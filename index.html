@@ -300,6 +300,37 @@ body{
   color:#494f55;
 }
 
+
+/* one-week reveal countdown */
+.countdown{
+  position:absolute;
+  z-index:8;
+  left:50%;
+  top:54%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+  pointer-events:none;
+  user-select:none;
+}
+.countdown-label{
+  margin-bottom:9px;
+  color:rgba(120,132,142,.46);
+  font:500 8px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.28em;
+  text-transform:uppercase;
+}
+.countdown-time{
+  color:rgba(178,195,208,.48);
+  font:400 clamp(20px,2.35vw,36px)/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.13em;
+  font-variant-numeric:tabular-nums;
+  text-shadow:0 0 18px rgba(170,210,240,.08);
+}
+.countdown-time .seconds{
+  color:rgba(205,222,235,.68);
+  text-shadow:0 0 14px rgba(185,220,245,.16);
+}
+
 /* moving story */
 .story-stream{
   position:absolute;
@@ -367,6 +398,19 @@ body{
     color:#656d74;
   }
 
+  .countdown{
+    top:55%;
+    width:90vw;
+  }
+  .countdown-label{
+    margin-bottom:8px;
+    font-size:7px;
+  }
+  .countdown-time{
+    font-size:clamp(20px,7vw,28px);
+    letter-spacing:.10em;
+  }
+
   .side-note{
     top:auto;
     right:auto;
@@ -429,6 +473,11 @@ body{
     <div class="horizon"></div>
   </div>
 
+  <div class="countdown" aria-label="Countdown to next reveal">
+    <div class="countdown-label">next signal</div>
+    <div class="countdown-time"><span id="countdown-main">07D 00:00:</span><span class="seconds" id="countdown-seconds">00</span></div>
+  </div>
+
   <div class="edge brand">ZDENEK LAB</div>
   <div class="edge status"><span class="dot"></span> something is forming</div>
   <div class="edge top-center">Independent experiments · Prague</div>
@@ -467,7 +516,38 @@ body{
   </div>
 
   <div class="edge bottom-left">Experiment 001 · AI HEAD / AI CUBE</div>
-  <div class="edge bottom-right">temporary interface · v0.8</div>
+  <div class="edge bottom-right">temporary interface · v0.9</div>
 </main>
+
+<script>
+(() => {
+  const target = new Date('2026-09-25T20:56:00+02:00').getTime();
+  const main = document.getElementById('countdown-main');
+  const seconds = document.getElementById('countdown-seconds');
+  if (!main || !seconds) return;
+
+  const pad = n => String(n).padStart(2, '0');
+
+  function updateCountdown(){
+    const remaining = Math.max(0, target - Date.now());
+    const totalSeconds = Math.floor(remaining / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const secs = totalSeconds % 60;
+
+    main.textContent = `${pad(days)}D ${pad(hours)}:${pad(minutes)}:`;
+    seconds.textContent = pad(secs);
+
+    if (remaining <= 0) {
+      document.querySelector('.countdown-label').textContent = 'signal open';
+      clearInterval(timer);
+    }
+  }
+
+  updateCountdown();
+  const timer = setInterval(updateCountdown, 1000);
+})();
+</script>
 </body>
 </html>
