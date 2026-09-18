@@ -300,6 +300,46 @@ body{
   color:#494f55;
 }
 
+/* moving story */
+.story-stream{
+  position:absolute;
+  z-index:9;
+  left:0;
+  right:0;
+  bottom:clamp(62px,6.5vh,82px);
+  overflow:hidden;
+  white-space:nowrap;
+  pointer-events:none;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 8%,#000 92%,transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0%,#000 8%,#000 92%,transparent 100%);
+}
+.story-track{
+  display:inline-flex;
+  width:max-content;
+  will-change:transform;
+  animation:storyScroll 78s linear infinite;
+}
+.story-group{
+  display:inline-flex;
+  align-items:center;
+  gap:0;
+  padding-right:80px;
+}
+.story-item{
+  color:#697179;
+  font:500 10px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.08em;
+}
+.story-item::after{
+  content:"  ·  ";
+  color:#3d444a;
+  padding:0 24px;
+}
+@keyframes storyScroll{
+  from{transform:translateX(0)}
+  to{transform:translateX(-50%)}
+}
+
 @media(max-width:760px){
   .planet{width:94vw}
   .rings{width:126vw}
@@ -328,7 +368,7 @@ body{
     top:auto;
     right:auto;
     left:50%;
-    bottom:104px;
+    bottom:128px;
     transform:translateX(-50%);
     width:84vw;
     text-align:center;
@@ -337,9 +377,23 @@ body{
     color:#747c83;
   }
 
+  .story-stream{
+    bottom:72px;
+  }
+  .story-track{
+    animation-duration:68s;
+  }
+  .story-item{
+    font-size:9px;
+    letter-spacing:.06em;
+  }
+  .story-item::after{
+    padding:0 18px;
+  }
+
   .bottom-left{
     left:28px;
-    bottom:40px;
+    bottom:34px;
     font-size:8px;
     letter-spacing:.11em;
   }
@@ -347,7 +401,8 @@ body{
 }
 
 @media(prefers-reduced-motion:reduce){
-  .stars,.halo,.planet,.dot,.meteor{animation:none}
+  .stars,.halo,.planet,.dot,.meteor,.story-track{animation:none}
+  .story-stream{display:none}
 }
 </style>
 </head>
@@ -378,8 +433,37 @@ body{
     Somewhere between <b>AI, hardware and curiosity</b>, something is beginning to move.
   </div>
 
+  <div class="story-stream" aria-label="AI CUBE story">
+    <div class="story-track">
+      <div class="story-group">
+        <span class="story-item">I spent two decades designing analog and mixed-signal integrated circuits.</span>
+        <span class="story-item">Then I became fascinated by the moment an AI decision turns into a real action.</span>
+        <span class="story-item">So I built AI_CUBE: two servos, a 3D-printed frame and a local brain.</span>
+        <span class="story-item">The closer software gets to hardware, the less room there is for uncertainty.</span>
+        <span class="story-item">The LLM chooses intent. Deterministic software controls the motion.</span>
+        <span class="story-item">Primitive → Capability → Agent Action → Guard → Executor.</span>
+        <span class="story-item">The next loop adds vision, audio and feedback from the physical world.</span>
+        <span class="story-item">AI_CUBE is not the destination. It is a test bench for agentic engineering.</span>
+        <span class="story-item">The same principles may one day guide local AI inside analog design flows.</span>
+        <span class="story-item">Give AI freedom where it helps — and hard boundaries where engineering begins.</span>
+      </div>
+      <div class="story-group" aria-hidden="true">
+        <span class="story-item">I spent two decades designing analog and mixed-signal integrated circuits.</span>
+        <span class="story-item">Then I became fascinated by the moment an AI decision turns into a real action.</span>
+        <span class="story-item">So I built AI_CUBE: two servos, a 3D-printed frame and a local brain.</span>
+        <span class="story-item">The closer software gets to hardware, the less room there is for uncertainty.</span>
+        <span class="story-item">The LLM chooses intent. Deterministic software controls the motion.</span>
+        <span class="story-item">Primitive → Capability → Agent Action → Guard → Executor.</span>
+        <span class="story-item">The next loop adds vision, audio and feedback from the physical world.</span>
+        <span class="story-item">AI_CUBE is not the destination. It is a test bench for agentic engineering.</span>
+        <span class="story-item">The same principles may one day guide local AI inside analog design flows.</span>
+        <span class="story-item">Give AI freedom where it helps — and hard boundaries where engineering begins.</span>
+      </div>
+    </div>
+  </div>
+
   <div class="edge bottom-left">Experiment 001 · AI HEAD / AI CUBE</div>
-  <div class="edge bottom-right">temporary interface · v0.5</div>
+  <div class="edge bottom-right">temporary interface · v0.6</div>
 </main>
 </body>
 </html>
