@@ -3,27 +3,327 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#000000">
 <title>ZDENEK LAB</title>
-<meta name="description" content="ZDENEK LAB — AI, hardware and experiments.">
+<meta name="description" content="ZDENEK LAB — experiments in AI, hardware and embodied intelligence.">
 <style>
-:root{color-scheme:dark}
-*{box-sizing:border-box}
-body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0b0d10;color:#f4f6f8;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-main{width:min(900px,90vw)}
-.kicker{font:600 12px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.16em;color:#8b949e;text-transform:uppercase}
-h1{margin:.35em 0 .2em;font-size:clamp(56px,11vw,128px);line-height:.9;letter-spacing:-.06em}
-p{max-width:650px;margin:0;color:#aeb6bf;font-size:clamp(18px,2.2vw,28px);line-height:1.35}
-.rule{margin-top:42px;height:1px;background:#242a31}
-.small{margin-top:14px;font:500 12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;color:#65707c}
+  :root{
+    --bg:#000;
+    --fg:#f1f1ef;
+    --muted:#777b80;
+    --dim:#34373b;
+    --line:rgba(255,255,255,.11);
+    --glow:rgba(205,225,255,.18);
+  }
+
+  *{box-sizing:border-box}
+  html,body{width:100%;height:100%;margin:0}
+  body{
+    overflow:hidden;
+    background:#000;
+    color:var(--fg);
+    font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    opacity:.16;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+    mix-blend-mode:soft-light;
+    z-index:20;
+  }
+
+  .page{
+    position:relative;
+    width:100%;
+    height:100%;
+    min-height:620px;
+    isolation:isolate;
+  }
+
+  .grid{
+    position:absolute;
+    inset:0;
+    opacity:.14;
+    background:
+      linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+    background-size:72px 72px;
+    mask-image:linear-gradient(to bottom,transparent 0%,#000 18%,#000 78%,transparent 100%);
+  }
+
+  .glow{
+    position:absolute;
+    width:min(68vw,900px);
+    aspect-ratio:1;
+    right:-10vw;
+    top:50%;
+    transform:translateY(-50%);
+    border-radius:50%;
+    background:radial-gradient(circle,rgba(145,180,220,.14) 0%,rgba(70,90,110,.05) 30%,transparent 68%);
+    filter:blur(30px);
+    opacity:.9;
+    transition:transform 1.2s cubic-bezier(.2,.8,.2,1);
+  }
+
+  header{
+    position:absolute;
+    left:clamp(26px,4vw,68px);
+    right:clamp(26px,4vw,68px);
+    top:clamp(24px,4vw,54px);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    z-index:10;
+  }
+
+  .brand{
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:.23em;
+    text-transform:uppercase;
+  }
+
+  .status{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    color:#777;
+    font:500 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+  }
+
+  .dot{
+    width:6px;height:6px;border-radius:50%;
+    background:#9da3aa;
+    box-shadow:0 0 12px rgba(210,225,240,.8);
+    animation:pulse 2.8s ease-in-out infinite;
+  }
+
+  @keyframes pulse{
+    0%,100%{opacity:.25;transform:scale(.8)}
+    50%{opacity:1;transform:scale(1)}
+  }
+
+  .copy{
+    position:absolute;
+    z-index:8;
+    left:clamp(26px,7vw,110px);
+    top:50%;
+    transform:translateY(-46%);
+    width:min(640px,52vw);
+  }
+
+  .eyebrow{
+    margin:0 0 22px;
+    color:#6e7277;
+    font:500 11px/1.3 ui-monospace,SFMono-Regular,Menlo,monospace;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+  }
+
+  h1{
+    margin:0;
+    font-weight:620;
+    font-size:clamp(58px,9.8vw,154px);
+    line-height:.78;
+    letter-spacing:-.075em;
+  }
+
+  h1 span{
+    display:block;
+    color:#5c6166;
+  }
+
+  .tagline{
+    margin:34px 0 0;
+    max-width:520px;
+    color:#8e9297;
+    font-size:clamp(16px,1.45vw,21px);
+    line-height:1.5;
+    letter-spacing:-.01em;
+  }
+
+  .tagline b{color:#c7c9ca;font-weight:500}
+
+  .head-wrap{
+    position:absolute;
+    z-index:4;
+    right:clamp(-150px,-5vw,-40px);
+    top:50%;
+    width:min(58vw,820px);
+    aspect-ratio:1;
+    transform:translateY(-47%);
+  }
+
+  .orbit{
+    position:absolute;
+    inset:7%;
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:50%;
+  }
+
+  .orbit::before,.orbit::after{
+    content:"";
+    position:absolute;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,.045);
+  }
+
+  .orbit::before{inset:11%}
+  .orbit::after{inset:23%}
+
+  .portrait-shell{
+    position:absolute;
+    inset:11%;
+    border-radius:50%;
+    overflow:hidden;
+    filter:drop-shadow(0 0 38px rgba(150,185,220,.08));
+    mask-image:radial-gradient(circle at center,#000 0%,#000 53%,rgba(0,0,0,.88) 63%,transparent 77%);
+  }
+
+  .portrait-shell::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      linear-gradient(90deg,#000 0%,transparent 24%,transparent 72%,#000 100%),
+      linear-gradient(0deg,#000 0%,transparent 34%,transparent 78%,#000 100%),
+      radial-gradient(circle at 50% 42%,transparent 0%,transparent 35%,rgba(0,0,0,.16) 58%,#000 79%);
+    pointer-events:none;
+  }
+
+  .portrait{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center 25%;
+    display:block;
+    filter:grayscale(1) contrast(1.55) brightness(.58);
+    opacity:.78;
+    transform:scale(1.04);
+  }
+
+  .scan{
+    position:absolute;
+    left:18%;
+    right:18%;
+    height:1px;
+    top:28%;
+    background:linear-gradient(90deg,transparent,rgba(210,230,250,.36),transparent);
+    box-shadow:0 0 18px rgba(180,215,255,.25);
+    opacity:.45;
+    animation:scan 6s ease-in-out infinite;
+  }
+
+  @keyframes scan{
+    0%,100%{transform:translateY(0);opacity:.15}
+    50%{transform:translateY(320px);opacity:.52}
+  }
+
+  .mark{
+    position:absolute;
+    right:14%;
+    bottom:18%;
+    color:#4d5258;
+    font:500 10px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+    letter-spacing:.12em;
+    text-align:right;
+  }
+
+  footer{
+    position:absolute;
+    z-index:10;
+    left:clamp(26px,4vw,68px);
+    right:clamp(26px,4vw,68px);
+    bottom:clamp(24px,3.6vw,50px);
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    color:#494d52;
+    font:500 10px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+  }
+
+  .project{
+    color:#72777c;
+  }
+
+  @media(max-width:800px){
+    .copy{
+      width:calc(100% - 52px);
+      left:26px;
+      top:auto;
+      bottom:112px;
+      transform:none;
+    }
+    h1{font-size:clamp(66px,20vw,112px)}
+    .tagline{font-size:16px;max-width:88%}
+    .head-wrap{
+      width:115vw;
+      right:-48vw;
+      top:34%;
+      opacity:.8;
+    }
+    .eyebrow{margin-bottom:14px}
+    footer{left:26px;right:26px}
+    footer .right{display:none}
+  }
+
+  @media(prefers-reduced-motion:reduce){
+    .dot,.scan{animation:none}
+  }
 </style>
 </head>
 <body>
-<main>
-<div class="kicker">Independent experiments / Prague</div>
-<h1>ZDENEK<br>LAB</h1>
-<p>AI, hardware and other things that seemed like a good idea.</p>
-<div class="rule"></div>
-<div class="small">FIRST PROJECT → AI CUBE / AI HEAD · SITE IN PROGRESS</div>
-</main>
+  <main class="page">
+    <div class="grid"></div>
+    <div class="glow" id="glow"></div>
+
+    <header>
+      <div class="brand">ZDENEK LAB</div>
+      <div class="status"><span class="dot"></span> experimental system online</div>
+    </header>
+
+    <section class="copy">
+      <p class="eyebrow">Independent experiments · Prague</p>
+      <h1>ZDENEK<span>LAB</span></h1>
+      <p class="tagline">
+        I build things that <b>think, move and occasionally misbehave.</b><br>
+        First experiment: an embodied AI head.
+      </p>
+    </section>
+
+    <section class="head-wrap" aria-label="AI head experiment">
+      <div class="orbit"></div>
+      <div class="portrait-shell">
+        <img class="portrait" src="https://avatars.githubusercontent.com/u/15107151?v=4" alt="Zdeněk Lukeš">
+        <div class="scan"></div>
+      </div>
+      <div class="mark">AI CUBE<br>EXPERIMENT 001</div>
+    </section>
+
+    <footer>
+      <div class="project">AI HEAD / AI CUBE · BUILDING IN PUBLIC</div>
+      <div class="right">SITE v0.1 · TEMPORARY INTERFACE</div>
+    </footer>
+  </main>
+
+<script>
+(() => {
+  const glow = document.getElementById('glow');
+  if (!glow || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  window.addEventListener('pointermove', e => {
+    const x = (e.clientX / innerWidth - .5) * 22;
+    const y = (e.clientY / innerHeight - .5) * 16;
+    glow.style.transform = `translate(calc(${x}px), calc(-50% + ${y}px))`;
+  }, {passive:true});
+})();
+</script>
 </body>
 </html>
