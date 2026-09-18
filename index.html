@@ -303,7 +303,7 @@ body{
   z-index:4;
   left:67%;
   top:33%;
-  width:18%;
+  width:14%;
   aspect-ratio:1;
   border-radius:50%;
   opacity:0;
@@ -339,10 +339,9 @@ body{
   height:20px;
   background:rgba(246,250,252,.99);
   box-shadow:
-    0 0 45px rgba(242,249,255,.98),
-    0 0 130px rgba(192,225,247,.76),
-    0 0 300px rgba(116,171,209,.43),
-    0 0 520px rgba(62,107,140,.20);
+    0 0 32px rgba(242,249,255,.95),
+    0 0 92px rgba(192,225,247,.64),
+    0 0 190px rgba(116,171,209,.28);
 }
 .impact-ring{
   width:30px;
@@ -421,9 +420,6 @@ body{
 .page.impact .rings{
   animation:ringsImpact 2.4s ease-out forwards;
 }
-.page.impact .stars{
-  animation:starsImpact 1.5s ease-out forwards;
-}
 
 @keyframes craterForm{
   0%{opacity:0;transform:translate(-50%,-50%) scale(.12)}
@@ -435,18 +431,18 @@ body{
   0%{opacity:0;transform:translate(-50%,-50%) scale(.16)}
   8%{opacity:1}
   24%{opacity:.98}
-  100%{opacity:0;transform:translate(-50%,-50%) scale(42)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(18)}
 }
 @keyframes impactRing{
   0%{opacity:0;transform:translate(-50%,-50%) scale(.15)}
   12%{opacity:.92}
-  100%{opacity:0;transform:translate(-50%,-50%) scale(28)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(18)}
 }
 @keyframes impactPlume{
-  0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}
-  16%{opacity:.72}
-  60%{opacity:.34;transform:translate(-50%,-50%) translate(45px,-38px) scale(4.2)}
-  100%{opacity:0;transform:translate(-50%,-50%) translate(92px,-78px) scale(7)}
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.22)}
+  10%{opacity:.68}
+  45%{opacity:.36;transform:translate(-50%,-50%) translate(28px,-24px) scale(2.8)}
+  100%{opacity:0;transform:translate(-50%,-50%) translate(60px,-52px) scale(4.8)}
 }
 @keyframes ejectaFly{
   0%{
@@ -462,10 +458,10 @@ body{
 }
 @keyframes planetImpact{
   0%{transform:translateY(18%) translate(0,0) scale(1)}
-  8%{transform:translateY(18%) translate(-9px,5px) scale(1.018)}
-  18%{transform:translateY(18%) translate(7px,-5px) scale(.991)}
-  32%{transform:translateY(18%) translate(-4px,3px) scale(1.006)}
-  50%{transform:translateY(18%) translate(2px,-1px) scale(.998)}
+  9%{transform:translateY(18%) translate(-4px,2px) scale(1.006)}
+  19%{transform:translateY(18%) translate(3px,-2px) scale(.997)}
+  34%{transform:translateY(18%) translate(-2px,1px) scale(1.002)}
+  52%{transform:translateY(18%) translate(1px,0) scale(1)}
   100%{transform:translateY(18%) translate(0,0) scale(1)}
 }
 @keyframes haloImpact{
@@ -478,12 +474,6 @@ body{
   0%{transform:scale(1);opacity:.72}
   22%{transform:scale(1.28);opacity:.98}
   100%{transform:scale(1.07);opacity:.32}
-}
-@keyframes starsImpact{
-  0%{opacity:.48;transform:scale(1.04)}
-  10%{opacity:.95;transform:scale(1.09)}
-  36%{opacity:.58;transform:scale(1.065)}
-  100%{opacity:.48;transform:scale(1.05)}
 }
 
 /* discreet 10-second impact preview */
@@ -810,7 +800,7 @@ body{
   <button class="impact-test" id="impact-test" type="button" aria-label="Preview impact in ten seconds">simulate impact · 10s</button>
 
   <div class="edge bottom-left">Experiment 001 · AI HEAD / AI CUBE</div>
-  <div class="edge bottom-right">temporary interface · v1.2</div>
+  <div class="edge bottom-right">temporary interface · v1.3</div>
 </main>
 
 <script>
@@ -878,9 +868,9 @@ body{
     const x = startX + (target.x - startX) * travel;
     const y = startY + (target.y - startY) * travel;
 
-    // Requested apparent size: 10% of the planet at the start, 50% at impact.
+    // Apparent size: 10% of the planet at first sight, 20% at impact.
     const sizeProgress = Math.pow(progress, .86);
-    const diameter = target.planetDiameter * (.10 + .40 * sizeProgress);
+    const diameter = target.planetDiameter * (.10 + .10 * sizeProgress);
 
     const dx = target.x - startX;
     const dy = target.y - startY;
@@ -890,7 +880,7 @@ body{
     impactor.style.top = y + 'px';
     impactor.style.width = diameter + 'px';
     impactor.style.height = diameter + 'px';
-    impactor.style.setProperty('--tail', Math.max(80, diameter * 1.9) + 'px');
+    impactor.style.setProperty('--tail', Math.max(58, diameter * 1.45) + 'px');
     impactor.style.transform = 'translate(-50%,-50%) rotate(' + angle.toFixed(2) + 'deg)';
   }
 
@@ -915,40 +905,63 @@ body{
     ejectaLayer.replaceChildren();
     const target = placeImpactFx();
     const rand = seededRandom(9182026);
-    const normalAngle = Math.atan2(-.34, .54);
+    const p = planet.getBoundingClientRect();
+    const centerX = p.left + p.width / 2;
+    const centerY = p.top + p.height / 2;
 
-    for (let i = 0; i < 46; i++) {
+    // Local surface normal at the impact point. Most material leaves away from the planet.
+    const normalAngle = Math.atan2(target.y - centerY, target.x - centerX);
+
+    for (let i = 0; i < 58; i++) {
       const fragment = document.createElement('span');
       fragment.className = 'ejecta-fragment';
 
-      const isDust = i >= 34;
-      const isHot = i < 12;
+      const isDust = i >= 42;
+      const isHot = i < 10;
+      const isFast = i < 30;
+
       if (isDust) fragment.classList.add('dust');
       else if (isHot) fragment.classList.add('hot');
 
-      // Most ejecta leaves along the local surface normal; some spreads into a wider curtain.
-      const spread = isDust ? 1.65 : (i < 28 ? 1.08 : 1.8);
-      const angle = normalAngle + (rand() - .5) * spread * 2;
-      const speed = target.planetDiameter * (isDust ? (.22 + rand() * .42) : (.32 + rand() * .82));
+      // A narrow fast ejecta cone plus a slower, broader curtain.
+      const halfSpread = isDust ? 1.18 : (isFast ? .58 : .92);
+      let angle = normalAngle + (rand() - .5) * halfSpread * 2;
+
+      // Oblique impact adds a slight downrange bias to part of the ejecta.
+      if (!isDust && i % 4 === 0) angle -= .22 + rand() * .18;
+
+      const speed = target.planetDiameter * (
+        isDust ? (.16 + rand() * .28) :
+        isFast ? (.45 + rand() * .62) :
+        (.24 + rand() * .36)
+      );
+
       const dx = Math.cos(angle) * speed;
       const dy = Math.sin(angle) * speed;
 
       const size = target.planetDiameter * (
-        isDust ? (.006 + rand() * .015) :
-        isHot ? (.006 + rand() * .012) :
-        (.009 + rand() * .022)
+        isDust ? (.003 + rand() * .008) :
+        isHot ? (.004 + rand() * .008) :
+        isFast ? (.004 + rand() * .010) :
+        (.007 + rand() * .015)
       );
-      const dur = (isDust ? 2.8 : 2.0) + rand() * 1.7;
-      const delay = rand() * .18;
+
+      const dur = isDust
+        ? 2.7 + rand() * 1.4
+        : isFast
+          ? 1.55 + rand() * 1.15
+          : 2.0 + rand() * 1.45;
+
+      const delay = rand() * .12;
       const rot = Math.round(rand() * 180);
-      const rot2 = rot + (rand() > .5 ? 1 : -1) * (260 + rand() * 720);
-      const alpha = isDust ? (.18 + rand() * .34) : (.58 + rand() * .40);
+      const rot2 = rot + (rand() > .5 ? 1 : -1) * (220 + rand() * 620);
+      const alpha = isDust ? (.14 + rand() * .28) : (.54 + rand() * .40);
 
       fragment.style.left = target.x + 'px';
       fragment.style.top = target.y + 'px';
       fragment.style.setProperty('--dx', dx.toFixed(1) + 'px');
       fragment.style.setProperty('--dy', dy.toFixed(1) + 'px');
-      fragment.style.setProperty('--size', Math.max(2, size).toFixed(1) + 'px');
+      fragment.style.setProperty('--size', Math.max(1.5, size).toFixed(1) + 'px');
       fragment.style.setProperty('--dur', dur.toFixed(2) + 's');
       fragment.style.setProperty('--delay', delay.toFixed(2) + 's');
       fragment.style.setProperty('--rot', rot + 'deg');
