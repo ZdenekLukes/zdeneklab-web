@@ -9,8 +9,9 @@
 <style>
 :root{
   --fg:#e9ecef;
-  --muted:#7a828a;
-  --faint:#40464d;
+  --edge:#737b83;
+  --edge-strong:#949ca4;
+  --edge-faint:#4d545b;
 }
 *{box-sizing:border-box}
 html,body{width:100%;height:100%;margin:0}
@@ -30,7 +31,7 @@ body{
     radial-gradient(circle at 50% 47%, rgba(23,32,40,.50) 0%, rgba(7,10,13,.72) 28%, rgba(1,2,3,.96) 66%, #000 100%);
 }
 
-/* star field */
+/* space */
 .stars{
   position:absolute;
   inset:-5%;
@@ -52,8 +53,6 @@ body{
   from{transform:scale(1.02)}
   to{transform:scale(1.08) translate3d(-1.2%,.7%,0)}
 }
-
-/* faint nebula */
 .nebula{
   position:absolute;
   inset:0;
@@ -92,10 +91,7 @@ body{
   height:1px;
   transform:translateY(-50%);
   transform-origin:right center;
-  background:linear-gradient(to left,
-    rgba(220,240,255,.60),
-    rgba(150,190,220,.18),
-    transparent 76%);
+  background:linear-gradient(to left,rgba(220,240,255,.60),rgba(150,190,220,.18),transparent 76%);
   filter:blur(.35px);
 }
 .m1{top:13%;left:84%;animation:meteor1 9.5s linear infinite;animation-delay:.7s}
@@ -128,7 +124,7 @@ body{
   30%,100%{transform:translate(-210px,150px) rotate(142deg) scale(.9);opacity:0}
 }
 
-/* central object */
+/* planet */
 .cosmos{
   position:absolute;
   inset:0;
@@ -155,10 +151,7 @@ body{
   from{transform:scale(.985);opacity:.72}
   to{transform:scale(1.035);opacity:1}
 }
-
-.rings,
-.rings::before,
-.rings::after{
+.rings,.rings::before,.rings::after{
   position:absolute;
   border-radius:50%;
   border:1px solid rgba(190,214,232,.055);
@@ -170,7 +163,6 @@ body{
 }
 .rings::before,.rings::after{content:"";inset:10%}
 .rings::after{inset:23%;border-color:rgba(190,214,232,.035)}
-
 .planet{
   position:absolute;
   width:min(49vw,635px);
@@ -194,7 +186,6 @@ body{
   from{transform:translateY(19%) scale(.988)}
   to{transform:translateY(16.5%) scale(1.016)}
 }
-
 .planet::before{
   content:"";
   position:absolute;
@@ -230,7 +221,6 @@ body{
   filter:blur(9px);
   opacity:.92;
 }
-
 .horizon{
   position:absolute;
   width:min(66vw,840px);
@@ -247,23 +237,30 @@ body{
   opacity:.76;
 }
 
-/* interface */
-header{
+/* quiet edge interface */
+.edge{
   position:absolute;
   z-index:10;
-  top:clamp(24px,4vw,50px);
-  left:clamp(26px,4vw,64px);
-  right:clamp(26px,4vw,64px);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  color:#686f76;
-  font:500 9px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
-  letter-spacing:.17em;
+  color:var(--edge);
+  font:500 9px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.15em;
   text-transform:uppercase;
 }
-.brand{color:#969ca2;font-weight:700;letter-spacing:.24em}
-.status{display:flex;align-items:center;gap:10px}
+.brand{
+  top:clamp(24px,4vw,50px);
+  left:clamp(26px,4vw,64px);
+  color:var(--edge-strong);
+  font-weight:700;
+  letter-spacing:.24em;
+}
+.status{
+  top:clamp(24px,4vw,50px);
+  right:clamp(26px,4vw,64px);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#697078;
+}
 .dot{
   width:5px;height:5px;border-radius:50%;
   background:#aab6c0;
@@ -271,94 +268,86 @@ header{
   animation:pulse 3.2s ease-in-out infinite;
 }
 @keyframes pulse{0%,100%{opacity:.2}50%{opacity:1}}
-
-.hero{
-  position:absolute;
-  z-index:8;
+.top-center{
+  top:clamp(86px,10vw,132px);
   left:50%;
-  top:48%;
-  transform:translate(-50%,-50%);
-  width:min(760px,88vw);
-  text-align:center;
+  transform:translateX(-50%);
+  color:#656d74;
+  white-space:nowrap;
 }
-.eyebrow{
-  margin:0 0 18px;
-  color:#555c63;
-  font:500 9px/1.3 ui-monospace,SFMono-Regular,Menlo,monospace;
-  letter-spacing:.22em;
-  text-transform:uppercase;
+.side-note{
+  right:clamp(26px,4vw,64px);
+  top:50%;
+  transform:translateY(-50%);
+  width:min(300px,24vw);
+  text-align:right;
+  text-transform:none;
+  letter-spacing:.02em;
+  line-height:1.6;
+  color:#747c83;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:clamp(12px,.9vw,14px);
 }
-h1{
-  margin:0;
-  font-size:clamp(34px,4.8vw,72px);
-  line-height:.9;
-  letter-spacing:-.055em;
-  font-weight:520;
-  color:rgba(233,237,240,.52);
-  text-shadow:0 0 18px rgba(190,220,242,.03);
-}
-h1 span{
-  display:block;
-  color:rgba(108,116,124,.34);
-}
-.tagline{
-  margin:22px auto 0;
-  max-width:560px;
-  color:#707880;
-  font-size:clamp(13px,1vw,16px);
-  line-height:1.55;
-}
-.tagline b{color:#aab2b9;font-weight:500}
-
-.signal{
-  width:1px;
-  height:48px;
-  margin:28px auto 0;
-  background:linear-gradient(to bottom,rgba(205,228,247,.26),transparent);
-  opacity:.45;
-}
-.signal::after{
-  content:"";
-  display:block;
-  width:4px;height:4px;
-  margin-left:-1.5px;
-  border-radius:50%;
-  background:#aebbc5;
-  box-shadow:0 0 11px rgba(210,232,248,.42);
-  animation:signal 3.8s ease-in-out infinite;
-}
-@keyframes signal{
-  0%,100%{transform:translateY(0);opacity:.18}
-  50%{transform:translateY(37px);opacity:.8}
-}
-
-footer{
-  position:absolute;
-  z-index:10;
+.side-note b{color:#9ca4ab;font-weight:500}
+.bottom-left{
   left:clamp(26px,4vw,64px);
+  bottom:clamp(24px,3.5vw,46px);
+  color:#5b6269;
+}
+.bottom-right{
   right:clamp(26px,4vw,64px);
   bottom:clamp(24px,3.5vw,46px);
-  display:flex;
-  justify-content:space-between;
-  color:#3f454b;
-  font:500 9px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
-  letter-spacing:.13em;
-  text-transform:uppercase;
+  color:#494f55;
 }
-footer .current{color:#575e65}
 
 @media(max-width:760px){
-  .planet{width:84vw}
-  .rings{width:118vw}
-  .halo{width:138vw}
-  .hero{top:48%;width:92vw}
-  h1{font-size:clamp(32px,10vw,54px)}
-  .tagline{font-size:13px;max-width:86%}
+  .planet{width:94vw}
+  .rings{width:126vw}
+  .halo{width:148vw}
+
+  .brand{
+    top:28px;
+    left:28px;
+    font-size:10px;
+  }
   .status{display:none}
-  footer .right{display:none}
+
+  .top-center{
+    top:102px;
+    left:50%;
+    width:86vw;
+    transform:translateX(-50%);
+    white-space:normal;
+    text-align:center;
+    font-size:8px;
+    line-height:1.5;
+    color:#656d74;
+  }
+
+  .side-note{
+    top:auto;
+    right:auto;
+    left:50%;
+    bottom:104px;
+    transform:translateX(-50%);
+    width:84vw;
+    text-align:center;
+    font-size:12px;
+    line-height:1.5;
+    color:#747c83;
+  }
+
+  .bottom-left{
+    left:28px;
+    bottom:40px;
+    font-size:8px;
+    letter-spacing:.11em;
+  }
+  .bottom-right{display:none}
 }
+
 @media(prefers-reduced-motion:reduce){
-  .stars,.halo,.planet,.dot,.signal::after,.meteor{animation:none}
+  .stars,.halo,.planet,.dot,.meteor{animation:none}
 }
 </style>
 </head>
@@ -374,11 +363,6 @@ footer .current{color:#575e65}
     <span class="meteor m4"></span>
   </div>
 
-  <header>
-    <div class="brand">ZDENEK LAB</div>
-    <div class="status"><span class="dot"></span> something is forming</div>
-  </header>
-
   <div class="cosmos" aria-hidden="true">
     <div class="halo"></div>
     <div class="rings"></div>
@@ -386,20 +370,16 @@ footer .current{color:#575e65}
     <div class="horizon"></div>
   </div>
 
-  <section class="hero">
-    <p class="eyebrow">Independent experiments · Prague</p>
-    <h1>ZDENEK<span>LAB</span></h1>
-    <p class="tagline">
-      Somewhere between <b>AI, hardware and curiosity</b>,<br>
-      something is beginning to move.
-    </p>
-    <div class="signal"></div>
-  </section>
+  <div class="edge brand">ZDENEK LAB</div>
+  <div class="edge status"><span class="dot"></span> something is forming</div>
+  <div class="edge top-center">Independent experiments · Prague</div>
 
-  <footer>
-    <div class="current">Experiment 001 · AI HEAD / AI CUBE</div>
-    <div class="right">temporary interface · v0.4</div>
-  </footer>
+  <div class="edge side-note">
+    Somewhere between <b>AI, hardware and curiosity</b>, something is beginning to move.
+  </div>
+
+  <div class="edge bottom-left">Experiment 001 · AI HEAD / AI CUBE</div>
+  <div class="edge bottom-right">temporary interface · v0.5</div>
 </main>
 </body>
 </html>
