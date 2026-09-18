@@ -288,6 +288,22 @@ body{
   font-size:clamp(12px,.9vw,14px);
 }
 .side-note b{color:#9ca4ab;font-weight:500}
+.cube-link{
+  display:inline-block;
+  margin-top:16px;
+  color:#7f8a91;
+  text-decoration:none;
+  font:500 8px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.20em;
+  text-transform:uppercase;
+  opacity:.72;
+  transition:color .25s ease,opacity .25s ease,transform .25s ease;
+}
+.cube-link:hover{
+  color:#c1cdd4;
+  opacity:1;
+  transform:translateX(2px);
+}
 .bottom-left{
   left:clamp(26px,4vw,64px);
   bottom:clamp(24px,3.5vw,46px);
@@ -552,6 +568,7 @@ body{
 
   <div class="edge side-note">
     Somewhere between <b>AI, hardware and curiosity</b>, something is beginning to move.
+    <a class="cube-link" href="ai-cube.html">AI_CUBE · explore →</a>
   </div>
 
   <div class="story-stream" aria-label="AI CUBE story">
