@@ -317,7 +317,7 @@ body{
   display:inline-flex;
   width:max-content;
   will-change:transform;
-  animation:storyScroll 78s linear infinite;
+  animation:storyScroll 156s linear infinite;
 }
 .story-group{
   display:inline-flex;
@@ -326,13 +326,16 @@ body{
   padding-right:80px;
 }
 .story-item{
-  color:#697179;
-  font:500 10px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
-  letter-spacing:.08em;
+  color:#747c83;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:clamp(12px,.9vw,14px);
+  font-weight:500;
+  line-height:1.6;
+  letter-spacing:.02em;
 }
 .story-item::after{
   content:"  ·  ";
-  color:#3d444a;
+  color:#4f565d;
   padding:0 24px;
 }
 @keyframes storyScroll{
@@ -381,11 +384,12 @@ body{
     bottom:72px;
   }
   .story-track{
-    animation-duration:68s;
+    animation-duration:136s;
   }
   .story-item{
-    font-size:9px;
-    letter-spacing:.06em;
+    font-size:12px;
+    line-height:1.5;
+    letter-spacing:.02em;
   }
   .story-item::after{
     padding:0 18px;
@@ -463,7 +467,7 @@ body{
   </div>
 
   <div class="edge bottom-left">Experiment 001 · AI HEAD / AI CUBE</div>
-  <div class="edge bottom-right">temporary interface · v0.6</div>
+  <div class="edge bottom-right">temporary interface · v0.7</div>
 </main>
 </body>
 </html>
