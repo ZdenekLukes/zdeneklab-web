@@ -24,7 +24,7 @@ body{
 .page{
   position:relative;
   min-height:100vh;
-  overflow:hidden;
+  overflow-x:hidden;
   isolation:isolate;
 }
 .stars{
@@ -313,10 +313,140 @@ h1{
   letter-spacing:.22em;
   text-transform:uppercase;
 }
+
+.how{
+  position:relative;
+  z-index:4;
+  width:min(1180px,90vw);
+  margin:0 auto;
+  padding:34px 0 110px;
+  border-top:1px solid var(--line);
+}
+.how-head{
+  display:grid;
+  grid-template-columns:minmax(220px,.55fr) minmax(0,1.45fr);
+  gap:clamp(28px,6vw,86px);
+  align-items:start;
+}
+.how-kicker{
+  color:#69737b;
+  font:500 8px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.28em;
+  text-transform:uppercase;
+}
+.how h2{
+  margin:13px 0 0;
+  color:#cfd8dd;
+  font-size:clamp(30px,4vw,52px);
+  font-weight:300;
+  line-height:1;
+  letter-spacing:.06em;
+}
+.how-intro{
+  margin:0;
+  max-width:720px;
+  color:#7e8990;
+  font-size:14px;
+  line-height:1.8;
+}
+.how-intro b{
+  color:#bcc7cd;
+  font-weight:500;
+}
+.flow{
+  position:relative;
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  margin-top:52px;
+  border-top:1px solid var(--line);
+  border-left:1px solid var(--line);
+}
+.flow::before{
+  content:"";
+  position:absolute;
+  left:5%;
+  right:5%;
+  top:55px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(161,195,215,.14) 8%,rgba(161,195,215,.14) 92%,transparent);
+  z-index:0;
+}
+.flow-step{
+  position:relative;
+  z-index:1;
+  min-height:166px;
+  padding:18px 16px 20px;
+  border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(5,9,11,.28),rgba(2,4,5,.14));
+}
+.flow-step::after{
+  content:"";
+  position:absolute;
+  top:52px;
+  right:-4px;
+  width:7px;
+  height:7px;
+  border-top:1px solid rgba(178,209,228,.22);
+  border-right:1px solid rgba(178,209,228,.22);
+  transform:rotate(45deg);
+}
+.flow-step:last-child::after{display:none}
+.flow-n{
+  color:#505b63;
+  font:500 7px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.19em;
+}
+.flow-title{
+  margin:24px 0 9px;
+  color:#aeb9bf;
+  font:500 10px/1.25 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.flow-step p{
+  margin:0;
+  color:#68737a;
+  font-size:11px;
+  line-height:1.55;
+}
+.rule{
+  display:flex;
+  justify-content:space-between;
+  gap:24px;
+  align-items:center;
+  margin-top:26px;
+  padding:16px 18px;
+  border:1px solid rgba(185,214,233,.07);
+  background:rgba(4,7,9,.16);
+}
+.rule-main{
+  color:#a8b4bb;
+  font-size:13px;
+  line-height:1.5;
+}
+.rule-main b{
+  color:#d0d9de;
+  font-weight:500;
+}
+.rule-code{
+  flex:none;
+  color:#5f6c74;
+  font:500 7px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  text-align:right;
+}
+
 .footer{
-  position:absolute;left:clamp(26px,4vw,64px);bottom:24px;z-index:10;
-  color:#4f575d;font:500 7px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
-  letter-spacing:.16em;text-transform:uppercase;
+  position:relative;
+  z-index:10;
+  width:min(1180px,90vw);
+  margin:-70px auto 28px;
+  color:#4f575d;
+  font:500 7px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.16em;
+  text-transform:uppercase;
 }
 @media(max-width:820px){
   .page{overflow:visible}
@@ -338,6 +468,36 @@ h1{
   h1{font-size:clamp(44px,14vw,68px)}
   .lead{font-size:18px}
   .grid{grid-template-columns:1fr}
+  .how{
+    width:90vw;
+    padding:18px 0 100px;
+  }
+  .how-head{
+    grid-template-columns:1fr;
+    gap:20px;
+  }
+  .how h2{font-size:38px}
+  .flow{
+    grid-template-columns:1fr;
+    margin-top:34px;
+  }
+  .flow::before{display:none}
+  .flow-step{
+    min-height:auto;
+    padding:17px 18px 19px;
+  }
+  .flow-step::after{
+    top:auto;
+    right:18px;
+    bottom:-4px;
+    transform:rotate(135deg);
+  }
+  .flow-title{margin:11px 0 7px}
+  .rule{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .rule-code{text-align:left}
   .footer{position:relative;left:auto;bottom:auto;width:90vw;margin:-54px auto 28px}
 }
 </style>
@@ -404,6 +564,59 @@ h1{
       </div>
       <div class="planet"></div>
       <div class="visual-label">AI_CUBE · physical agent prototype</div>
+    </div>
+  </section>
+
+  <section class="how" id="how-it-works">
+    <div class="how-head">
+      <div>
+        <div class="how-kicker">System architecture</div>
+        <h2>How it works</h2>
+      </div>
+      <p class="how-intro">
+        AI_CUBE deliberately separates <b>meaning from motion.</b>
+        The local model may interpret a situation and choose an intent, but it never drives
+        the servos directly. Every physical action passes through a small deterministic layer
+        that keeps the behavior understandable, repeatable and constrained.
+      </p>
+    </div>
+
+    <div class="flow" aria-label="AI CUBE system flow">
+      <article class="flow-step">
+        <div class="flow-n">01</div>
+        <div class="flow-title">Listen / See</div>
+        <p>Audio and vision turn the physical world into observations the system can reason about.</p>
+      </article>
+      <article class="flow-step">
+        <div class="flow-n">02</div>
+        <div class="flow-title">Local AI</div>
+        <p>The model understands context, language and intent while remaining on the local machine.</p>
+      </article>
+      <article class="flow-step">
+        <div class="flow-n">03</div>
+        <div class="flow-title">Agent Action</div>
+        <p>The AI chooses a published semantic action such as nod, look, glance or curious.</p>
+      </article>
+      <article class="flow-step">
+        <div class="flow-n">04</div>
+        <div class="flow-title">Guard</div>
+        <p>Deterministic validation checks that the requested action and parameters are allowed.</p>
+      </article>
+      <article class="flow-step">
+        <div class="flow-n">05</div>
+        <div class="flow-title">Capability</div>
+        <p>A known core capability converts intent into a deterministic motion sequence.</p>
+      </article>
+      <article class="flow-step">
+        <div class="flow-n">06</div>
+        <div class="flow-title">Executor</div>
+        <p>The servo layer performs the motion and the physical result becomes observable again.</p>
+      </article>
+    </div>
+
+    <div class="rule">
+      <div class="rule-main"><b>AI decides what.</b> Deterministic software decides how.</div>
+      <div class="rule-code">Observation → Intent → Action → Guard → Capability → Motion</div>
     </div>
   </section>
 
