@@ -77,7 +77,7 @@ body{
   position:absolute;
   width:3px;
   height:3px;
-  border-radius:46% 54% 49% 51% / 43% 58% 42% 57%;
+  border-radius:50%;
   background:rgba(238,247,255,.96);
   box-shadow:0 0 9px rgba(220,240,255,.80);
   opacity:0;
@@ -436,13 +436,16 @@ body{
   animation:impactPlume 3.4s ease-out forwards;
 }
 .page.impact .planet{
-  animation:planetImpact 1.45s cubic-bezier(.2,.8,.2,1) forwards;
+  animation:planetDisintegrate .72s cubic-bezier(.16,.72,.2,1) forwards;
 }
 .page.impact .halo{
-  animation:haloImpact 2.2s ease-out forwards;
+  animation:haloCollapse 2.3s ease-out forwards;
 }
 .page.impact .rings{
-  animation:ringsImpact 2.4s ease-out forwards;
+  animation:ringsCollapse 2.6s ease-out forwards;
+}
+.page.impact .horizon{
+  animation:horizonCollapse 2.1s ease-out forwards;
 }
 
 @keyframes craterForm{
@@ -469,24 +472,110 @@ body{
   45%{opacity:.36;transform:translate(-50%,-50%) translate(28px,-24px) scale(2.8)}
   100%{opacity:0;transform:translate(-50%,-50%) translate(60px,-52px) scale(4.8)}
 }
-@keyframes planetImpact{
-  0%{transform:translateY(18%) translate(0,0) scale(1)}
-  9%{transform:translateY(18%) translate(-4px,2px) scale(1.006)}
-  19%{transform:translateY(18%) translate(3px,-2px) scale(.997)}
-  34%{transform:translateY(18%) translate(-2px,1px) scale(1.002)}
-  52%{transform:translateY(18%) translate(1px,0) scale(1)}
-  100%{transform:translateY(18%) translate(0,0) scale(1)}
+@keyframes planetDisintegrate{
+  0%{opacity:1;filter:brightness(1);transform:translateY(18%) scale(1)}
+  10%{opacity:1;filter:brightness(1.45);transform:translateY(18%) scale(1.012)}
+  24%{opacity:.96;filter:brightness(2.2);transform:translateY(18%) scale(1.025)}
+  42%{opacity:.46;filter:brightness(3.2);transform:translateY(18%) scale(1.05)}
+  100%{opacity:0;filter:brightness(4);transform:translateY(18%) scale(1.10)}
 }
-@keyframes haloImpact{
-  0%{transform:scale(1);opacity:.8}
-  12%{transform:scale(1.10);opacity:.94}
-  42%{transform:scale(1.03);opacity:.78}
-  100%{transform:scale(1);opacity:.82}
+@keyframes haloCollapse{
+  0%{transform:scale(1);opacity:.82}
+  12%{transform:scale(1.20);opacity:1}
+  42%{transform:scale(1.52);opacity:.62}
+  100%{transform:scale(2.25);opacity:0}
 }
-@keyframes ringsImpact{
+@keyframes ringsCollapse{
   0%{transform:scale(1);opacity:.72}
-  18%{transform:scale(1.08);opacity:.82}
-  100%{transform:scale(1.02);opacity:.46}
+  16%{transform:scale(1.10);opacity:.86}
+  100%{transform:scale(1.85);opacity:0}
+}
+@keyframes horizonCollapse{
+  0%{opacity:.76;transform:translate(-50%,7%) scale(1)}
+  18%{opacity:1;transform:translate(-50%,7%) scale(1.12)}
+  100%{opacity:0;transform:translate(-50%,7%) scale(1.8)}
+}
+
+/* catastrophic breakup */
+.destruction-layer{
+  position:absolute;
+  inset:0;
+  z-index:9;
+  overflow:hidden;
+  pointer-events:none;
+}
+.planet-shard,
+.planet-dust{
+  position:absolute;
+  left:0;
+  top:0;
+  opacity:0;
+  pointer-events:none;
+}
+.planet-shard{
+  width:var(--size,26px);
+  height:calc(var(--size,26px) * var(--aspect,.72));
+  clip-path:var(--clip,polygon(8% 22%,65% 0,100% 37%,77% 92%,27% 100%,0 64%));
+  background:
+    radial-gradient(circle at 24% 22%,rgba(195,215,226,.16) 0 7%,transparent 8%),
+    linear-gradient(145deg,
+      rgba(47,58,66,.98) 0%,
+      rgba(21,27,31,.99) 34%,
+      rgba(7,10,12,1) 70%,
+      #010202 100%);
+  box-shadow:
+    inset -8px -9px 12px rgba(0,0,0,.72),
+    inset 3px 3px 5px rgba(190,216,232,.10),
+    0 0 5px rgba(174,207,229,.08);
+}
+.planet-shard.hot{
+  background:
+    linear-gradient(145deg,
+      rgba(228,240,247,.92) 0 5%,
+      rgba(114,145,166,.72) 13%,
+      rgba(47,58,66,.98) 28%,
+      rgba(16,21,24,1) 58%,
+      #020303 100%);
+  box-shadow:
+    inset -8px -9px 12px rgba(0,0,0,.68),
+    0 0 8px rgba(210,235,249,.40),
+    0 0 22px rgba(121,176,210,.18);
+}
+.planet-dust{
+  width:var(--size,3px);
+  height:var(--size,3px);
+  border-radius:50%;
+  background:rgba(121,139,150,.46);
+  filter:blur(.6px);
+}
+.destruction-core{
+  position:absolute;
+  z-index:10;
+  left:0;
+  top:0;
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  opacity:0;
+  pointer-events:none;
+  transform:translate(-50%,-50%);
+  background:rgba(250,253,255,.99);
+  box-shadow:
+    0 0 40px rgba(250,253,255,1),
+    0 0 110px rgba(214,237,252,.92),
+    0 0 260px rgba(130,190,227,.58),
+    0 0 520px rgba(65,118,153,.28);
+}
+.page.impact .destruction-core{
+  animation:coreDetonation 1.65s cubic-bezier(.1,.7,.2,1) forwards;
+}
+@keyframes coreDetonation{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.12)}
+  4%{opacity:1}
+  12%{opacity:1;transform:translate(-50%,-50%) scale(3.8)}
+  28%{opacity:.92;transform:translate(-50%,-50%) scale(7.2)}
+  58%{opacity:.26;transform:translate(-50%,-50%) scale(12)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(17)}
 }
 
 /* discreet 10-second impact preview */
@@ -766,6 +855,8 @@ body{
     <div class="impact-ring" id="impact-ring"></div>
     <div class="impact-plume" id="impact-plume"></div>
     <div class="ejecta-layer" id="ejecta-layer"></div>
+    <div class="destruction-layer" id="destruction-layer"></div>
+    <div class="destruction-core" id="destruction-core"></div>
   </div>
 
   <div class="countdown" aria-label="Countdown to next reveal">
@@ -813,7 +904,7 @@ body{
   <button class="impact-test" id="impact-test" type="button" aria-label="Preview impact in ten seconds">simulate impact · 10s</button>
 
   <div class="edge bottom-left">Experiment 001 · AI HEAD / AI CUBE</div>
-  <div class="edge bottom-right">temporary interface · v1.4</div>
+  <div class="edge bottom-right">temporary interface · v1.5</div>
 </main>
 
 <script>
@@ -828,12 +919,14 @@ body{
   const ring = document.getElementById('impact-ring');
   const plume = document.getElementById('impact-plume');
   const ejectaLayer = document.getElementById('ejecta-layer');
+  const destructionLayer = document.getElementById('destruction-layer');
+  const destructionCore = document.getElementById('destruction-core');
   const main = document.getElementById('countdown-main');
   const seconds = document.getElementById('countdown-seconds');
   const label = document.querySelector('.countdown-label');
   const testButton = document.getElementById('impact-test');
 
-  if (!page || !planet || !impactor || !flash || !ring || !plume || !ejectaLayer || !main || !seconds || !label || !testButton) return;
+  if (!page || !planet || !impactor || !flash || !ring || !plume || !ejectaLayer || !destructionLayer || !destructionCore || !main || !seconds || !label || !testButton) return;
 
   const pad = n => String(n).padStart(2, '0');
   let simulationTarget = null;
@@ -1051,11 +1144,126 @@ body{
     }
   }
 
+  function buildPlanetDestruction(){
+    destructionLayer.replaceChildren();
+
+    const p = planet.getBoundingClientRect();
+    const cx = p.left + p.width / 2;
+    const cy = p.top + p.height / 2;
+    const r = p.width / 2;
+    const rand = seededRandom(25091926);
+    const clips = [
+      'polygon(7% 19%,64% 0,100% 31%,84% 86%,38% 100%,0 63%)',
+      'polygon(15% 3%,79% 12%,100% 58%,63% 100%,8% 78%,0 34%)',
+      'polygon(3% 33%,38% 0,91% 15%,100% 72%,54% 100%,9% 82%)',
+      'polygon(12% 7%,68% 0,100% 42%,84% 96%,29% 100%,0 57%)',
+      'polygon(0 27%,43% 0,94% 21%,100% 67%,65% 100%,17% 90%)'
+    ];
+
+    destructionCore.style.left = cx + 'px';
+    destructionCore.style.top = cy + 'px';
+
+    // Large and medium chunks: the planet itself, not just surface ejecta.
+    for (let i = 0; i < 48; i++) {
+      const shard = document.createElement('span');
+      shard.className = 'planet-shard';
+      if (i < 12) shard.classList.add('hot');
+
+      const a0 = rand() * Math.PI * 2;
+      const rr = Math.sqrt(rand()) * r * .72;
+      const sx = cx + Math.cos(a0) * rr;
+      const sy = cy + Math.sin(a0) * rr;
+
+      let out = Math.atan2(sy - cy, sx - cx);
+      if (rr < r * .12) out = rand() * Math.PI * 2;
+      out += (rand() - .5) * .34;
+
+      const large = i < 11;
+      const size = p.width * (large ? (.075 + rand()*.085) : (.026 + rand()*.055));
+      const dist = p.width * (large ? (.70 + rand()*1.10) : (.90 + rand()*1.65));
+      const dx = Math.cos(out) * dist;
+      const dy = Math.sin(out) * dist;
+      const rot0 = Math.round(rand()*180);
+      const rot1 = rot0 + (rand()>.5?1:-1) * (240 + rand()*900);
+      const duration = (large ? 2900 : 2100) + rand()*1900;
+      const delay = 70 + rand()*150;
+
+      shard.style.left = sx + 'px';
+      shard.style.top = sy + 'px';
+      shard.style.setProperty('--size', size.toFixed(1) + 'px');
+      shard.style.setProperty('--aspect', (.54 + rand()*.48).toFixed(2));
+      shard.style.setProperty('--clip', clips[i % clips.length]);
+      destructionLayer.appendChild(shard);
+
+      const k1x = dx*.16, k1y = dy*.16;
+      const k2x = dx*.52, k2y = dy*.52;
+      shard.animate([
+        {
+          opacity:0,
+          transform:'translate(-50%,-50%) translate(0px,0px) rotate('+rot0+'deg) scale(.35)'
+        },
+        {
+          opacity:1,
+          offset:.07,
+          transform:'translate(-50%,-50%) translate('+(k1x).toFixed(1)+'px,'+(k1y).toFixed(1)+'px) rotate('+(rot0+(rot1-rot0)*.20).toFixed(0)+'deg) scale(1.02)'
+        },
+        {
+          opacity:.95,
+          offset:.55,
+          transform:'translate(-50%,-50%) translate('+(k2x).toFixed(1)+'px,'+(k2y).toFixed(1)+'px) rotate('+(rot0+(rot1-rot0)*.58).toFixed(0)+'deg) scale(.92)'
+        },
+        {
+          opacity:.06,
+          transform:'translate(-50%,-50%) translate('+dx.toFixed(1)+'px,'+dy.toFixed(1)+'px) rotate('+rot1.toFixed(0)+'deg) scale(.74)'
+        }
+      ],{
+        duration,
+        delay,
+        easing:'cubic-bezier(.08,.55,.16,1)',
+        fill:'forwards'
+      });
+    }
+
+    // Fine debris cloud gives the breakup mass and depth.
+    for (let i = 0; i < 92; i++) {
+      const dust = document.createElement('span');
+      dust.className = 'planet-dust';
+      const a = rand() * Math.PI * 2;
+      const rr = Math.sqrt(rand()) * r * .42;
+      const sx = cx + Math.cos(a) * rr;
+      const sy = cy + Math.sin(a) * rr;
+      const out = a + (rand()-.5)*.75;
+      const dist = p.width * (.35 + rand()*1.65);
+      const dx = Math.cos(out)*dist;
+      const dy = Math.sin(out)*dist;
+      const size = 1.2 + rand()*4.2;
+      const alpha = .20 + rand()*.56;
+
+      dust.style.left = sx+'px';
+      dust.style.top = sy+'px';
+      dust.style.setProperty('--size',size.toFixed(1)+'px');
+      destructionLayer.appendChild(dust);
+
+      dust.animate([
+        {opacity:0, transform:'translate(-50%,-50%) scale(.4)'},
+        {opacity:alpha, offset:.06, transform:'translate(-50%,-50%) translate('+(dx*.12).toFixed(1)+'px,'+(dy*.12).toFixed(1)+'px) scale(1)'},
+        {opacity:alpha*.55, offset:.55, transform:'translate(-50%,-50%) translate('+(dx*.55).toFixed(1)+'px,'+(dy*.55).toFixed(1)+'px) scale(.85)'},
+        {opacity:0, transform:'translate(-50%,-50%) translate('+dx.toFixed(1)+'px,'+dy.toFixed(1)+'px) scale(.55)'}
+      ],{
+        duration:1800+rand()*2300,
+        delay:40+rand()*180,
+        easing:'cubic-bezier(.08,.58,.18,1)',
+        fill:'forwards'
+      });
+    }
+  }
+
   function resetPreview(){
     clearTimeout(resetTimer);
     resetTimer = null;
     page.classList.remove('impact');
     ejectaLayer.replaceChildren();
+    destructionLayer.replaceChildren();
 
     simulationStart = null;
     simulationTarget = null;
@@ -1078,6 +1286,7 @@ body{
     impactWasPreview = preview;
 
     buildEjecta();
+    buildPlanetDestruction();
     page.classList.add('impact');
     label.textContent = 'impact';
     testButton.disabled = true;
@@ -1085,7 +1294,7 @@ body{
 
     // Preview is temporary: show the collision, then return to the real weekly countdown.
     if (preview) {
-      resetTimer = setTimeout(resetPreview, 4800);
+      resetTimer = setTimeout(resetPreview, 6500);
     }
   }
 
@@ -1118,6 +1327,7 @@ body{
     clearTimeout(resetTimer);
     page.classList.remove('impact');
     ejectaLayer.replaceChildren();
+    destructionLayer.replaceChildren();
 
     const now = Date.now();
     simulationStart = now;
