@@ -207,19 +207,21 @@ body{
 .planet::after{
   content:"";
   position:absolute;
-  left:5%;
-  right:5%;
-  top:-2.6%;
-  height:8%;
+  left:9%;
+  right:9%;
+  top:-1.5%;
+  height:5.6%;
   border-radius:50%;
   background:
-    radial-gradient(ellipse at center,
-      rgba(235,247,255,.72) 0%,
-      rgba(162,203,234,.31) 35%,
-      rgba(76,113,143,.09) 58%,
-      transparent 78%);
-  filter:blur(9px);
-  opacity:.92;
+    radial-gradient(
+      ellipse at center,
+      rgba(236,247,254,.62) 0%,
+      rgba(181,214,235,.25) 28%,
+      rgba(100,146,176,.07) 52%,
+      transparent 74%
+    );
+  filter:blur(5px);
+  opacity:.72;
 }
 .horizon{
   position:absolute;
@@ -311,7 +313,7 @@ body{
   width:min(24vw,310px);
   aspect-ratio:.78;
   transform:translate(-50%,-46%);
-  opacity:.34;
+  opacity:.28;
   pointer-events:none;
   filter:blur(.15px);
   mix-blend-mode:screen;
@@ -326,8 +328,8 @@ body{
   );
   background:
     radial-gradient(ellipse at 50% 38%,
-      rgba(78,108,126,.22) 0%,
-      rgba(28,41,49,.16) 42%,
+      rgba(72,100,116,.16) 0%,
+      rgba(22,33,40,.11) 42%,
       rgba(0,0,0,0) 74%);
   box-shadow:
     inset 0 0 0 1px rgba(176,210,230,.075),
@@ -380,18 +382,21 @@ body{
   position:absolute;
   z-index:3;
   left:50%;
-  top:48%;
-  width:min(31vw,400px);
-  aspect-ratio:1;
+  top:50%;
+  width:min(28vw,360px);
+  height:min(34vw,430px);
   transform:translate(-50%,-50%);
   border-radius:50%;
-  opacity:.22;
+  opacity:.11;
   pointer-events:none;
-  background:radial-gradient(circle,
-    rgba(112,166,198,.10) 0%,
-    rgba(58,92,114,.045) 34%,
-    transparent 68%);
-  filter:blur(14px);
+  background:
+    radial-gradient(
+      ellipse at 50% 42%,
+      rgba(86,128,154,.07) 0%,
+      rgba(42,68,86,.03) 34%,
+      transparent 72%
+    );
+  filter:blur(16px);
   animation:presenceBreath 12s ease-in-out infinite alternate;
 }
 @keyframes presenceBreath{
