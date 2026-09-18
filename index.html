@@ -77,7 +77,7 @@ body{
   position:absolute;
   width:3px;
   height:3px;
-  border-radius:50%;
+  border-radius:46% 54% 49% 51% / 43% 58% 42% 57%;
   background:rgba(238,247,255,.96);
   box-shadow:0 0 9px rgba(220,240,255,.80);
   opacity:0;
@@ -246,56 +246,80 @@ body{
   top:0;
   width:48px;
   height:48px;
-  border-radius:50%;
-  opacity:.92;
+  opacity:.96;
   pointer-events:none;
   transform:translate(-50%,-50%);
   transform-origin:center center;
-  background:
-    radial-gradient(circle at 31% 27%,
-      rgba(226,232,234,.96) 0 5%,
-      rgba(134,139,141,.96) 9%,
-      rgba(74,78,79,.98) 24%,
-      rgba(31,34,35,1) 48%,
-      rgba(9,11,12,1) 76%,
-      #020303 100%),
-    radial-gradient(circle at 68% 62%,rgba(130,136,138,.22) 0 6%,transparent 7%),
-    radial-gradient(circle at 42% 71%,rgba(155,160,162,.15) 0 8%,transparent 9%);
-  box-shadow:
-    inset -10px -11px 18px rgba(0,0,0,.72),
-    inset 5px 5px 10px rgba(210,224,232,.10),
-    0 0 12px rgba(213,230,240,.18),
-    0 0 44px rgba(113,151,178,.11);
   will-change:left,top,width,height,transform,opacity;
-}
-.impactor::before{
-  content:"";
-  position:absolute;
-  inset:5%;
-  border-radius:50%;
-  background:
-    radial-gradient(circle at 30% 40%,rgba(0,0,0,.52) 0 8%,transparent 9%),
-    radial-gradient(circle at 63% 27%,rgba(0,0,0,.44) 0 6%,transparent 7%),
-    radial-gradient(circle at 57% 68%,rgba(0,0,0,.38) 0 10%,transparent 11%),
-    radial-gradient(circle at 78% 51%,rgba(184,191,194,.08) 0 5%,transparent 6%);
-  opacity:.9;
 }
 .impactor::after{
   content:"";
   position:absolute;
-  right:58%;
+  right:54%;
   top:50%;
-  width:var(--tail,110px);
-  height:max(2px,calc(var(--tail,110px) * .035));
+  width:var(--tail,84px);
+  height:var(--tail-h,18px);
   transform:translateY(-50%);
   transform-origin:right center;
-  background:linear-gradient(to left,
-    rgba(220,233,241,.30),
-    rgba(129,160,180,.13) 24%,
-    rgba(70,92,108,.07) 52%,
-    transparent 88%);
-  filter:blur(1.2px);
-  opacity:.72;
+  background:
+    radial-gradient(ellipse at right,
+      rgba(129,143,151,.16) 0%,
+      rgba(82,94,101,.09) 32%,
+      rgba(40,48,53,.045) 58%,
+      transparent 82%);
+  filter:blur(4px);
+  opacity:.42;
+  transition:opacity .16s ease-out;
+}
+.rock{
+  position:absolute;
+  left:var(--x,50%);
+  top:var(--y,50%);
+  width:var(--w,28%);
+  height:var(--h,24%);
+  transform:translate(-50%,-50%) rotate(var(--r,0deg));
+  transform-origin:center center;
+  clip-path:var(--clip,polygon(12% 20%,68% 4%,96% 37%,78% 92%,29% 100%,2% 61%));
+  background:
+    radial-gradient(circle at 28% 22%,rgba(126,130,129,.18) 0 7%,transparent 8%),
+    radial-gradient(circle at 67% 62%,rgba(0,0,0,.44) 0 13%,transparent 14%),
+    linear-gradient(145deg,
+      rgba(92,96,95,.98) 0%,
+      rgba(54,58,58,.98) 24%,
+      rgba(29,32,33,1) 57%,
+      rgba(9,11,12,1) 100%);
+  box-shadow:
+    inset -5px -6px 8px rgba(0,0,0,.58),
+    inset 2px 2px 3px rgba(185,191,190,.08);
+  opacity:var(--op,.98);
+}
+.rock::after{
+  content:"";
+  position:absolute;
+  inset:8%;
+  clip-path:inherit;
+  background:
+    radial-gradient(circle at 22% 58%,rgba(0,0,0,.42) 0 7%,transparent 8%),
+    radial-gradient(circle at 71% 27%,rgba(0,0,0,.34) 0 6%,transparent 7%);
+  opacity:.8;
+}
+.page.impact .impactor::after{opacity:0}
+.page.impact .rock{
+  animation:cometBreak var(--break-dur,.72s) cubic-bezier(.1,.72,.17,1) var(--break-delay,0s) forwards;
+}
+@keyframes cometBreak{
+  0%{
+    opacity:var(--op,.98);
+    transform:translate(-50%,-50%) rotate(var(--r,0deg)) scale(1);
+  }
+  35%{opacity:1}
+  100%{
+    opacity:0;
+    transform:
+      translate(calc(-50% + var(--break-x,18px)),calc(-50% + var(--break-y,-14px)))
+      rotate(var(--break-r,180deg))
+      scale(.42);
+  }
 }
 
 .crater{
@@ -305,7 +329,7 @@ body{
   top:33%;
   width:14%;
   aspect-ratio:1;
-  border-radius:50%;
+  border-radius:46% 54% 49% 51% / 43% 58% 42% 57%;
   opacity:0;
   transform:translate(-50%,-50%) scale(.15);
   background:
@@ -344,23 +368,26 @@ body{
     0 0 190px rgba(116,171,209,.28);
 }
 .impact-ring{
-  width:30px;
-  height:30px;
-  border:1px solid rgba(230,244,252,.88);
-  box-shadow:
-    0 0 28px rgba(190,226,247,.38),
-    inset 0 0 18px rgba(220,239,251,.14);
+  width:40px;
+  height:22px;
+  border-radius:48% 52% 45% 55%;
+  border:1px solid rgba(214,231,242,.38);
+  border-left-color:rgba(235,246,252,.72);
+  border-top-color:rgba(235,246,252,.58);
+  box-shadow:0 0 22px rgba(161,198,220,.18);
+  transform:translate(-50%,-50%) rotate(-34deg);
 }
 .impact-plume{
-  width:44px;
-  height:44px;
+  width:54px;
+  height:38px;
+  border-radius:58% 42% 63% 37%;
   background:
-    radial-gradient(circle,
-      rgba(218,227,232,.52) 0 10%,
-      rgba(123,137,145,.28) 28%,
-      rgba(68,78,84,.15) 48%,
-      transparent 73%);
-  filter:blur(4px);
+    radial-gradient(ellipse at 28% 62%,
+      rgba(224,230,232,.42) 0 9%,
+      rgba(140,149,153,.25) 26%,
+      rgba(82,89,92,.14) 50%,
+      transparent 76%);
+  filter:blur(3.5px);
 }
 
 .ejecta-layer{
@@ -408,9 +435,6 @@ body{
 .page.impact .impact-plume{
   animation:impactPlume 3.4s ease-out forwards;
 }
-.page.impact .ejecta-fragment{
-  animation:ejectaFly var(--dur,2.7s) cubic-bezier(.13,.65,.19,1) var(--delay,0s) forwards;
-}
 .page.impact .planet{
   animation:planetImpact 1.45s cubic-bezier(.2,.8,.2,1) forwards;
 }
@@ -428,33 +452,22 @@ body{
   100%{opacity:.96;transform:translate(-50%,-50%) scale(1)}
 }
 @keyframes impactFlash{
-  0%{opacity:0;transform:translate(-50%,-50%) scale(.16)}
-  8%{opacity:1}
-  24%{opacity:.98}
-  100%{opacity:0;transform:translate(-50%,-50%) scale(18)}
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.20)}
+  5%{opacity:1}
+  16%{opacity:.96}
+  55%{opacity:.22}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(7.5)}
 }
 @keyframes impactRing{
-  0%{opacity:0;transform:translate(-50%,-50%) scale(.15)}
-  12%{opacity:.92}
-  100%{opacity:0;transform:translate(-50%,-50%) scale(18)}
+  0%{opacity:0;transform:translate(-50%,-50%) rotate(-34deg) scale(.25)}
+  8%{opacity:.64}
+  100%{opacity:0;transform:translate(-50%,-50%) rotate(-34deg) scale(8)}
 }
 @keyframes impactPlume{
   0%{opacity:0;transform:translate(-50%,-50%) scale(.22)}
   10%{opacity:.68}
   45%{opacity:.36;transform:translate(-50%,-50%) translate(28px,-24px) scale(2.8)}
   100%{opacity:0;transform:translate(-50%,-50%) translate(60px,-52px) scale(4.8)}
-}
-@keyframes ejectaFly{
-  0%{
-    opacity:0;
-    transform:translate(-50%,-50%) translate(0,0) rotate(var(--rot,0deg)) scale(.35);
-  }
-  10%{opacity:var(--alpha,.95)}
-  70%{opacity:calc(var(--alpha,.95) * .8)}
-  100%{
-    opacity:0;
-    transform:translate(-50%,-50%) translate(var(--dx,120px),var(--dy,-90px)) rotate(var(--rot2,420deg)) scale(.75);
-  }
 }
 @keyframes planetImpact{
   0%{transform:translateY(18%) translate(0,0) scale(1)}
@@ -466,14 +479,14 @@ body{
 }
 @keyframes haloImpact{
   0%{transform:scale(1);opacity:.8}
-  16%{transform:scale(1.34);opacity:1}
-  48%{transform:scale(1.10);opacity:.72}
+  12%{transform:scale(1.10);opacity:.94}
+  42%{transform:scale(1.03);opacity:.78}
   100%{transform:scale(1);opacity:.82}
 }
 @keyframes ringsImpact{
   0%{transform:scale(1);opacity:.72}
-  22%{transform:scale(1.28);opacity:.98}
-  100%{transform:scale(1.07);opacity:.32}
+  18%{transform:scale(1.08);opacity:.82}
+  100%{transform:scale(1.02);opacity:.46}
 }
 
 /* discreet 10-second impact preview */
@@ -748,7 +761,7 @@ body{
       <div class="crater" id="crater"></div>
     </div>
     <div class="horizon"></div>
-    <div class="impactor" id="impactor"></div>
+    <div class="impactor" id="impactor" aria-hidden="true"></div>
     <div class="impact-flash" id="impact-flash"></div>
     <div class="impact-ring" id="impact-ring"></div>
     <div class="impact-plume" id="impact-plume"></div>
@@ -800,7 +813,7 @@ body{
   <button class="impact-test" id="impact-test" type="button" aria-label="Preview impact in ten seconds">simulate impact · 10s</button>
 
   <div class="edge bottom-left">Experiment 001 · AI HEAD / AI CUBE</div>
-  <div class="edge bottom-right">temporary interface · v1.3</div>
+  <div class="edge bottom-right">temporary interface · v1.4</div>
 </main>
 
 <script>
@@ -901,6 +914,47 @@ body{
     };
   }
 
+  function buildComet(){
+    impactor.replaceChildren();
+    const rand = seededRandom(731941);
+    const clips = [
+      'polygon(8% 22%,62% 2%,96% 31%,82% 88%,35% 100%,2% 67%)',
+      'polygon(17% 5%,78% 14%,100% 54%,69% 96%,15% 82%,0 39%)',
+      'polygon(4% 35%,36% 2%,89% 17%,100% 73%,58% 100%,12% 84%)',
+      'polygon(11% 10%,69% 0,100% 41%,88% 92%,29% 100%,0 61%)'
+    ];
+
+    const layout = [
+      [48,48,36,31],[28,43,23,22],[67,38,24,21],[57,67,25,20],
+      [38,68,22,19],[76,58,18,17],[20,63,16,15],[62,18,15,14],
+      [42,22,17,14],[80,31,13,12],[15,31,12,11],[74,76,13,11],
+      [31,82,11,10],[88,51,10,9]
+    ];
+
+    layout.forEach((v,i) => {
+      const rock = document.createElement('span');
+      rock.className = 'rock';
+      const jitterX = (rand()-.5)*5;
+      const jitterY = (rand()-.5)*5;
+      rock.style.setProperty('--x',(v[0]+jitterX).toFixed(1)+'%');
+      rock.style.setProperty('--y',(v[1]+jitterY).toFixed(1)+'%');
+      rock.style.setProperty('--w',v[2]+'%');
+      rock.style.setProperty('--h',v[3]+'%');
+      rock.style.setProperty('--r',Math.round(rand()*180-90)+'deg');
+      rock.style.setProperty('--clip',clips[i%clips.length]);
+      rock.style.setProperty('--op',(0.78+rand()*.20).toFixed(2));
+
+      const a = -1.0 + rand()*2.0;
+      const dist = 16 + rand()*34;
+      rock.style.setProperty('--break-x',(Math.cos(a)*dist).toFixed(1)+'px');
+      rock.style.setProperty('--break-y',(Math.sin(a)*dist-10-rand()*20).toFixed(1)+'px');
+      rock.style.setProperty('--break-r',Math.round((rand()>.5?1:-1)*(140+rand()*420))+'deg');
+      rock.style.setProperty('--break-dur',(0.48+rand()*.42).toFixed(2)+'s');
+      rock.style.setProperty('--break-delay',(rand()*.08).toFixed(2)+'s');
+      impactor.appendChild(rock);
+    });
+  }
+
   function buildEjecta(){
     ejectaLayer.replaceChildren();
     const target = placeImpactFx();
@@ -908,66 +962,92 @@ body{
     const p = planet.getBoundingClientRect();
     const centerX = p.left + p.width / 2;
     const centerY = p.top + p.height / 2;
-
-    // Local surface normal at the impact point. Most material leaves away from the planet.
     const normalAngle = Math.atan2(target.y - centerY, target.x - centerX);
 
-    for (let i = 0; i < 58; i++) {
+    for (let i = 0; i < 72; i++) {
       const fragment = document.createElement('span');
       fragment.className = 'ejecta-fragment';
 
-      const isDust = i >= 42;
-      const isHot = i < 10;
-      const isFast = i < 30;
+      const isDust = i >= 50;
+      const isHot = i < 9;
+      const isFast = i < 34;
 
       if (isDust) fragment.classList.add('dust');
       else if (isHot) fragment.classList.add('hot');
 
-      // A narrow fast ejecta cone plus a slower, broader curtain.
-      const halfSpread = isDust ? 1.18 : (isFast ? .58 : .92);
-      let angle = normalAngle + (rand() - .5) * halfSpread * 2;
+      const spread = isDust ? 1.22 : (isFast ? .54 : .88);
+      let angle = normalAngle + (rand() - .5) * spread * 2;
 
-      // Oblique impact adds a slight downrange bias to part of the ejecta.
-      if (!isDust && i % 4 === 0) angle -= .22 + rand() * .18;
+      // Slight downrange bias from the oblique impactor path.
+      if (!isDust && i % 5 === 0) angle -= .16 + rand()*.15;
 
-      const speed = target.planetDiameter * (
-        isDust ? (.16 + rand() * .28) :
-        isFast ? (.45 + rand() * .62) :
-        (.24 + rand() * .36)
+      const distance = target.planetDiameter * (
+        isDust ? (.14 + rand()*.26) :
+        isFast ? (.38 + rand()*.62) :
+        (.20 + rand()*.34)
       );
 
-      const dx = Math.cos(angle) * speed;
-      const dy = Math.sin(angle) * speed;
+      const vx = Math.cos(angle) * distance;
+      const vy = Math.sin(angle) * distance;
+
+      // Gravity bends the outer part of the trajectory back toward the planet.
+      const gravityMag = target.planetDiameter * (isDust ? .10 : .14);
+      const gravityAngle = normalAngle + Math.PI;
+      const gx = Math.cos(gravityAngle) * gravityMag;
+      const gy = Math.sin(gravityAngle) * gravityMag;
 
       const size = target.planetDiameter * (
-        isDust ? (.003 + rand() * .008) :
-        isHot ? (.004 + rand() * .008) :
-        isFast ? (.004 + rand() * .010) :
-        (.007 + rand() * .015)
+        isDust ? (.0025 + rand()*.006) :
+        isHot ? (.0035 + rand()*.006) :
+        isFast ? (.0035 + rand()*.008) :
+        (.006 + rand()*.012)
       );
 
-      const dur = isDust
-        ? 2.7 + rand() * 1.4
-        : isFast
-          ? 1.55 + rand() * 1.15
-          : 2.0 + rand() * 1.45;
-
-      const delay = rand() * .12;
-      const rot = Math.round(rand() * 180);
-      const rot2 = rot + (rand() > .5 ? 1 : -1) * (220 + rand() * 620);
-      const alpha = isDust ? (.14 + rand() * .28) : (.54 + rand() * .40);
+      const rot0 = Math.round(rand()*180);
+      const rot1 = rot0 + (rand()>.5?1:-1)*(180+rand()*620);
+      const alpha = isDust ? (.12+rand()*.24) : (.50+rand()*.42);
+      const duration = isDust ? 2700+rand()*1500 : (isFast ? 1450+rand()*1150 : 1900+rand()*1400);
+      const delay = rand()*90;
 
       fragment.style.left = target.x + 'px';
       fragment.style.top = target.y + 'px';
-      fragment.style.setProperty('--dx', dx.toFixed(1) + 'px');
-      fragment.style.setProperty('--dy', dy.toFixed(1) + 'px');
-      fragment.style.setProperty('--size', Math.max(1.5, size).toFixed(1) + 'px');
-      fragment.style.setProperty('--dur', dur.toFixed(2) + 's');
-      fragment.style.setProperty('--delay', delay.toFixed(2) + 's');
-      fragment.style.setProperty('--rot', rot + 'deg');
-      fragment.style.setProperty('--rot2', rot2.toFixed(0) + 'deg');
-      fragment.style.setProperty('--alpha', alpha.toFixed(2));
+      fragment.style.setProperty('--size',Math.max(1.3,size).toFixed(1)+'px');
+      fragment.style.setProperty('--rot',rot0+'deg');
+      fragment.style.setProperty('--alpha',alpha.toFixed(2));
       ejectaLayer.appendChild(fragment);
+
+      const k1x = vx*.28;
+      const k1y = vy*.28;
+      const k2x = vx*.64 + gx*.04;
+      const k2y = vy*.64 + gy*.04;
+      const k3x = vx + gx*.34;
+      const k3y = vy + gy*.34;
+
+      fragment.animate([
+        {
+          opacity:0,
+          transform:'translate(-50%,-50%) translate(0px,0px) rotate('+rot0+'deg) scale(.28)'
+        },
+        {
+          opacity:alpha,
+          offset:.10,
+          transform:'translate(-50%,-50%) translate('+(k1x).toFixed(1)+'px,'+(k1y).toFixed(1)+'px) rotate('+(rot0+(rot1-rot0)*.28).toFixed(0)+'deg) scale(.72)'
+        },
+        {
+          opacity:alpha*.82,
+          offset:.56,
+          transform:'translate(-50%,-50%) translate('+(k2x).toFixed(1)+'px,'+(k2y).toFixed(1)+'px) rotate('+(rot0+(rot1-rot0)*.64).toFixed(0)+'deg) scale(.88)'
+        },
+        {
+          opacity:0,
+          transform:'translate(-50%,-50%) translate('+(k3x).toFixed(1)+'px,'+(k3y).toFixed(1)+'px) rotate('+rot1.toFixed(0)+'deg) scale(.62)'
+        }
+      ],{
+        duration,
+        delay,
+        easing:'cubic-bezier(.12,.58,.20,1)',
+        fill:'forwards'
+      });
     }
   }
 
@@ -986,7 +1066,8 @@ body{
     testButton.disabled = false;
     testButton.textContent = 'simulate impact · 10s';
 
-    // Restart the original subtle planet/halo/rings animations cleanly.
+    // Restore the intact rubble cluster and the original subtle scene.
+    buildComet();
     void page.offsetWidth;
     update();
   }
@@ -1057,6 +1138,7 @@ body{
     if (!impacted) update();
   });
 
+  buildComet();
   update();
   setInterval(update, 100);
 })();
