@@ -1,818 +1,545 @@
 <!doctype html>
-<html lang="cs">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#000000">
-<title>ZDENEK LAB</title>
-<meta name="description" content="ZDENEK LAB — experiments in AI, hardware and embodied intelligence.">
+<meta name="theme-color" content="#020507">
+<title>ZDENEK LAB — AI_CUBE</title>
+<meta name="description" content="ZDENEK LAB — local embodied intelligence.">
 <style>
 :root{
-  --fg:#e9ecef;
-  --edge:#737b83;
-  --edge-strong:#949ca4;
-  --edge-faint:#4d545b;
+  --ink:#d9e4eb;
+  --muted:#77858f;
+  --faint:#46535c;
+  --line:rgba(150,187,211,.14);
+  --ice:#b9e7ff;
+  --progress:0;
 }
 *{box-sizing:border-box}
-html,body{width:100%;height:100%;margin:0;-webkit-text-size-adjust:100%;text-size-adjust:100%}
-body{
-  overflow:hidden;
-  background:#000;
-  color:var(--fg);
-  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-}
+html,body{margin:0;width:100%;height:100%;background:#000;color:var(--ink);overflow:hidden}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button{font:inherit}
 .page{
   position:relative;
   width:100%;
   height:100%;
-  min-height:620px;
+  min-height:700px;
+  overflow:hidden;
   isolation:isolate;
   background:
-    radial-gradient(circle at 50% 47%, rgba(23,32,40,.50) 0%, rgba(7,10,13,.72) 28%, rgba(1,2,3,.96) 66%, #000 100%);
+    radial-gradient(ellipse at 50% 46%,rgba(19,34,45,.34),transparent 38%),
+    radial-gradient(ellipse at 72% 26%,rgba(30,58,78,.12),transparent 28%),
+    linear-gradient(#010304,#000 72%);
 }
 
-/* space */
+/* SPACE */
 .stars{
-  position:absolute;
-  inset:-5%;
-  z-index:0;
-  opacity:.48;
+  position:absolute;inset:-6%;z-index:0;opacity:.58;
   background-image:
-    radial-gradient(circle at 8% 20%, rgba(255,255,255,.95) 0 1px, transparent 1.5px),
-    radial-gradient(circle at 15% 72%, rgba(255,255,255,.5) 0 1px, transparent 1.3px),
-    radial-gradient(circle at 27% 32%, rgba(200,220,240,.38) 0 1px, transparent 1.3px),
-    radial-gradient(circle at 39% 12%, rgba(255,255,255,.34) 0 1px, transparent 1.2px),
-    radial-gradient(circle at 58% 19%, rgba(255,255,255,.50) 0 1px, transparent 1.3px),
-    radial-gradient(circle at 70% 74%, rgba(210,230,245,.34) 0 1px, transparent 1.3px),
-    radial-gradient(circle at 84% 29%, rgba(255,255,255,.48) 0 1px, transparent 1.3px),
-    radial-gradient(circle at 92% 63%, rgba(255,255,255,.30) 0 1px, transparent 1.2px);
-  background-size:240px 240px,330px 330px,410px 410px,520px 520px,610px 610px,760px 760px,880px 880px,980px 980px;
-  animation:starDrift 40s linear infinite;
+    radial-gradient(circle at 6% 16%,#dcecff 0 1px,transparent 1.4px),
+    radial-gradient(circle at 13% 72%,rgba(255,255,255,.58) 0 1px,transparent 1.3px),
+    radial-gradient(circle at 22% 31%,rgba(188,218,239,.48) 0 1px,transparent 1.3px),
+    radial-gradient(circle at 34% 9%,rgba(255,255,255,.40) 0 1px,transparent 1.2px),
+    radial-gradient(circle at 48% 21%,rgba(255,255,255,.54) 0 1px,transparent 1.3px),
+    radial-gradient(circle at 63% 15%,rgba(220,238,251,.46) 0 1px,transparent 1.2px),
+    radial-gradient(circle at 72% 72%,rgba(210,230,245,.42) 0 1px,transparent 1.3px),
+    radial-gradient(circle at 84% 31%,rgba(255,255,255,.53) 0 1px,transparent 1.3px),
+    radial-gradient(circle at 94% 65%,rgba(255,255,255,.38) 0 1px,transparent 1.2px);
+  background-size:210px 210px,290px 290px,370px 370px,470px 470px,560px 560px,650px 650px,760px 760px,880px 880px,1020px 1020px;
+  animation:starDrift 55s linear infinite;
 }
 @keyframes starDrift{
-  from{transform:scale(1.02)}
-  to{transform:scale(1.08) translate3d(-1.2%,.7%,0)}
+  from{transform:scale(1.01)}
+  to{transform:scale(1.07) translate(-1.1%,.6%)}
 }
 .nebula{
-  position:absolute;
-  inset:0;
-  z-index:0;
-  pointer-events:none;
+  position:absolute;inset:-12%;z-index:0;opacity:.55;pointer-events:none;
   background:
-    radial-gradient(ellipse at 50% 41%, rgba(92,126,154,.11) 0%, rgba(42,59,73,.055) 25%, transparent 57%),
-    radial-gradient(ellipse at 37% 54%, rgba(45,63,82,.07) 0%, transparent 50%),
-    radial-gradient(ellipse at 67% 54%, rgba(45,63,82,.06) 0%, transparent 48%);
-  filter:blur(34px);
+    radial-gradient(ellipse at 17% 38%,rgba(61,94,119,.10),transparent 28%),
+    radial-gradient(ellipse at 83% 28%,rgba(78,118,148,.10),transparent 29%),
+    radial-gradient(ellipse at 52% 54%,rgba(36,62,81,.08),transparent 40%);
+  filter:blur(38px);
 }
 
-/* occasional meteors */
-.meteors{
-  position:absolute;
-  inset:0;
-  z-index:3;
-  pointer-events:none;
-  overflow:hidden;
-}
-.meteor{
-  position:absolute;
-  width:3px;
-  height:3px;
-  border-radius:50%;
-  background:rgba(238,247,255,.96);
-  box-shadow:0 0 9px rgba(220,240,255,.80);
-  opacity:0;
-}
-.meteor::after{
-  content:"";
-  position:absolute;
-  top:50%;
-  right:0;
-  width:145px;
-  height:1px;
-  transform:translateY(-50%);
-  transform-origin:right center;
-  background:linear-gradient(to left,rgba(220,240,255,.60),rgba(150,190,220,.18),transparent 76%);
-  filter:blur(.35px);
-}
-.m1{top:13%;left:84%;animation:meteor1 9.5s linear infinite;animation-delay:.7s}
-.m2{top:22%;left:27%;animation:meteor2 13.5s linear infinite;animation-delay:4.3s}
-.m3{top:34%;left:93%;animation:meteor3 16s linear infinite;animation-delay:7.4s}
-.m4{top:10%;left:60%;animation:meteor4 20s linear infinite;animation-delay:11.5s}
-
-@keyframes meteor1{
-  0%,4%{transform:translate(0,0) rotate(145deg) scale(.75);opacity:0}
-  6%{opacity:.95}
-  15%{transform:translate(-260px,190px) rotate(145deg) scale(1);opacity:.75}
-  18%,100%{transform:translate(-300px,220px) rotate(145deg) scale(1);opacity:0}
-}
-@keyframes meteor2{
-  0%,9%{transform:translate(0,0) rotate(37deg) scale(.65);opacity:0}
-  11%{opacity:.75}
-  18%{transform:translate(180px,125px) rotate(37deg) scale(.95);opacity:.62}
-  21%,100%{transform:translate(225px,155px) rotate(37deg) scale(.95);opacity:0}
-}
-@keyframes meteor3{
-  0%,13%{transform:translate(0,0) rotate(146deg) scale(.7);opacity:0}
-  15%{opacity:.85}
-  22%{transform:translate(-210px,155px) rotate(146deg) scale(.95);opacity:.65}
-  25%,100%{transform:translate(-245px,180px) rotate(146deg) scale(.95);opacity:0}
-}
-@keyframes meteor4{
-  0%,18%{transform:translate(0,0) rotate(142deg) scale(.6);opacity:0}
-  20%{opacity:.65}
-  27%{transform:translate(-175px,125px) rotate(142deg) scale(.9);opacity:.52}
-  30%,100%{transform:translate(-210px,150px) rotate(142deg) scale(.9);opacity:0}
-}
-
-/* planet */
-.cosmos{
-  position:absolute;
-  inset:0;
-  z-index:1;
-  display:grid;
-  place-items:center;
-  pointer-events:none;
-}
-.halo{
-  position:absolute;
-  width:min(82vw,1040px);
-  aspect-ratio:1;
-  border-radius:50%;
-  background:
-    radial-gradient(circle,
-      rgba(170,205,232,.14) 0%,
-      rgba(86,122,151,.07) 28%,
-      rgba(35,53,68,.03) 43%,
-      transparent 67%);
-  filter:blur(14px);
-  animation:haloBreath 9s ease-in-out infinite alternate;
-}
-@keyframes haloBreath{
-  from{transform:scale(.985);opacity:.72}
-  to{transform:scale(1.035);opacity:1}
-}
-.rings,.rings::before,.rings::after{
-  position:absolute;
-  border-radius:50%;
-  border:1px solid rgba(190,214,232,.055);
-}
-.rings{
-  width:min(72vw,900px);
-  aspect-ratio:1;
-  opacity:.72;
-}
-.rings::before,.rings::after{content:"";inset:10%}
-.rings::after{inset:23%;border-color:rgba(190,214,232,.035)}
-.planet{
-  position:absolute;
-  width:min(49vw,635px);
-  aspect-ratio:1;
-  border-radius:50%;
-  transform:translateY(18%);
-  background:
-    radial-gradient(circle at 48% 33%,
-      rgba(19,29,38,.95) 0%,
-      rgba(8,13,18,.98) 31%,
-      rgba(3,5,7,1) 62%,
-      #000 100%);
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,.025),
-    0 -18px 42px rgba(165,205,236,.10),
-    0 -40px 110px rgba(93,136,170,.10),
-    0 0 220px rgba(55,85,108,.10);
-  animation:planetBreath 13s ease-in-out infinite alternate;
-}
-@keyframes planetBreath{
-  from{transform:translateY(19%) scale(.988)}
-  to{transform:translateY(16.5%) scale(1.016)}
-}
-.planet::before{
-  content:"";
-  position:absolute;
-  inset:-2px;
-  border-radius:50%;
-  padding:2px;
-  background:
-    linear-gradient(180deg,
-      rgba(235,246,255,.78) 0%,
-      rgba(185,218,242,.34) 6%,
-      rgba(92,133,166,.11) 17%,
-      rgba(30,44,56,.025) 31%,
-      transparent 47%);
-  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-  -webkit-mask-composite:xor;
-  mask-composite:exclude;
-  filter:drop-shadow(0 -5px 15px rgba(190,224,249,.46));
-}
-.planet::after{
-  content:"";
-  position:absolute;
-  left:5%;
-  right:5%;
-  top:-2.6%;
-  height:8%;
-  border-radius:50%;
-  background:
-    radial-gradient(ellipse at center,
-      rgba(235,247,255,.72) 0%,
-      rgba(162,203,234,.31) 35%,
-      rgba(76,113,143,.09) 58%,
-      transparent 78%);
-  filter:blur(9px);
-  opacity:.92;
-}
-.horizon{
-  position:absolute;
-  width:min(66vw,840px);
-  height:110px;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,7%);
-  border-radius:50%;
-  background:radial-gradient(ellipse at center,
-    rgba(190,220,242,.16) 0%,
-    rgba(95,134,163,.06) 34%,
-    transparent 70%);
-  filter:blur(20px);
-  opacity:.76;
-}
-
-/* quiet edge interface */
-.edge{
-  position:absolute;
-  z-index:10;
-  color:var(--edge);
-  font:500 9px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
-  letter-spacing:.15em;
-  text-transform:uppercase;
-}
+/* HEADER */
 .brand{
-  top:clamp(24px,4vw,50px);
-  left:clamp(26px,4vw,64px);
-  color:var(--edge-strong);
-  font-weight:700;
-  letter-spacing:.24em;
+  position:absolute;z-index:20;left:clamp(26px,3.4vw,58px);top:clamp(24px,3vw,46px);
+}
+.brand-main{
+  font:500 clamp(15px,1.55vw,25px)/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.22em;color:#e1e8ec;
+}
+.brand-sub{
+  margin-top:10px;
+  font:500 7px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.34em;color:#68747c;text-transform:uppercase;
 }
 .status{
-  top:clamp(24px,4vw,50px);
-  right:clamp(26px,4vw,64px);
-  display:flex;
-  align-items:center;
-  gap:10px;
-  color:#697078;
-}
-.dot{
-  width:5px;height:5px;border-radius:50%;
-  background:#aab6c0;
-  box-shadow:0 0 10px rgba(210,230,246,.55);
-  animation:pulse 3.2s ease-in-out infinite;
-}
-@keyframes pulse{0%,100%{opacity:.2}50%{opacity:1}}
-.top-center{
-  top:clamp(86px,10vw,132px);
-  left:50%;
-  transform:translateX(-50%);
-  color:#656d74;
-  white-space:nowrap;
-}
-.side-note{
-  right:clamp(26px,4vw,64px);
-  top:50%;
-  transform:translateY(-50%);
-  width:min(300px,24vw);
-  text-align:right;
-  text-transform:none;
-  letter-spacing:.02em;
-  line-height:1.6;
-  color:#747c83;
-  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  font-size:clamp(12px,.9vw,14px);
-}
-.side-note b{color:#9ca4ab;font-weight:500}
-.bottom-left{
-  left:clamp(26px,4vw,64px);
-  bottom:clamp(24px,3.5vw,46px);
-  color:#5b6269;
-}
-.bottom-right{
-  right:clamp(26px,4vw,64px);
-  bottom:clamp(24px,3.5vw,46px);
-  color:#494f55;
-}
-
-
-/* one-week reveal countdown */
-.countdown{
-  position:absolute;
-  z-index:8;
-  left:50%;
-  top:54%;
-  transform:translate(-50%,-50%);
-  text-align:center;
-  pointer-events:none;
-  user-select:none;
-}
-.countdown-label{
-  margin-bottom:9px;
-  color:rgba(120,132,142,.46);
+  position:absolute;z-index:20;right:clamp(26px,3.4vw,58px);top:clamp(28px,3.1vw,48px);
+  display:flex;gap:10px;align-items:center;
   font:500 8px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
-  letter-spacing:.28em;
-  text-transform:uppercase;
+  letter-spacing:.21em;text-transform:uppercase;color:#697780;
 }
-.countdown-time{
-  color:rgba(178,195,208,.48);
-  font:400 clamp(20px,2.35vw,36px)/1 ui-monospace,SFMono-Regular,Menlo,monospace;
-  letter-spacing:.13em;
+.status-dot{
+  width:4px;height:4px;border-radius:50%;background:#b8cad5;
+  box-shadow:0 0 10px rgba(185,220,242,.55);
+  animation:statusPulse 3.4s ease-in-out infinite;
+}
+@keyframes statusPulse{0%,100%{opacity:.25}50%{opacity:1}}
+
+/* COUNTDOWN */
+.hero-copy{
+  position:absolute;z-index:18;left:50%;top:clamp(74px,8.8vh,100px);
+  transform:translateX(-50%);width:min(900px,78vw);text-align:center;
+}
+.kicker{
+  color:#a9b7c0;
+  font:400 clamp(10px,.9vw,14px)/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.62em;text-indent:.62em;text-transform:uppercase;
+}
+.countdown{
+  display:flex;justify-content:center;align-items:flex-end;gap:clamp(20px,3vw,48px);
+  margin-top:24px;
+}
+.time-cell{min-width:78px;text-align:center}
+.time-value{
+  display:block;
+  color:#dbeaf3;
+  font:300 clamp(29px,3.5vw,56px)/.95 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.10em;
   font-variant-numeric:tabular-nums;
-  text-shadow:0 0 18px rgba(170,210,240,.08);
+  text-shadow:0 0 14px rgba(171,213,239,.16);
 }
-.countdown-time .seconds{
-  color:inherit;
-  text-shadow:inherit;
+.time-label{
+  display:block;margin-top:12px;color:#64737d;
+  font:500 7px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.28em;text-transform:uppercase;
 }
 
+/* SIDE COPY */
+.side-copy{
+  position:absolute;z-index:17;top:31%;
+  width:190px;color:#71818c;
+  font:500 8px/1.9 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.30em;text-transform:uppercase;
+}
+.side-copy.left{left:clamp(26px,4vw,70px)}
+.side-copy.right{right:clamp(26px,4vw,70px);text-align:right}
+.side-copy::after{
+  content:"";display:block;width:38px;height:1px;margin-top:14px;
+  background:rgba(166,194,211,.32);
+}
+.side-copy.right::after{margin-left:auto}
 
-/* countdown as a quiet orbital instrument */
-.orbit-progress{
-  position:absolute;
-  z-index:6;
-  left:50%;
-  top:50%;
-  width:min(58vw,740px);
-  aspect-ratio:1;
-  transform:translate(-50%,-42%);
-  border-radius:50%;
-  pointer-events:none;
-  opacity:.62;
+/* HERO PLANET */
+.scene{
+  position:absolute;z-index:2;inset:0;pointer-events:none;
 }
-.orbit-progress::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:50%;
-  background:conic-gradient(
-    from -90deg,
-    rgba(184,214,233,.24) 0turn,
-    rgba(135,177,205,.10) calc(var(--progress,0) * 1turn),
-    rgba(255,255,255,.018) calc(var(--progress,0) * 1turn),
-    rgba(255,255,255,.018) 1turn
-  );
-  -webkit-mask:radial-gradient(circle,transparent 68.6%,#000 69%,#000 69.35%,transparent 69.8%);
-  mask:radial-gradient(circle,transparent 68.6%,#000 69%,#000 69.35%,transparent 69.8%);
-}
-.orbit-progress::after{
-  content:"";
-  position:absolute;
-  inset:7%;
-  border-radius:50%;
-  border:1px solid rgba(184,214,233,.026);
-}
-.signal-sweep{
-  position:absolute;
-  inset:0;
-  transform:rotate(var(--angle,-90deg));
-  transform-origin:50% 50%;
-  will-change:transform;
-}
-.signal-dot{
-  position:absolute;
-  left:50%;
-  top:15.2%;
-  width:5px;
-  height:5px;
+.planet-wrap{
+  position:absolute;left:50%;top:55%;
+  width:min(45vw,650px);aspect-ratio:1;
   transform:translate(-50%,-50%);
-  border-radius:50%;
-  background:rgba(204,229,244,.72);
+}
+.atmosphere{
+  position:absolute;inset:-5%;border-radius:50%;
+  background:radial-gradient(circle,transparent 56%,rgba(112,162,195,.035) 66%,rgba(158,202,229,.10) 69%,transparent 73%);
+  filter:blur(6px);opacity:.95;
+}
+.planet{
+  position:absolute;inset:0;border-radius:50%;overflow:hidden;
+  background:
+    radial-gradient(circle at 30% 21%,rgba(59,72,78,.28) 0 2%,transparent 3%),
+    radial-gradient(circle at 62% 38%,rgba(43,54,60,.20) 0 3%,transparent 4%),
+    radial-gradient(circle at 44% 68%,rgba(42,54,61,.15) 0 4%,transparent 5%),
+    radial-gradient(circle at 49% 36%,rgba(24,34,40,.96) 0%,rgba(8,13,16,.99) 35%,rgba(2,4,5,1) 69%,#000 100%);
   box-shadow:
-    0 0 7px rgba(202,232,249,.62),
-    0 0 20px rgba(126,183,216,.24);
+    inset 24px 18px 55px rgba(120,146,162,.035),
+    inset -70px -70px 100px rgba(0,0,0,.82),
+    0 0 0 1px rgba(230,244,252,.045),
+    0 0 18px rgba(178,218,242,.16),
+    0 0 64px rgba(105,159,193,.11),
+    0 0 170px rgba(49,82,104,.12);
+  animation:planetFloat 15s ease-in-out infinite alternate;
 }
-.signal-dot::after{
-  content:"";
-  position:absolute;
-  left:50%;
-  top:50%;
-  width:42px;
-  height:1px;
-  transform:translate(-100%,-50%) rotate(90deg);
-  transform-origin:100% 50%;
-  background:linear-gradient(90deg,transparent,rgba(166,205,230,.22));
+@keyframes planetFloat{
+  from{transform:translateY(2px) scale(.995)}
+  to{transform:translateY(-4px) scale(1.008)}
 }
-.countdown::before,
-.countdown::after{
-  content:"";
-  position:absolute;
-  top:50%;
-  width:54px;
-  height:1px;
-  background:linear-gradient(90deg,transparent,rgba(151,180,198,.12));
+.planet::before{
+  content:"";position:absolute;inset:-1px;border-radius:50%;
+  background:
+    radial-gradient(ellipse at 20% 21%,rgba(238,248,255,.70) 0%,rgba(187,222,244,.26) 4%,rgba(97,144,176,.08) 10%,transparent 18%);
+  mix-blend-mode:screen;opacity:.78;
 }
-.countdown::before{right:calc(100% + 24px)}
-.countdown::after{left:calc(100% + 24px);transform:scaleX(-1)}
-.countdown-label::after{
-  content:" · orbital lock";
-  opacity:.42;
-  letter-spacing:.18em;
+.planet::after{
+  content:"";position:absolute;inset:0;border-radius:50%;
+  background:
+    radial-gradient(circle at 17% 18%,transparent 0 58%,rgba(210,234,248,.13) 59%,rgba(119,169,202,.04) 61%,transparent 63%),
+    linear-gradient(110deg,rgba(216,239,252,.035),transparent 28%,transparent 72%,rgba(125,166,190,.02));
+  opacity:.8;
 }
 
-/* zero-state: almost nothing changes at first, then a presence resolves inside the darkness */
-.head-reveal{
-  position:absolute;
-  z-index:5;
-  left:50%;
-  top:52%;
-  width:min(31vw,400px);
-  aspect-ratio:.76;
-  transform:translate(-50%,-42%) scale(.93);
-  opacity:0;
-  filter:blur(7px) brightness(.42);
-  pointer-events:none;
-  transition:
-    opacity 1.8s ease,
-    filter 2.1s ease,
-    transform 2.4s cubic-bezier(.16,.82,.2,1);
+/* horizon flare from the side, not pasted on top */
+.sun{
+  position:absolute;left:calc(50% - min(22vw,320px));top:42%;
+  width:7px;height:7px;border-radius:50%;
+  background:#fff;opacity:.62;
+  box-shadow:
+    0 0 12px rgba(255,255,255,.9),
+    0 0 35px rgba(220,238,250,.65),
+    0 0 90px rgba(171,205,227,.35),
+    0 0 180px rgba(98,150,184,.17);
 }
-.head-reveal svg{width:100%;height:100%;display:block;overflow:visible}
-.head-shell{fill:#020405;stroke:rgba(151,179,196,.11);stroke-width:2}
-.head-inner{fill:#000203;stroke:rgba(132,164,184,.08);stroke-width:1.5}
-.head-rim{
-  fill:none;
-  stroke:rgba(164,205,230,.18);
-  stroke-width:2.2;
+.orbit{
+  position:absolute;left:50%;top:55%;
+  width:min(66vw,940px);height:min(20vw,260px);
+  transform:translate(-50%,-50%) rotate(-4deg);
+  border-radius:50%;
+  border:1px solid rgba(132,179,207,.12);
+  box-shadow:0 0 16px rgba(94,139,168,.035);
 }
-.head-line{
-  fill:none;
-  stroke:rgba(122,173,204,.10);
-  stroke-width:1.25;
+.orbit.o2{width:min(74vw,1080px);height:min(27vw,360px);opacity:.45;transform:translate(-50%,-50%) rotate(8deg)}
+.orbit.o3{width:min(56vw,800px);height:min(14vw,190px);opacity:.40;transform:translate(-50%,-50%) rotate(16deg)}
+
+/* INBOUND OBJECT */
+.inbound{
+  position:absolute;z-index:9;left:84%;top:22%;
+  width:46px;height:29px;
+  transform:translate(-50%,-50%) rotate(-23deg);
+  will-change:left,top,width,height,transform;
+}
+.inbound-body{
+  position:absolute;inset:0;
+  clip-path:polygon(11% 29%,30% 4%,72% 0,100% 31%,87% 74%,57% 100%,18% 86%,0 57%);
+  background:linear-gradient(145deg,#59636a 0%,#23292d 22%,#0b0e10 58%,#020304 100%);
+  box-shadow:inset 4px 4px 7px rgba(208,222,230,.08),inset -6px -7px 10px rgba(0,0,0,.72);
+}
+.inbound-body::before{
+  content:"";position:absolute;inset:13%;
+  background:
+    radial-gradient(circle at 28% 35%,rgba(0,0,0,.68) 0 8%,transparent 9%),
+    radial-gradient(circle at 65% 62%,rgba(0,0,0,.62) 0 11%,transparent 12%);
+}
+.inbound-tail{
+  position:absolute;right:68%;top:50%;width:var(--tail,110px);height:18px;
+  transform:translateY(-50%);
+  background:linear-gradient(90deg,transparent 0%,rgba(83,112,130,.06) 48%,rgba(147,190,216,.18) 83%,rgba(213,236,249,.28) 100%);
+  clip-path:polygon(0 44%,100% 0,100% 100%,0 56%);
+  filter:blur(3px);opacity:.62;
+}
+.inbound-debris{position:absolute;inset:-36%;opacity:.55}
+.inbound-debris::before,.inbound-debris::after{
+  content:"";position:absolute;width:4px;height:4px;background:#343b40;
+  clip-path:polygon(0 21%,72% 0,100% 61%,31% 100%);
+}
+.inbound-debris::before{left:-4%;top:18%}
+.inbound-debris::after{right:-8%;bottom:13%}
+
+/* PROGRESS */
+.progress{
+  position:absolute;z-index:18;left:50%;bottom:166px;
+  width:min(72vw,1110px);transform:translateX(-50%);
+}
+.progress-line{
+  position:absolute;left:0;right:0;top:19px;height:1px;background:rgba(107,134,151,.28);
+}
+.progress-fill{
+  position:absolute;left:0;top:19px;height:1px;width:calc(var(--progress) * 100%);
+  background:linear-gradient(90deg,rgba(134,174,199,.36),rgba(207,233,248,.86));
+  box-shadow:0 0 7px rgba(176,215,238,.36);
+}
+.progress-marker{
+  position:absolute;top:16px;left:calc(var(--progress) * 100%);
+  width:6px;height:6px;border-radius:50%;transform:translateX(-50%);
+  background:#d9eefb;box-shadow:0 0 8px rgba(197,230,249,.60);
+}
+.progress-labels{display:grid;grid-template-columns:repeat(4,1fr)}
+.phase{
+  color:#53616a;text-align:center;
+  font:500 7px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.24em;text-transform:uppercase;transition:color .5s ease;
+}
+.phase.active{color:#9eb1bd}
+
+/* STORY CARDS */
+.cards{
+  position:absolute;z-index:16;left:50%;bottom:28px;
+  width:min(94vw,1450px);height:112px;transform:translateX(-50%);
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;
+}
+.card{
+  position:relative;overflow:hidden;border:1px solid rgba(115,143,160,.18);
+  background:rgba(2,5,7,.64);opacity:.52;transition:opacity .5s ease,border-color .5s ease;
+}
+.card.active{opacity:.95;border-color:rgba(153,190,212,.30)}
+.card-visual{position:absolute;inset:0;background:radial-gradient(circle at 52% 58%,rgba(51,75,92,.22),transparent 56%)}
+.card-planet{
+  position:absolute;width:74px;height:74px;border-radius:50%;left:24px;top:17px;
+  background:radial-gradient(circle at 35% 28%,#28333a 0%,#0a0e11 43%,#010202 76%);
+  box-shadow:0 0 11px rgba(151,195,222,.16),inset -16px -18px 23px rgba(0,0,0,.72);
+}
+.card-crack::after{
+  content:"";position:absolute;left:48px;top:23px;width:52px;height:61px;
+  background:
+    linear-gradient(110deg,transparent 0 46%,rgba(118,199,240,.72) 47% 48%,transparent 49%),
+    linear-gradient(65deg,transparent 0 54%,rgba(118,199,240,.48) 55% 56%,transparent 57%);
+  filter:drop-shadow(0 0 4px rgba(93,180,226,.38));
+}
+.card-fragments::before,.card-fragments::after{
+  content:"";position:absolute;left:54px;top:42px;width:28px;height:22px;
+  background:#11171b;clip-path:polygon(0 20%,75% 0,100% 68%,37% 100%);
+  box-shadow:42px -14px 0 #0d1215,-34px 18px 0 #151b1f,27px 31px 0 #0b0f11;
+}
+.card-head{
+  position:absolute;left:62px;top:14px;width:60px;height:78px;
+  clip-path:polygon(24% 0,76% 0,100% 22%,91% 73%,68% 100%,32% 100%,9% 73%,0 22%);
+  background:linear-gradient(145deg,#252d32,#080b0d 42%,#010202 78%);
+  border:1px solid rgba(171,199,216,.12);
+}
+.card-head::before,.card-head::after{
+  content:"";position:absolute;top:42%;width:17px;height:2px;background:#c4edff;
+  box-shadow:0 0 6px rgba(177,226,250,.72);
+}
+.card-head::before{left:12px;transform:rotate(4deg)}
+.card-head::after{right:12px;transform:rotate(-4deg)}
+.card-copy{
+  position:absolute;left:12px;right:10px;bottom:9px;
+  font:500 7px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.16em;text-transform:uppercase;color:#85949e;
+}
+.card-copy b{display:block;margin-bottom:4px;color:#c1cbd1;font-weight:500}
+
+/* ZERO REVEAL */
+.fractures{
+  position:absolute;inset:0;z-index:7;opacity:0;pointer-events:none;
+  transition:opacity .8s ease;
+}
+.fractures svg{width:100%;height:100%}
+.fractures path{
+  fill:none;stroke:rgba(157,211,241,.58);stroke-width:.8;
+  filter:drop-shadow(0 0 3px rgba(115,193,235,.55));
+}
+.ai-head{
+  position:absolute;z-index:4;left:50%;top:55%;
+  width:min(25vw,355px);height:min(34vw,490px);
+  transform:translate(-50%,-44%) scale(.88);
+  opacity:0;filter:blur(8px) brightness(.35);
+  transition:opacity 1.8s ease,filter 2s ease,transform 2.2s cubic-bezier(.16,.8,.18,1);
+}
+.head-halo{
+  position:absolute;inset:-28%;border-radius:50%;
+  background:radial-gradient(circle,rgba(106,171,211,.12),rgba(39,71,91,.055) 36%,transparent 70%);
+  filter:blur(12px);
+}
+.head-shell{
+  position:absolute;left:10%;right:10%;top:0;bottom:10%;
+  clip-path:polygon(24% 0,76% 0,95% 13%,100% 51%,88% 79%,67% 100%,33% 100%,12% 79%,0 51%,5% 13%);
+  background:
+    linear-gradient(150deg,rgba(74,87,95,.72) 0%,rgba(24,31,35,.98) 18%,rgba(4,7,8,1) 48%,rgba(14,19,22,.98) 77%,#020304 100%);
+  box-shadow:inset 8px 7px 18px rgba(211,228,238,.035),inset -18px -20px 30px rgba(0,0,0,.78);
+  border:1px solid rgba(164,193,210,.10);
+}
+.head-shell::before{
+  content:"";position:absolute;left:10%;right:10%;top:12%;bottom:15%;
+  clip-path:polygon(16% 0,84% 0,100% 18%,92% 82%,70% 100%,30% 100%,8% 82%,0 18%);
+  background:radial-gradient(ellipse at 50% 28%,rgba(18,31,39,.84),rgba(0,2,3,.99) 67%);
+  border:1px solid rgba(128,167,190,.08);
+}
+.head-seam{
+  position:absolute;z-index:2;left:50%;top:8%;bottom:22%;width:1px;
+  background:linear-gradient(transparent,rgba(137,180,207,.13),transparent);
 }
 .head-eye{
-  fill:rgba(205,236,252,.96);
-  opacity:0;
-  filter:drop-shadow(0 0 5px rgba(190,228,249,.78)) drop-shadow(0 0 16px rgba(107,178,219,.42));
-  transform-box:fill-box;
+  position:absolute;z-index:3;top:41%;width:25%;height:3px;opacity:0;
+  background:linear-gradient(90deg,transparent,#d5f3ff 28%,#d5f3ff 72%,transparent);
+  box-shadow:0 0 5px rgba(211,241,255,.92),0 0 17px rgba(116,195,236,.54),0 0 35px rgba(72,143,180,.25);
   transform-origin:center;
 }
-.head-core{
-  fill:rgba(158,215,246,.24);
-  opacity:0;
-  filter:drop-shadow(0 0 7px rgba(120,190,229,.30));
+.head-eye.left{left:18%;transform:rotate(4deg)}
+.head-eye.right{right:18%;transform:rotate(-4deg)}
+.head-neck{
+  position:absolute;left:35%;right:35%;bottom:0;height:27%;
+  clip-path:polygon(18% 0,82% 0,100% 100%,0 100%);
+  background:linear-gradient(90deg,#050708,#1d2529 27%,#080c0e 58%,#020304);
+  border-left:1px solid rgba(139,170,189,.07);border-right:1px solid rgba(139,170,189,.07);
 }
-.presence-copy{
-  position:absolute;
-  z-index:11;
-  left:50%;
-  top:78%;
-  transform:translateX(-50%) translateY(8px);
-  color:rgba(146,164,174,.52);
-  opacity:0;
-  font:500 clamp(7px,.64vw,10px)/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
-  letter-spacing:.22em;
-  text-transform:uppercase;
-  white-space:nowrap;
-  pointer-events:none;
-  transition:opacity 1.4s ease,transform 1.5s ease;
+.zero-wave{
+  position:absolute;z-index:12;left:50%;top:55%;width:10px;height:10px;border-radius:50%;
+  transform:translate(-50%,-50%);opacity:0;border:1px solid rgba(206,232,247,.58);
 }
-.zero-pulse{
-  position:absolute;
-  z-index:7;
-  left:50%;
-  top:52%;
-  width:10px;
-  height:10px;
-  border-radius:50%;
-  transform:translate(-50%,-50%);
-  opacity:0;
-  border:1px solid rgba(203,231,248,.46);
-  pointer-events:none;
-}
-.page.reveal-start .story-track{animation-play-state:paused}
-.page.reveal-start .meteors{opacity:.16;transition:opacity 1s ease}
-.page.reveal-start .stars{opacity:.34;transition:opacity 1.4s ease}
-.page.reveal-start .orbit-progress{
-  opacity:.22;
-  transition:opacity 1.2s ease;
-}
-.page.reveal-start .zero-pulse{
-  animation:zeroPulse 2.4s ease-out forwards;
-}
-.page.reveal-start .planet{
-  filter:brightness(.72);
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,.018),
-    0 -16px 38px rgba(146,190,222,.07),
-    0 -34px 90px rgba(84,126,157,.07),
-    0 0 170px rgba(45,72,91,.07);
-  transition:filter 2.2s ease,box-shadow 2.2s ease,opacity 2.4s ease;
-}
-.page.reveal-head .planet{
-  opacity:.34;
-  filter:brightness(.46);
-}
-.page.reveal-head .head-reveal{
-  opacity:.92;
-  filter:blur(0) brightness(.86);
+.page.fracture .fractures{opacity:1}
+.page.fracture .planet{filter:brightness(.72);transition:filter 1.1s ease}
+.page.reveal .planet{opacity:.18;filter:brightness(.36);transition:opacity 1.8s ease,filter 1.8s ease}
+.page.reveal .atmosphere{opacity:.34;transition:opacity 1.8s ease}
+.page.reveal .ai-head{
+  opacity:.98;filter:blur(0) brightness(.88);
   transform:translate(-50%,-50%) scale(1);
 }
-.page.reveal-eyes .head-eye{
-  animation:eyesWake 1.8s ease forwards;
-}
-.page.reveal-eyes .head-core{
-  animation:coreWake 2.4s ease forwards;
-}
-.page.reveal-eyes .presence-copy{
-  opacity:1;
-  transform:translateX(-50%) translateY(0);
-}
-.page.reveal-eyes .status{
-  color:#80919b;
-}
-.page.reveal-eyes .dot{
-  background:#c6dce8;
-  box-shadow:0 0 13px rgba(194,225,243,.64);
-}
-@keyframes zeroPulse{
+.page.reveal .zero-wave{animation:zeroWave 2.2s ease-out forwards}
+.page.online .head-eye{animation:eyeWake 1.5s ease forwards}
+.page.online .ai-head{filter:blur(0) brightness(1)}
+.page.online .kicker{color:#c0d1db}
+.page.online .status{color:#8fa3af}
+.page.online .progress-marker{box-shadow:0 0 15px rgba(205,237,253,.88)}
+@keyframes zeroWave{
   0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}
-  10%{opacity:.72}
-  100%{opacity:0;transform:translate(-50%,-50%) scale(58)}
+  10%{opacity:.76}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(65)}
 }
-@keyframes eyesWake{
+@keyframes eyeWake{
   0%{opacity:0;transform:scaleX(.05)}
-  18%{opacity:.10}
-  42%{opacity:.92;transform:scaleX(1)}
-  58%{opacity:.28}
-  72%,100%{opacity:.95;transform:scaleX(1)}
-}
-@keyframes coreWake{
-  0%,35%{opacity:0}
-  100%{opacity:.34}
+  18%{opacity:.12}
+  38%{opacity:1;transform:scaleX(1)}
+  54%{opacity:.30}
+  70%,100%{opacity:.98;transform:scaleX(1)}
 }
 
-/* discreet preview */
-.reveal-test{
-  position:absolute;
-  z-index:14;
-  right:clamp(26px,4vw,64px);
-  bottom:clamp(58px,6.5vw,84px);
-  min-height:32px;
-  padding:0 12px;
-  border:1px solid rgba(126,142,153,.18);
-  border-radius:2px;
-  background:rgba(5,8,10,.26);
-  color:#5f686f;
-  font:500 8px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
-  letter-spacing:.15em;
-  text-transform:uppercase;
-  cursor:pointer;
-  backdrop-filter:blur(4px);
+/* PREVIEW BUTTON */
+.preview{
+  position:absolute;z-index:25;right:clamp(26px,3.4vw,58px);bottom:147px;
+  height:30px;padding:0 11px;border:1px solid rgba(122,151,169,.19);border-radius:2px;
+  background:rgba(3,6,8,.44);color:#58656e;cursor:pointer;
+  font:500 7px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.16em;text-transform:uppercase;
 }
-.reveal-test:hover{
-  color:#8c979e;
-  border-color:rgba(158,181,198,.30);
-  background:rgba(9,13,16,.36);
-}
-.reveal-test:disabled{opacity:.42;cursor:default}
+.preview:hover{color:#8ea0ab;border-color:rgba(158,190,210,.31)}
+.preview:disabled{opacity:.42;cursor:default}
 
-/* moving story */
-.story-stream{
-  position:absolute;
-  z-index:9;
-  left:0;
-  right:0;
-  bottom:clamp(62px,6.5vh,82px);
-  overflow:hidden;
-  white-space:nowrap;
-  pointer-events:none;
-  -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 8%,#000 92%,transparent 100%);
-  mask-image:linear-gradient(90deg,transparent 0%,#000 8%,#000 92%,transparent 100%);
-}
-.story-track{
-  display:inline-flex;
-  width:max-content;
-  will-change:transform;
-  animation:storyScroll 156s linear infinite;
-}
-.story-group{
-  display:inline-flex;
-  align-items:center;
-  gap:0;
-  padding-right:80px;
-}
-.story-item{
-  color:#747c83;
-  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  font-size:clamp(12px,.9vw,14px);
-  font-weight:500;
-  line-height:1.6;
-  letter-spacing:.02em;
-}
-.story-item::after{
-  content:"  ·  ";
-  color:#4f565d;
-  padding:0 24px;
-}
-@keyframes storyScroll{
-  from{transform:translateX(0)}
-  to{transform:translateX(-50%)}
-}
-
-@media(max-width:760px){
-  .planet{width:94vw}
-  .rings{width:126vw}
-  .halo{width:148vw}
-
-  .brand{
-    top:28px;
-    left:28px;
-    font-size:10px;
-  }
+@media(max-width:900px){
+  .page{min-height:620px}
+  .brand-main{font-size:14px}
+  .brand-sub{font-size:6px}
   .status{display:none}
-
-  .top-center{
-    top:102px;
-    left:50%;
-    width:86vw;
-    transform:translateX(-50%);
-    white-space:normal;
-    text-align:center;
-    font-size:8px;
-    line-height:1.5;
-    color:#656d74;
-  }
-
-  .countdown{
-    top:55%;
-    width:90vw;
-  }
-  .orbit-progress{
-    width:112vw;
-    transform:translate(-50%,-41%);
-  }
-  .countdown::before,
-  .countdown::after{display:none}
-  .countdown-label::after{display:none}
-  .head-reveal{
-    width:63vw;
-    top:53%;
-  }
-  .presence-copy{
-    top:76%;
-    font-size:7px;
-  }
-  .countdown-label{
-    margin-bottom:8px;
-    font-size:7px;
-  }
-  .countdown-time{
-    font-size:clamp(20px,7vw,28px);
-    letter-spacing:.10em;
-  }
-
-  .side-note{
-    top:auto;
-    right:auto;
-    left:50%;
-    bottom:128px;
-    transform:translateX(-50%);
-    width:84vw;
-    text-align:center;
-    font-size:12px;
-    line-height:1.5;
-    color:#747c83;
-  }
-
-  .story-stream{
-    bottom:72px;
-  }
-  .story-track{
-    animation-duration:136s;
-  }
-  .story-item{
-    font-size:11px;
-    line-height:1.5;
-    letter-spacing:.02em;
-  }
-  .story-item::after{
-    padding:0 18px;
-  }
-
-  .reveal-test{
-    right:28px;
-    bottom:66px;
-    min-height:30px;
-    padding:0 10px;
-    font-size:7px;
-  }
-
-  .bottom-left{
-    left:28px;
-    bottom:34px;
-    font-size:8px;
-    letter-spacing:.11em;
-  }
-  .bottom-right{display:none}
+  .hero-copy{top:78px;width:92vw}
+  .kicker{font-size:8px;letter-spacing:.42em}
+  .countdown{gap:14px;margin-top:17px}
+  .time-cell{min-width:56px}
+  .time-value{font-size:clamp(23px,7vw,34px)}
+  .time-label{font-size:6px;margin-top:8px}
+  .side-copy{display:none}
+  .planet-wrap{width:min(86vw,560px);top:53%}
+  .sun{left:13%;top:43%}
+  .orbit{width:122vw;height:31vw}
+  .orbit.o2{width:138vw;height:42vw}
+  .orbit.o3{width:106vw;height:23vw}
+  .inbound{top:25%}
+  .progress{bottom:87px;width:86vw}
+  .cards{display:none}
+  .preview{bottom:28px;right:28px}
+  .ai-head{width:min(54vw,330px);height:min(72vw,470px);top:54%}
 }
-
+@media(max-width:560px){
+  .brand{left:22px;top:24px}
+  .brand-main{font-size:12px}
+  .hero-copy{top:84px}
+  .kicker{font-size:7px}
+  .countdown{gap:8px}
+  .time-cell{min-width:48px}
+  .time-value{font-size:22px}
+  .time-label{font-size:5px;letter-spacing:.16em}
+  .planet-wrap{width:94vw;top:54%}
+  .progress{bottom:70px}
+  .preview{bottom:20px}
+}
 @media(prefers-reduced-motion:reduce){
-  .stars,.halo,.planet,.dot,.meteor,.story-track{animation:none}
-  .story-stream{display:none}
+  .stars,.planet,.status-dot{animation:none}
 }
 </style>
 </head>
 <body>
-<main class="page">
+<main class="page" id="page">
   <div class="stars"></div>
   <div class="nebula"></div>
 
-  <div class="meteors" aria-hidden="true">
-    <span class="meteor m1"></span>
-    <span class="meteor m2"></span>
-    <span class="meteor m3"></span>
-    <span class="meteor m4"></span>
-  </div>
+  <header class="brand">
+    <div class="brand-main">ZDENEK LAB</div>
+    <div class="brand-sub">AI_CUBE · LOCAL EMBODIED INTELLIGENCE</div>
+  </header>
+  <div class="status" id="status"><span class="status-dot"></span><span id="statusText">approach detected</span></div>
 
-  <div class="cosmos" aria-hidden="true">
-    <div class="halo"></div>
-    <div class="rings"></div>
+  <section class="hero-copy">
+    <div class="kicker" id="kicker">Something is arriving</div>
+    <div class="countdown" aria-label="Countdown to reveal">
+      <div class="time-cell"><span class="time-value" id="days">07</span><span class="time-label">days</span></div>
+      <div class="time-cell"><span class="time-value" id="hours">00</span><span class="time-label">hours</span></div>
+      <div class="time-cell"><span class="time-value" id="minutes">00</span><span class="time-label">minutes</span></div>
+      <div class="time-cell"><span class="time-value" id="seconds">00</span><span class="time-label">seconds</span></div>
+    </div>
+  </section>
 
-    <div class="orbit-progress" id="orbit-progress">
-      <div class="signal-sweep" id="signal-sweep">
-        <span class="signal-dot"></span>
+  <div class="side-copy left">Not a threat.<br>A new presence.<br>Stay tuned.</div>
+  <div class="side-copy right">Different intelligence.<br>A closer world.</div>
+
+  <section class="scene" aria-hidden="true">
+    <div class="orbit"></div>
+    <div class="orbit o2"></div>
+    <div class="orbit o3"></div>
+    <div class="sun"></div>
+
+    <div class="ai-head" id="aiHead">
+      <div class="head-halo"></div>
+      <div class="head-neck"></div>
+      <div class="head-shell">
+        <div class="head-seam"></div>
+        <span class="head-eye left"></span>
+        <span class="head-eye right"></span>
       </div>
     </div>
 
-    <div class="head-reveal" aria-hidden="true">
-      <svg viewBox="0 0 420 560">
-        <path class="head-shell" d="M98 114 Q126 34 210 22 Q294 34 322 114 L310 350 Q299 430 210 493 Q121 430 110 350 Z"/>
-        <path class="head-inner" d="M121 129 Q210 69 299 129 L290 338 Q278 391 210 437 Q142 391 130 338 Z"/>
-        <path class="head-rim" d="M112 118 Q210 52 308 118"/>
-        <path class="head-line" d="M210 70 V177 M168 88 L180 177 M252 88 L240 177"/>
-        <path class="head-line" d="M149 224 H190 L205 240 M271 224 H230 L215 240"/>
-        <path class="head-line" d="M155 302 H194 L210 320 L226 302 H265"/>
-        <path class="head-line" d="M178 385 L210 409 L242 385"/>
-        <path d="M126 248 Q163 220 197 241 Q171 270 132 265 Z" fill="#000"/>
-        <path d="M294 248 Q257 220 223 241 Q249 270 288 265 Z" fill="#000"/>
-        <path class="head-eye" d="M136 249 Q164 235 191 247 Q165 257 140 256 Z"/>
-        <path class="head-eye" d="M284 249 Q256 235 229 247 Q255 257 280 256 Z"/>
-        <circle class="head-core" cx="210" cy="304" r="5"/>
-        <path class="head-line" d="M210 182 V288 M186 328 L210 345 L234 328"/>
-        <path class="head-shell" d="M155 459 L265 459 L292 558 L128 558 Z"/>
-        <path class="head-line" d="M210 469 V535 M190 493 H210 M230 509 H210"/>
-      </svg>
-    </div>
-
-    <div class="planet" id="planet"></div>
-    <div class="horizon"></div>
-    <div class="zero-pulse"></div>
-  </div>
-
-  <div class="presence-copy">presence detected · AI_CUBE</div>
-
-  <div class="countdown" aria-label="Countdown to next reveal">
-    <div class="countdown-label">next signal</div>
-    <div class="countdown-time"><span id="countdown-main">07D 00:00:</span><span class="seconds" id="countdown-seconds">00</span></div>
-  </div>
-
-  <div class="edge brand">ZDENEK LAB</div>
-  <div class="edge status"><span class="dot"></span> something is forming</div>
-  <div class="edge top-center">Independent experiments · Prague</div>
-
-  <div class="edge side-note">
-    Somewhere between <b>AI, hardware and curiosity</b>, something is beginning to move.
-  </div>
-
-  <div class="story-stream" aria-label="AI CUBE story">
-    <div class="story-track">
-      <div class="story-group">
-        <span class="story-item">I spent two decades designing analog and mixed-signal integrated circuits.</span>
-        <span class="story-item">Then I became fascinated by the moment an AI decision turns into a real action.</span>
-        <span class="story-item">So I built AI_CUBE: two servos, a 3D-printed frame and a local brain.</span>
-        <span class="story-item">The closer software gets to hardware, the less room there is for uncertainty.</span>
-        <span class="story-item">The LLM chooses intent. Deterministic software controls the motion.</span>
-        <span class="story-item">Primitive → Capability → Agent Action → Guard → Executor.</span>
-        <span class="story-item">The next loop adds vision, audio and feedback from the physical world.</span>
-        <span class="story-item">AI_CUBE is not the destination. It is a test bench for agentic engineering.</span>
-        <span class="story-item">The same principles may one day guide local AI inside analog design flows.</span>
-        <span class="story-item">Give AI freedom where it helps — and hard boundaries where engineering begins.</span>
-      </div>
-      <div class="story-group" aria-hidden="true">
-        <span class="story-item">I spent two decades designing analog and mixed-signal integrated circuits.</span>
-        <span class="story-item">Then I became fascinated by the moment an AI decision turns into a real action.</span>
-        <span class="story-item">So I built AI_CUBE: two servos, a 3D-printed frame and a local brain.</span>
-        <span class="story-item">The closer software gets to hardware, the less room there is for uncertainty.</span>
-        <span class="story-item">The LLM chooses intent. Deterministic software controls the motion.</span>
-        <span class="story-item">Primitive → Capability → Agent Action → Guard → Executor.</span>
-        <span class="story-item">The next loop adds vision, audio and feedback from the physical world.</span>
-        <span class="story-item">AI_CUBE is not the destination. It is a test bench for agentic engineering.</span>
-        <span class="story-item">The same principles may one day guide local AI inside analog design flows.</span>
-        <span class="story-item">Give AI freedom where it helps — and hard boundaries where engineering begins.</span>
+    <div class="planet-wrap" id="planetWrap">
+      <div class="atmosphere"></div>
+      <div class="planet" id="planet"></div>
+      <div class="fractures">
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+          <path d="M49 2 L51 19 L45 29 L52 41 L48 53 L55 66 L50 98"/>
+          <path d="M45 29 L31 36 L27 49 L16 57"/>
+          <path d="M52 41 L66 34 L77 39 L88 30"/>
+          <path d="M48 53 L35 61 L26 76 L15 81"/>
+          <path d="M55 66 L69 71 L76 85 L88 92"/>
+        </svg>
       </div>
     </div>
-  </div>
 
-  <button class="reveal-test" id="reveal-test" type="button" aria-label="Preview reveal in ten seconds">simulate reveal · 10s</button>
+    <div class="inbound" id="inbound">
+      <div class="inbound-tail"></div>
+      <div class="inbound-debris"></div>
+      <div class="inbound-body"></div>
+    </div>
+    <div class="zero-wave"></div>
+  </section>
 
-  <div class="edge bottom-left">Experiment 001 · AI HEAD / AI CUBE</div>
-  <div class="edge bottom-right">temporary interface · v3.1</div>
+  <section class="progress" aria-label="Reveal progress">
+    <div class="progress-line"></div>
+    <div class="progress-fill"></div>
+    <div class="progress-marker"></div>
+    <div class="progress-labels">
+      <div class="phase active" data-phase="0">Approach</div>
+      <div class="phase" data-phase="1">Alignment</div>
+      <div class="phase" data-phase="2">Arrival</div>
+      <div class="phase" data-phase="3">Reveal</div>
+    </div>
+  </section>
+
+  <section class="cards" aria-label="Arrival sequence">
+    <div class="card active" data-card="0">
+      <div class="card-visual"><div class="card-planet"></div></div>
+      <div class="card-copy"><b>01 · Approach</b>Something is coming</div>
+    </div>
+    <div class="card" data-card="1">
+      <div class="card-visual card-crack"><div class="card-planet"></div></div>
+      <div class="card-copy"><b>02 · Awakening</b>Old forms end</div>
+    </div>
+    <div class="card" data-card="2">
+      <div class="card-visual card-fragments"></div>
+      <div class="card-copy"><b>03 · Emergence</b>A new presence</div>
+    </div>
+    <div class="card" data-card="3">
+      <div class="card-visual"><div class="card-head"></div></div>
+      <div class="card-copy"><b>04 · Online</b>AI_CUBE // embodied intelligence</div>
+    </div>
+  </section>
+
+  <button class="preview" id="preview" type="button">simulate reveal · 10s</button>
 </main>
 
 <script>
@@ -820,30 +547,28 @@ body{
   const REAL_START = new Date('2026-09-18T20:56:00+02:00').getTime();
   const REAL_TARGET = new Date('2026-09-25T20:56:00+02:00').getTime();
 
-  const page = document.querySelector('.page');
-  const main = document.getElementById('countdown-main');
-  const seconds = document.getElementById('countdown-seconds');
-  const label = document.querySelector('.countdown-label');
-  const orbit = document.getElementById('orbit-progress');
-  const sweep = document.getElementById('signal-sweep');
-  const status = document.querySelector('.status');
-  const test = document.getElementById('reveal-test');
-
-  if (!page || !main || !seconds || !label || !orbit || !sweep || !status || !test) return;
+  const page = document.getElementById('page');
+  const inbound = document.getElementById('inbound');
+  const preview = document.getElementById('preview');
+  const kicker = document.getElementById('kicker');
+  const statusText = document.getElementById('statusText');
+  const daysEl = document.getElementById('days');
+  const hoursEl = document.getElementById('hours');
+  const minutesEl = document.getElementById('minutes');
+  const secondsEl = document.getElementById('seconds');
+  const phases = [...document.querySelectorAll('.phase')];
+  const cards = [...document.querySelectorAll('.card')];
 
   const pad = n => String(n).padStart(2,'0');
+
   let previewStart = null;
   let previewTarget = null;
-  let revealing = false;
+  let revealStarted = false;
   let timers = [];
 
   function clearTimers(){
     timers.forEach(clearTimeout);
     timers = [];
-  }
-
-  function setStatus(text){
-    status.innerHTML = '<span class="dot"></span> ' + text;
   }
 
   function activeWindow(){
@@ -853,47 +578,79 @@ body{
     return {start:REAL_START,target:REAL_TARGET,preview:false};
   }
 
+  function setPhase(index){
+    phases.forEach((el,i)=>el.classList.toggle('active',i<=index));
+    cards.forEach((el,i)=>el.classList.toggle('active',i===index));
+  }
+
+  function placeInbound(progress){
+    const t = Math.pow(progress,.72);
+    const startX = 86;
+    const startY = 21;
+    const endX = 68;
+    const endY = 39;
+    const arc = Math.sin(t*Math.PI)*-5.5;
+
+    const x = startX + (endX-startX)*t;
+    const y = startY + (endY-startY)*t + arc;
+    const w = 32 + 74*Math.pow(progress,.88);
+    const h = w*.63;
+    const rot = -24 + 12*t;
+
+    inbound.style.left = x+'%';
+    inbound.style.top = y+'%';
+    inbound.style.width = w+'px';
+    inbound.style.height = h+'px';
+    inbound.style.transform = 'translate(-50%,-50%) rotate('+rot+'deg)';
+    inbound.style.setProperty('--tail',Math.max(90,w*2.3)+'px');
+    inbound.style.opacity = String(.58 + progress*.38);
+  }
+
   function resetPreview(){
     clearTimers();
-    page.classList.remove('reveal-start','reveal-head','reveal-eyes');
+    page.classList.remove('fracture','reveal','online');
     previewStart = null;
     previewTarget = null;
-    revealing = false;
-
-    label.textContent = 'next signal';
-    setStatus('something is forming');
-    test.disabled = false;
-    test.textContent = 'simulate reveal · 10s';
+    revealStarted = false;
+    kicker.textContent = 'Something is arriving';
+    statusText.textContent = 'approach detected';
+    preview.disabled = false;
+    preview.textContent = 'simulate reveal · 10s';
     void page.offsetWidth;
     update();
   }
 
-  function reveal(preview){
-    if (revealing) return;
-    revealing = true;
+  function reveal(previewMode){
+    if (revealStarted) return;
+    revealStarted = true;
 
-    main.textContent = '00D 00:00:';
-    seconds.textContent = '00';
-    label.textContent = 'signal lock';
-    setStatus('signal lock');
-    test.disabled = true;
-    test.textContent = preview ? 'signal locked' : 'system event';
-    page.classList.add('reveal-start');
+    daysEl.textContent='00';
+    hoursEl.textContent='00';
+    minutesEl.textContent='00';
+    secondsEl.textContent='00';
+    setPhase(2);
+    kicker.textContent='Arrival';
+    statusText.textContent='arrival confirmed';
+    preview.disabled = true;
+    preview.textContent = previewMode ? 'reveal running' : 'arrival';
 
-    timers.push(setTimeout(() => {
-      page.classList.add('reveal-head');
-      label.textContent = 'presence';
-      setStatus('presence detected');
-    }, 1250));
+    page.classList.add('fracture');
 
     timers.push(setTimeout(() => {
-      page.classList.add('reveal-eyes');
-      label.textContent = 'online';
-      setStatus('online');
-    }, 3100));
+      page.classList.add('reveal');
+      setPhase(3);
+      kicker.textContent='A new presence';
+      statusText.textContent='presence detected';
+    },900));
 
-    if (preview) {
-      timers.push(setTimeout(resetPreview, 8200));
+    timers.push(setTimeout(() => {
+      page.classList.add('online');
+      kicker.textContent='AI_CUBE // online';
+      statusText.textContent='system online';
+    },2600));
+
+    if (previewMode) {
+      timers.push(setTimeout(resetPreview,7600));
     }
   }
 
@@ -904,36 +661,43 @@ body{
     const remaining = Math.max(0,state.target-now);
     const progress = Math.min(1,Math.max(0,(now-state.start)/duration));
 
-    orbit.style.setProperty('--progress',progress.toFixed(6));
-    sweep.style.setProperty('--angle',(-90 + progress*360).toFixed(3)+'deg');
+    page.style.setProperty('--progress',progress.toFixed(6));
+    if (!revealStarted) placeInbound(progress);
 
     const totalSeconds = Math.floor(remaining/1000);
     const days = Math.floor(totalSeconds/86400);
     const hours = Math.floor((totalSeconds%86400)/3600);
     const minutes = Math.floor((totalSeconds%3600)/60);
-    const secs = totalSeconds%60;
+    const seconds = totalSeconds%60;
 
-    main.textContent = pad(days)+'D '+pad(hours)+':'+pad(minutes)+':';
-    seconds.textContent = pad(secs);
+    daysEl.textContent=pad(days);
+    hoursEl.textContent=pad(hours);
+    minutesEl.textContent=pad(minutes);
+    secondsEl.textContent=pad(seconds);
 
-    if (remaining <= 0 && !revealing) reveal(state.preview);
+    let phase = 0;
+    if (progress >= .58) phase = 1;
+    if (progress >= .88) phase = 2;
+    if (progress >= 1) phase = 3;
+    if (!revealStarted) setPhase(phase);
+
+    if (remaining <= 0 && !revealStarted) reveal(state.preview);
   }
 
-  test.addEventListener('click',() => {
-    if (previewTarget !== null || revealing) return;
-
+  preview.addEventListener('click',() => {
+    if (previewTarget !== null || revealStarted) return;
     clearTimers();
-    page.classList.remove('reveal-start','reveal-head','reveal-eyes');
+    page.classList.remove('fracture','reveal','online');
 
     const now = Date.now();
     previewStart = now;
     previewTarget = now + 10000;
-    revealing = false;
+    revealStarted = false;
 
-    label.textContent = 'accelerated signal';
-    setStatus('signal approaching');
-    test.disabled = true;
-    test.textContent = 'reveal in 10s';
+    kicker.textContent='Accelerated approach';
+    statusText.textContent='vector locked';
+    preview.disabled = true;
+    preview.textContent='reveal in 10s';
     update();
   });
 
