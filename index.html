@@ -252,6 +252,19 @@ body{
   font-weight:700;
   letter-spacing:.24em;
 }
+.cube-nav{
+  top:clamp(24px,4vw,50px);
+  right:clamp(26px,4vw,64px);
+  color:var(--edge-strong);
+  font-weight:700;
+  letter-spacing:.24em;
+  text-decoration:none;
+  transition:color .25s ease,opacity .25s ease;
+}
+.cube-nav:hover{
+  color:#c1cbd1;
+  opacity:1;
+}
 .status{
   top:clamp(24px,4vw,50px);
   right:clamp(26px,4vw,64px);
@@ -288,22 +301,6 @@ body{
   font-size:clamp(12px,.9vw,14px);
 }
 .side-note b{color:#9ca4ab;font-weight:500}
-.cube-link{
-  display:inline-block;
-  margin-top:16px;
-  color:#7f8a91;
-  text-decoration:none;
-  font:500 8px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
-  letter-spacing:.20em;
-  text-transform:uppercase;
-  opacity:.72;
-  transition:color .25s ease,opacity .25s ease,transform .25s ease;
-}
-.cube-link:hover{
-  color:#c1cdd4;
-  opacity:1;
-  transform:translateX(2px);
-}
 .bottom-left{
   left:clamp(26px,4vw,64px);
   bottom:clamp(24px,3.5vw,46px);
@@ -468,6 +465,11 @@ body{
     left:28px;
     font-size:10px;
   }
+  .cube-nav{
+    top:28px;
+    right:28px;
+    font-size:10px;
+  }
   .status{display:none}
 
   .top-center{
@@ -563,12 +565,11 @@ body{
   </div>
 
   <div class="edge brand">ZDENEK LAB</div>
-  <div class="edge status"><span class="dot"></span> something is forming</div>
+  <a class="edge cube-nav" href="ai-cube.html">AI CUBE</a>
   <div class="edge top-center">Independent experiments · Prague</div>
 
   <div class="edge side-note">
     Somewhere between <b>AI, hardware and curiosity</b>, something is beginning to move.
-    <a class="cube-link" href="ai-cube.html">AI_CUBE · explore →</a>
   </div>
 
   <div class="story-stream" aria-label="AI CUBE story">
