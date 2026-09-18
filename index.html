@@ -238,347 +238,400 @@ body{
 }
 
 
-/* approaching comet + impact event */
-.impactor{
+/* countdown reveal: the planet was a dormant machine */
+.machine-surface{
+  position:absolute;
+  inset:0;
+  z-index:5;
+  border-radius:50%;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 48% 33%,
+      rgba(19,29,38,.98) 0%,
+      rgba(8,13,18,.99) 31%,
+      rgba(3,5,7,1) 62%,
+      #000 100%);
+  opacity:1;
+}
+.machine-seams{
+  position:absolute;
+  inset:0;
+  opacity:0;
+  transition:opacity .75s ease;
+}
+.machine-seams::before,
+.machine-seams::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:76%;
+  height:1px;
+  transform-origin:center;
+  background:linear-gradient(90deg,transparent,rgba(154,192,218,.32),transparent);
+  box-shadow:0 0 10px rgba(127,175,207,.10);
+}
+.machine-seams::before{transform:translate(-50%,-50%) rotate(28deg)}
+.machine-seams::after{transform:translate(-50%,-50%) rotate(-37deg)}
+.seam-ring{
+  position:absolute;
+  inset:17%;
+  border-radius:50%;
+  border:1px solid rgba(148,187,213,.20);
+  box-shadow:
+    inset 0 0 20px rgba(114,159,190,.035),
+    0 0 18px rgba(114,159,190,.035);
+}
+.seam-v{
+  position:absolute;
+  left:50%;
+  top:12%;
+  bottom:12%;
+  width:1px;
+  transform:translateX(-50%);
+  background:linear-gradient(180deg,transparent,rgba(151,190,215,.22),transparent);
+}
+.scan-line{
   position:absolute;
   z-index:7;
-  left:0;
-  top:0;
-  width:48px;
-  height:48px;
-  opacity:.96;
-  pointer-events:none;
-  transform:translate(-50%,-50%);
-  transform-origin:center center;
-  will-change:left,top,width,height,transform,opacity;
-}
-.impactor::after{
-  content:"";
-  position:absolute;
-  right:54%;
-  top:50%;
-  width:var(--tail,84px);
-  height:var(--tail-h,18px);
-  transform:translateY(-50%);
-  transform-origin:right center;
-  background:
-    radial-gradient(ellipse at right,
-      rgba(129,143,151,.16) 0%,
-      rgba(82,94,101,.09) 32%,
-      rgba(40,48,53,.045) 58%,
-      transparent 82%);
-  filter:blur(4px);
-  opacity:.42;
-  transition:opacity .16s ease-out;
-}
-.rock{
-  position:absolute;
-  left:var(--x,50%);
-  top:var(--y,50%);
-  width:var(--w,28%);
-  height:var(--h,24%);
-  transform:translate(-50%,-50%) rotate(var(--r,0deg));
-  transform-origin:center center;
-  clip-path:var(--clip,polygon(12% 20%,68% 4%,96% 37%,78% 92%,29% 100%,2% 61%));
-  background:
-    radial-gradient(circle at 28% 22%,rgba(126,130,129,.18) 0 7%,transparent 8%),
-    radial-gradient(circle at 67% 62%,rgba(0,0,0,.44) 0 13%,transparent 14%),
-    linear-gradient(145deg,
-      rgba(92,96,95,.98) 0%,
-      rgba(54,58,58,.98) 24%,
-      rgba(29,32,33,1) 57%,
-      rgba(9,11,12,1) 100%);
+  left:13%;
+  right:13%;
+  top:8%;
+  height:1px;
+  opacity:0;
+  background:linear-gradient(90deg,
+    transparent,
+    rgba(184,222,246,.20) 12%,
+    rgba(221,241,253,.78) 50%,
+    rgba(184,222,246,.20) 88%,
+    transparent);
   box-shadow:
-    inset -5px -6px 8px rgba(0,0,0,.58),
-    inset 2px 2px 3px rgba(185,191,190,.08);
-  opacity:var(--op,.98);
+    0 0 8px rgba(194,227,247,.48),
+    0 0 26px rgba(130,184,218,.20);
 }
-.rock::after{
-  content:"";
+.shell-panels{
   position:absolute;
-  inset:8%;
-  clip-path:inherit;
+  inset:0;
+  z-index:6;
+  pointer-events:none;
+}
+.shell-panel{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  opacity:0;
   background:
-    radial-gradient(circle at 22% 58%,rgba(0,0,0,.42) 0 7%,transparent 8%),
-    radial-gradient(circle at 71% 27%,rgba(0,0,0,.34) 0 6%,transparent 7%);
-  opacity:.8;
+    radial-gradient(circle at 48% 33%,
+      rgba(18,27,35,.99) 0%,
+      rgba(7,11,15,1) 39%,
+      rgba(2,4,5,1) 75%,
+      #000 100%);
+  box-shadow:inset 0 0 0 1px rgba(170,207,231,.035);
 }
-.page.impact .impactor::after{opacity:0}
-.page.impact .rock{
-  animation:cometBreak var(--break-dur,.72s) cubic-bezier(.1,.72,.17,1) var(--break-delay,0s) forwards;
-}
-@keyframes cometBreak{
-  0%{
-    opacity:var(--op,.98);
-    transform:translate(-50%,-50%) rotate(var(--r,0deg)) scale(1);
-  }
-  35%{opacity:1}
-  100%{
-    opacity:0;
-    transform:
-      translate(calc(-50% + var(--break-x,18px)),calc(-50% + var(--break-y,-14px)))
-      rotate(var(--break-r,180deg))
-      scale(.42);
-  }
-}
+.shell-panel.p1{clip-path:polygon(50% 0,100% 0,100% 51%,50% 50%)}
+.shell-panel.p2{clip-path:polygon(50% 50%,100% 51%,100% 100%,50% 100%)}
+.shell-panel.p3{clip-path:polygon(0 0,50% 0,50% 50%,0 47%)}
+.shell-panel.p4{clip-path:polygon(0 47%,50% 50%,50% 100%,0 100%)}
 
-.crater{
+/* embodied AI revealed inside */
+.robot-stage{
   position:absolute;
   z-index:4;
-  left:67%;
-  top:33%;
-  width:14%;
+  left:50%;
+  top:52%;
+  width:58%;
+  height:58%;
+  transform:translate(-50%,-50%) scale(.78);
+  opacity:0;
+  filter:blur(5px) brightness(.55);
+  transform-origin:50% 72%;
+  transition:
+    opacity 1.1s ease,
+    filter 1.2s ease,
+    transform 1.35s cubic-bezier(.18,.8,.2,1);
+}
+.robot-yoke{
+  position:absolute;
+  left:12%;
+  right:12%;
+  top:18%;
+  bottom:2%;
+  border:clamp(1px,.25vw,3px) solid rgba(115,134,147,.38);
+  border-top-color:rgba(145,169,185,.50);
+  border-radius:38% 38% 18% 18% / 28% 28% 12% 12%;
+  box-shadow:
+    inset 0 0 18px rgba(146,184,209,.035),
+    0 0 18px rgba(108,151,180,.035);
+}
+.robot-pivot{
+  position:absolute;
+  top:51%;
+  width:15%;
   aspect-ratio:1;
-  border-radius:46% 54% 49% 51% / 43% 58% 42% 57%;
-  opacity:0;
-  transform:translate(-50%,-50%) scale(.15);
-  background:
-    radial-gradient(circle at 42% 42%,
-      rgba(0,0,0,1) 0 31%,
-      rgba(7,9,10,.99) 34%,
-      rgba(34,39,42,.98) 44%,
-      rgba(126,143,154,.40) 51%,
-      rgba(31,36,39,.96) 60%,
-      rgba(6,8,9,.74) 69%,
-      transparent 72%);
-  box-shadow:
-    inset -10px -10px 18px rgba(0,0,0,.90),
-    inset 6px 6px 12px rgba(211,229,240,.12),
-    0 0 24px rgba(106,143,168,.10);
-}
-
-.impact-flash,
-.impact-ring,
-.impact-plume{
-  position:absolute;
-  z-index:9;
-  left:0;
-  top:0;
   border-radius:50%;
-  opacity:0;
-  pointer-events:none;
-}
-.impact-flash{
-  width:20px;
-  height:20px;
-  background:rgba(246,250,252,.99);
-  box-shadow:
-    0 0 32px rgba(242,249,255,.95),
-    0 0 92px rgba(192,225,247,.64),
-    0 0 190px rgba(116,171,209,.28);
-}
-.impact-ring{
-  width:40px;
-  height:22px;
-  border-radius:48% 52% 45% 55%;
-  border:1px solid rgba(214,231,242,.38);
-  border-left-color:rgba(235,246,252,.72);
-  border-top-color:rgba(235,246,252,.58);
-  box-shadow:0 0 22px rgba(161,198,220,.18);
-  transform:translate(-50%,-50%) rotate(-34deg);
-}
-.impact-plume{
-  width:54px;
-  height:38px;
-  border-radius:58% 42% 63% 37%;
+  transform:translateY(-50%);
   background:
-    radial-gradient(ellipse at 28% 62%,
-      rgba(224,230,232,.42) 0 9%,
-      rgba(140,149,153,.25) 26%,
-      rgba(82,89,92,.14) 50%,
-      transparent 76%);
-  filter:blur(3.5px);
-}
-
-.ejecta-layer{
-  position:absolute;
-  inset:0;
-  z-index:8;
-  overflow:hidden;
-  pointer-events:none;
-}
-.ejecta-fragment{
-  position:absolute;
-  left:0;
-  top:0;
-  width:var(--size,5px);
-  height:calc(var(--size,5px) * .72);
-  opacity:0;
-  transform:translate(-50%,-50%) rotate(var(--rot,0deg));
-  clip-path:polygon(8% 26%,61% 0,100% 35%,83% 89%,31% 100%,0 65%);
-  background:linear-gradient(135deg,#596166 0%,#22272a 44%,#080a0b 100%);
-  box-shadow:0 0 4px rgba(201,219,230,.10);
-}
-.ejecta-fragment.hot{
-  background:linear-gradient(135deg,#eef5f8 0%,#a9bbc6 18%,#5c6c75 42%,#181d20 78%);
+    radial-gradient(circle,
+      rgba(85,97,104,.85) 0 18%,
+      rgba(19,23,26,.98) 20% 54%,
+      rgba(105,119,128,.48) 56% 62%,
+      rgba(8,10,11,1) 64%);
   box-shadow:
-    0 0 7px rgba(229,244,252,.58),
-    0 0 18px rgba(130,178,208,.26);
+    inset -3px -4px 7px rgba(0,0,0,.70),
+    0 0 9px rgba(157,187,207,.06);
 }
-.ejecta-fragment.dust{
-  border-radius:50%;
-  clip-path:none;
-  background:rgba(123,134,140,.44);
-  filter:blur(1.5px);
-  box-shadow:none;
-}
-.page.impact .impactor{opacity:0}
-.page.impact .crater{
-  animation:craterForm 2.2s cubic-bezier(.16,.82,.2,1) forwards;
-}
-.page.impact .impact-flash{
-  animation:impactFlash 1.18s ease-out forwards;
-}
-.page.impact .impact-ring{
-  animation:impactRing 2.1s cubic-bezier(.12,.65,.22,1) forwards;
-}
-.page.impact .impact-plume{
-  animation:impactPlume 3.4s ease-out forwards;
-}
-.page.impact .planet{
-  animation:planetDisintegrate .72s cubic-bezier(.16,.72,.2,1) forwards;
-}
-.page.impact .halo{
-  animation:haloCollapse 2.3s ease-out forwards;
-}
-.page.impact .rings{
-  animation:ringsCollapse 2.6s ease-out forwards;
-}
-.page.impact .horizon{
-  animation:horizonCollapse 2.1s ease-out forwards;
-}
-
-@keyframes craterForm{
-  0%{opacity:0;transform:translate(-50%,-50%) scale(.12)}
-  30%{opacity:1;transform:translate(-50%,-50%) scale(1.28)}
-  62%{opacity:.98;transform:translate(-50%,-50%) scale(.94)}
-  100%{opacity:.96;transform:translate(-50%,-50%) scale(1)}
-}
-@keyframes impactFlash{
-  0%{opacity:0;transform:translate(-50%,-50%) scale(.20)}
-  5%{opacity:1}
-  16%{opacity:.96}
-  55%{opacity:.22}
-  100%{opacity:0;transform:translate(-50%,-50%) scale(7.5)}
-}
-@keyframes impactRing{
-  0%{opacity:0;transform:translate(-50%,-50%) rotate(-34deg) scale(.25)}
-  8%{opacity:.64}
-  100%{opacity:0;transform:translate(-50%,-50%) rotate(-34deg) scale(8)}
-}
-@keyframes impactPlume{
-  0%{opacity:0;transform:translate(-50%,-50%) scale(.22)}
-  10%{opacity:.68}
-  45%{opacity:.36;transform:translate(-50%,-50%) translate(28px,-24px) scale(2.8)}
-  100%{opacity:0;transform:translate(-50%,-50%) translate(60px,-52px) scale(4.8)}
-}
-@keyframes planetDisintegrate{
-  0%{opacity:1;filter:brightness(1);transform:translateY(18%) scale(1)}
-  10%{opacity:1;filter:brightness(1.45);transform:translateY(18%) scale(1.012)}
-  24%{opacity:.96;filter:brightness(2.2);transform:translateY(18%) scale(1.025)}
-  42%{opacity:.46;filter:brightness(3.2);transform:translateY(18%) scale(1.05)}
-  100%{opacity:0;filter:brightness(4);transform:translateY(18%) scale(1.10)}
-}
-@keyframes haloCollapse{
-  0%{transform:scale(1);opacity:.82}
-  12%{transform:scale(1.20);opacity:1}
-  42%{transform:scale(1.52);opacity:.62}
-  100%{transform:scale(2.25);opacity:0}
-}
-@keyframes ringsCollapse{
-  0%{transform:scale(1);opacity:.72}
-  16%{transform:scale(1.10);opacity:.86}
-  100%{transform:scale(1.85);opacity:0}
-}
-@keyframes horizonCollapse{
-  0%{opacity:.76;transform:translate(-50%,7%) scale(1)}
-  18%{opacity:1;transform:translate(-50%,7%) scale(1.12)}
-  100%{opacity:0;transform:translate(-50%,7%) scale(1.8)}
-}
-
-/* catastrophic breakup */
-.destruction-layer{
+.robot-pivot.left{left:4%}
+.robot-pivot.right{right:4%}
+.robot-neck{
   position:absolute;
-  inset:0;
-  z-index:9;
-  overflow:hidden;
-  pointer-events:none;
+  left:43%;
+  width:14%;
+  bottom:0;
+  height:25%;
+  background:linear-gradient(90deg,
+    #080b0d 0%,
+    #30383d 25%,
+    #12171a 55%,
+    #080a0b 100%);
+  clip-path:polygon(19% 0,81% 0,100% 100%,0 100%);
+  box-shadow:inset 0 0 0 1px rgba(160,188,205,.08);
 }
-.planet-shard,
-.planet-dust{
+.robot-head{
   position:absolute;
-  left:0;
-  top:0;
-  opacity:0;
-  pointer-events:none;
-}
-.planet-shard{
-  width:var(--size,26px);
-  height:calc(var(--size,26px) * var(--aspect,.72));
-  clip-path:var(--clip,polygon(8% 22%,65% 0,100% 37%,77% 92%,27% 100%,0 64%));
-  background:
-    radial-gradient(circle at 24% 22%,rgba(195,215,226,.16) 0 7%,transparent 8%),
-    linear-gradient(145deg,
-      rgba(47,58,66,.98) 0%,
-      rgba(21,27,31,.99) 34%,
-      rgba(7,10,12,1) 70%,
-      #010202 100%);
-  box-shadow:
-    inset -8px -9px 12px rgba(0,0,0,.72),
-    inset 3px 3px 5px rgba(190,216,232,.10),
-    0 0 5px rgba(174,207,229,.08);
-}
-.planet-shard.hot{
-  background:
-    linear-gradient(145deg,
-      rgba(228,240,247,.92) 0 5%,
-      rgba(114,145,166,.72) 13%,
-      rgba(47,58,66,.98) 28%,
-      rgba(16,21,24,1) 58%,
-      #020303 100%);
-  box-shadow:
-    inset -8px -9px 12px rgba(0,0,0,.68),
-    0 0 8px rgba(210,235,249,.40),
-    0 0 22px rgba(121,176,210,.18);
-}
-.planet-dust{
-  width:var(--size,3px);
-  height:var(--size,3px);
-  border-radius:50%;
-  background:rgba(121,139,150,.46);
-  filter:blur(.6px);
-}
-.destruction-core{
-  position:absolute;
-  z-index:10;
-  left:0;
-  top:0;
-  width:24px;
-  height:24px;
-  border-radius:50%;
-  opacity:0;
-  pointer-events:none;
+  left:50%;
+  top:46%;
+  width:67%;
+  height:49%;
   transform:translate(-50%,-50%);
-  background:rgba(250,253,255,.99);
+  border-radius:12% 12% 18% 18% / 14% 14% 22% 22%;
+  background:
+    linear-gradient(145deg,
+      rgba(77,88,94,.92) 0%,
+      rgba(31,37,41,.98) 21%,
+      rgba(12,16,18,1) 54%,
+      rgba(4,6,7,1) 100%);
+  border:1px solid rgba(164,190,207,.15);
   box-shadow:
-    0 0 40px rgba(250,253,255,1),
-    0 0 110px rgba(214,237,252,.92),
-    0 0 260px rgba(130,190,227,.58),
-    0 0 520px rgba(65,118,153,.28);
+    inset 7px 7px 14px rgba(171,199,216,.035),
+    inset -13px -15px 24px rgba(0,0,0,.76),
+    0 14px 30px rgba(0,0,0,.62);
+  transform-origin:50% 75%;
 }
-.page.impact .destruction-core{
-  animation:coreDetonation 1.65s cubic-bezier(.1,.7,.2,1) forwards;
+.robot-head::before{
+  content:"";
+  position:absolute;
+  left:8%;
+  right:8%;
+  top:9%;
+  height:7%;
+  clip-path:polygon(4% 0,96% 0,100% 100%,0 100%);
+  background:linear-gradient(90deg,
+    rgba(139,160,172,.15),
+    rgba(202,220,231,.07),
+    rgba(139,160,172,.12));
 }
-@keyframes coreDetonation{
-  0%{opacity:0;transform:translate(-50%,-50%) scale(.12)}
-  4%{opacity:1}
-  12%{opacity:1;transform:translate(-50%,-50%) scale(3.8)}
-  28%{opacity:.92;transform:translate(-50%,-50%) scale(7.2)}
-  58%{opacity:.26;transform:translate(-50%,-50%) scale(12)}
-  100%{opacity:0;transform:translate(-50%,-50%) scale(17)}
+.face-screen{
+  position:absolute;
+  left:10%;
+  right:10%;
+  top:30%;
+  height:38%;
+  overflow:hidden;
+  border-radius:10% / 22%;
+  background:
+    radial-gradient(ellipse at 50% 45%,rgba(22,32,38,.72),rgba(1,3,4,.98) 67%);
+  border:1px solid rgba(139,172,193,.12);
+  box-shadow:
+    inset 0 0 30px rgba(0,0,0,.92),
+    0 0 8px rgba(135,182,211,.025);
+}
+.face-screen::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  opacity:.22;
+  background:repeating-linear-gradient(
+    180deg,
+    transparent 0 3px,
+    rgba(167,201,222,.045) 4px
+  );
+}
+.eye{
+  position:absolute;
+  top:46%;
+  width:24%;
+  height:8%;
+  border-radius:50%;
+  opacity:0;
+  background:rgba(204,234,251,.94);
+  box-shadow:
+    0 0 5px rgba(215,239,253,.76),
+    0 0 16px rgba(132,196,232,.45),
+    0 0 36px rgba(86,152,190,.20);
+}
+.eye.left{left:18%;transform:rotate(2deg)}
+.eye.right{right:18%;transform:rotate(-2deg)}
+.robot-id{
+  position:absolute;
+  left:50%;
+  bottom:8%;
+  transform:translateX(-50%);
+  color:rgba(133,151,162,.38);
+  font:500 clamp(4px,.44vw,7px)/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.20em;
+  white-space:nowrap;
 }
 
-/* discreet 10-second impact preview */
+.global-scan{
+  position:absolute;
+  z-index:13;
+  left:0;
+  right:0;
+  top:0;
+  height:1px;
+  opacity:0;
+  pointer-events:none;
+  background:linear-gradient(90deg,
+    transparent 4%,
+    rgba(155,197,224,.10) 23%,
+    rgba(219,239,251,.50) 50%,
+    rgba(155,197,224,.10) 77%,
+    transparent 96%);
+  box-shadow:0 0 18px rgba(147,200,231,.20);
+}
+.reveal-copy{
+  position:absolute;
+  z-index:12;
+  left:50%;
+  top:79%;
+  width:min(680px,82vw);
+  transform:translateX(-50%);
+  text-align:center;
+  pointer-events:none;
+}
+.system-id,
+.reveal-line{
+  opacity:0;
+  transition:opacity 1.2s ease,transform 1.4s ease;
+}
+.system-id{
+  color:rgba(138,158,171,.62);
+  font:500 clamp(8px,.72vw,11px)/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.20em;
+  text-transform:uppercase;
+  transform:translateY(5px);
+}
+.reveal-line{
+  margin-top:14px;
+  color:rgba(195,207,214,.78);
+  font:400 clamp(13px,1vw,17px)/1.4 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  letter-spacing:.02em;
+  transform:translateY(7px);
+}
+
+/* reveal stages */
+.page.reveal-start .story-track{animation-play-state:paused}
+.page.reveal-start .meteors{opacity:0;transition:opacity .7s ease}
+.page.reveal-start .stars{
+  opacity:.14;
+  animation-play-state:paused;
+  transition:opacity 1.1s ease;
+}
+.page.reveal-start .planet{
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.035),
+    0 -18px 48px rgba(181,216,242,.18),
+    0 -50px 150px rgba(103,151,185,.18),
+    0 0 280px rgba(62,103,132,.16);
+  transition:box-shadow 1.5s ease;
+}
+.page.scan .machine-seams{opacity:1}
+.page.scan .scan-line{animation:surfaceScan 1.75s cubic-bezier(.22,.65,.24,1) forwards}
+.page.scan .global-scan{animation:globalScan 1.55s cubic-bezier(.20,.66,.23,1) forwards}
+.page.open .machine-surface{
+  animation:surfaceVanish .8s ease forwards;
+}
+.page.open .shell-panel{opacity:1}
+.page.open .shell-panel.p1{animation:panel1 2.1s cubic-bezier(.18,.72,.18,1) forwards}
+.page.open .shell-panel.p2{animation:panel2 2.15s cubic-bezier(.18,.72,.18,1) forwards}
+.page.open .shell-panel.p3{animation:panel3 2.2s cubic-bezier(.18,.72,.18,1) forwards}
+.page.open .shell-panel.p4{animation:panel4 2.05s cubic-bezier(.18,.72,.18,1) forwards}
+.page.open .robot-stage{
+  opacity:.50;
+  filter:blur(1.5px) brightness(.72);
+  transform:translate(-50%,-50%) scale(.91);
+}
+.page.online .robot-stage{
+  opacity:1;
+  filter:blur(0) brightness(1);
+  transform:translate(-50%,-50%) scale(1);
+}
+.page.online .eye{animation:eyeWake 1.4s ease forwards}
+.page.online .robot-head{animation:headNotice 5.8s ease-in-out 1.1s forwards}
+.page.online .system-id{
+  opacity:1;
+  transform:translateY(0);
+}
+.page.message .reveal-line{
+  opacity:1;
+  transform:translateY(0);
+}
+.page.online .status{
+  color:#7f929e;
+}
+.page.online .dot{
+  background:#c4d9e6;
+  box-shadow:0 0 14px rgba(188,222,242,.72);
+}
+
+@keyframes surfaceScan{
+  0%{top:8%;opacity:0}
+  8%{opacity:.92}
+  88%{opacity:.76}
+  100%{top:91%;opacity:0}
+}
+@keyframes globalScan{
+  0%{top:4%;opacity:0}
+  12%{opacity:.70}
+  100%{top:96%;opacity:0}
+}
+@keyframes surfaceVanish{
+  0%{opacity:1;filter:brightness(1)}
+  32%{opacity:.88;filter:brightness(1.35)}
+  100%{opacity:0;filter:brightness(.65)}
+}
+@keyframes panel1{
+  0%{opacity:.92;transform:translate(0,0) rotate(0)}
+  100%{opacity:0;transform:translate(24%,-22%) rotate(10deg) scale(.92)}
+}
+@keyframes panel2{
+  0%{opacity:.92;transform:translate(0,0) rotate(0)}
+  100%{opacity:0;transform:translate(25%,24%) rotate(-8deg) scale(.90)}
+}
+@keyframes panel3{
+  0%{opacity:.92;transform:translate(0,0) rotate(0)}
+  100%{opacity:0;transform:translate(-25%,-21%) rotate(-11deg) scale(.91)}
+}
+@keyframes panel4{
+  0%{opacity:.92;transform:translate(0,0) rotate(0)}
+  100%{opacity:0;transform:translate(-23%,25%) rotate(9deg) scale(.90)}
+}
+@keyframes eyeWake{
+  0%{opacity:0;transform:scaleX(.12)}
+  22%{opacity:.18}
+  35%{opacity:1;transform:scaleX(1)}
+  50%{opacity:.35}
+  66%,100%{opacity:.96;transform:scaleX(1)}
+}
+@keyframes headNotice{
+  0%{transform:translate(-50%,-50%) rotate(0deg)}
+  22%{transform:translate(-50%,-51%) rotate(-1.5deg)}
+  48%{transform:translate(-49%,-50%) rotate(2.8deg)}
+  72%{transform:translate(-50%,-50.5%) rotate(.8deg)}
+  100%{transform:translate(-50%,-50%) rotate(0deg)}
+}
+
+/* discreet 10-second reveal preview */
 .impact-test{
   position:absolute;
   z-index:14;
@@ -808,6 +861,17 @@ body{
     padding:0 18px;
   }
 
+  .robot-stage{
+    width:66%;
+    height:58%;
+  }
+  .reveal-copy{
+    top:76%;
+    width:86vw;
+  }
+  .system-id{font-size:7px}
+  .reveal-line{font-size:12px;margin-top:10px}
+
   .impact-test{
     right:28px;
     bottom:66px;
@@ -847,21 +911,47 @@ body{
     <div class="halo"></div>
     <div class="rings"></div>
     <div class="planet" id="planet">
-      <div class="crater" id="crater"></div>
+      <div class="robot-stage" id="robot-stage">
+        <div class="robot-yoke"></div>
+        <div class="robot-pivot left"></div>
+        <div class="robot-pivot right"></div>
+        <div class="robot-neck"></div>
+        <div class="robot-head">
+          <div class="face-screen">
+            <span class="eye left"></span>
+            <span class="eye right"></span>
+          </div>
+          <div class="robot-id">AI_CUBE // 01</div>
+        </div>
+      </div>
+
+      <div class="shell-panels">
+        <span class="shell-panel p1"></span>
+        <span class="shell-panel p2"></span>
+        <span class="shell-panel p3"></span>
+        <span class="shell-panel p4"></span>
+      </div>
+
+      <div class="machine-surface">
+        <div class="machine-seams">
+          <div class="seam-ring"></div>
+          <div class="seam-v"></div>
+        </div>
+        <div class="scan-line"></div>
+      </div>
     </div>
     <div class="horizon"></div>
-    <div class="impactor" id="impactor" aria-hidden="true"></div>
-    <div class="impact-flash" id="impact-flash"></div>
-    <div class="impact-ring" id="impact-ring"></div>
-    <div class="impact-plume" id="impact-plume"></div>
-    <div class="ejecta-layer" id="ejecta-layer"></div>
-    <div class="destruction-layer" id="destruction-layer"></div>
-    <div class="destruction-core" id="destruction-core"></div>
   </div>
 
   <div class="countdown" aria-label="Countdown to next reveal">
     <div class="countdown-label">next signal</div>
     <div class="countdown-time"><span id="countdown-main">07D 00:00:</span><span class="seconds" id="countdown-seconds">00</span></div>
+  </div>
+
+  <div class="global-scan" aria-hidden="true"></div>
+  <div class="reveal-copy" aria-live="polite">
+    <div class="system-id">AI_CUBE // LOCAL EMBODIED INTELLIGENCE</div>
+    <div class="reveal-line">It was never just a chatbot.</div>
   </div>
 
   <div class="edge brand">ZDENEK LAB</div>
@@ -901,456 +991,139 @@ body{
     </div>
   </div>
 
-  <button class="impact-test" id="impact-test" type="button" aria-label="Preview impact in ten seconds">simulate impact · 10s</button>
+  <button class="impact-test" id="impact-test" type="button" aria-label="Preview reveal in ten seconds">simulate reveal · 10s</button>
 
   <div class="edge bottom-left">Experiment 001 · AI HEAD / AI CUBE</div>
-  <div class="edge bottom-right">temporary interface · v1.5</div>
+  <div class="edge bottom-right">temporary interface · v2.0</div>
 </main>
 
 <script>
 (() => {
-  const REAL_START = new Date('2026-09-18T20:56:00+02:00').getTime();
   const REAL_TARGET = new Date('2026-09-25T20:56:00+02:00').getTime();
 
   const page = document.querySelector('.page');
-  const planet = document.getElementById('planet');
-  const impactor = document.getElementById('impactor');
-  const flash = document.getElementById('impact-flash');
-  const ring = document.getElementById('impact-ring');
-  const plume = document.getElementById('impact-plume');
-  const ejectaLayer = document.getElementById('ejecta-layer');
-  const destructionLayer = document.getElementById('destruction-layer');
-  const destructionCore = document.getElementById('destruction-core');
   const main = document.getElementById('countdown-main');
   const seconds = document.getElementById('countdown-seconds');
   const label = document.querySelector('.countdown-label');
   const testButton = document.getElementById('impact-test');
+  const status = document.querySelector('.status');
 
-  if (!page || !planet || !impactor || !flash || !ring || !plume || !ejectaLayer || !destructionLayer || !destructionCore || !main || !seconds || !label || !testButton) return;
+  if (!page || !main || !seconds || !label || !testButton || !status) return;
 
-  const pad = n => String(n).padStart(2, '0');
-  let simulationTarget = null;
-  let simulationStart = null;
-  let impacted = false;
-  let impactWasPreview = false;
-  let resetTimer = null;
+  const pad = n => String(n).padStart(2,'0');
+  let previewTarget = null;
+  let revealStarted = false;
+  let previewReveal = false;
+  let timers = [];
 
-  function activeWindow(){
-    if (simulationTarget !== null && simulationStart !== null) {
-      return {
-        start: simulationStart,
-        target: simulationTarget,
-        duration: simulationTarget - simulationStart,
-        preview: true
-      };
-    }
-    return {
-      start: REAL_START,
-      target: REAL_TARGET,
-      duration: REAL_TARGET - REAL_START,
-      preview: false
-    };
+  function clearStageTimers(){
+    timers.forEach(clearTimeout);
+    timers = [];
   }
 
-  function impactPoint(){
-    const p = planet.getBoundingClientRect();
-    return {
-      x: p.left + p.width * .67,
-      y: p.top + p.height * .33,
-      planetDiameter: p.width
-    };
+  function activeTarget(){
+    return previewTarget !== null ? previewTarget : REAL_TARGET;
   }
 
-  function placeImpactor(progress){
-    const target = impactPoint();
-    const w = page.clientWidth;
-    const h = page.clientHeight;
-
-    const startX = w * .90;
-    const startY = h * .10;
-
-    // The approach accelerates subtly toward the final collision.
-    const travel = Math.pow(progress, 1.42);
-    const x = startX + (target.x - startX) * travel;
-    const y = startY + (target.y - startY) * travel;
-
-    // Apparent size: 10% of the planet at first sight, 20% at impact.
-    const sizeProgress = Math.pow(progress, .86);
-    const diameter = target.planetDiameter * (.10 + .10 * sizeProgress);
-
-    const dx = target.x - startX;
-    const dy = target.y - startY;
-    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-
-    impactor.style.left = x + 'px';
-    impactor.style.top = y + 'px';
-    impactor.style.width = diameter + 'px';
-    impactor.style.height = diameter + 'px';
-    impactor.style.setProperty('--tail', Math.max(58, diameter * 1.45) + 'px');
-    impactor.style.transform = 'translate(-50%,-50%) rotate(' + angle.toFixed(2) + 'deg)';
-  }
-
-  function placeImpactFx(){
-    const target = impactPoint();
-    [flash, ring, plume].forEach(el => {
-      el.style.left = target.x + 'px';
-      el.style.top = target.y + 'px';
-    });
-    return target;
-  }
-
-  function seededRandom(seed){
-    let s = seed >>> 0;
-    return () => {
-      s = (s * 1664525 + 1013904223) >>> 0;
-      return s / 4294967296;
-    };
-  }
-
-  function buildComet(){
-    impactor.replaceChildren();
-    const rand = seededRandom(731941);
-    const clips = [
-      'polygon(8% 22%,62% 2%,96% 31%,82% 88%,35% 100%,2% 67%)',
-      'polygon(17% 5%,78% 14%,100% 54%,69% 96%,15% 82%,0 39%)',
-      'polygon(4% 35%,36% 2%,89% 17%,100% 73%,58% 100%,12% 84%)',
-      'polygon(11% 10%,69% 0,100% 41%,88% 92%,29% 100%,0 61%)'
-    ];
-
-    const layout = [
-      [48,48,36,31],[28,43,23,22],[67,38,24,21],[57,67,25,20],
-      [38,68,22,19],[76,58,18,17],[20,63,16,15],[62,18,15,14],
-      [42,22,17,14],[80,31,13,12],[15,31,12,11],[74,76,13,11],
-      [31,82,11,10],[88,51,10,9]
-    ];
-
-    layout.forEach((v,i) => {
-      const rock = document.createElement('span');
-      rock.className = 'rock';
-      const jitterX = (rand()-.5)*5;
-      const jitterY = (rand()-.5)*5;
-      rock.style.setProperty('--x',(v[0]+jitterX).toFixed(1)+'%');
-      rock.style.setProperty('--y',(v[1]+jitterY).toFixed(1)+'%');
-      rock.style.setProperty('--w',v[2]+'%');
-      rock.style.setProperty('--h',v[3]+'%');
-      rock.style.setProperty('--r',Math.round(rand()*180-90)+'deg');
-      rock.style.setProperty('--clip',clips[i%clips.length]);
-      rock.style.setProperty('--op',(0.78+rand()*.20).toFixed(2));
-
-      const a = -1.0 + rand()*2.0;
-      const dist = 16 + rand()*34;
-      rock.style.setProperty('--break-x',(Math.cos(a)*dist).toFixed(1)+'px');
-      rock.style.setProperty('--break-y',(Math.sin(a)*dist-10-rand()*20).toFixed(1)+'px');
-      rock.style.setProperty('--break-r',Math.round((rand()>.5?1:-1)*(140+rand()*420))+'deg');
-      rock.style.setProperty('--break-dur',(0.48+rand()*.42).toFixed(2)+'s');
-      rock.style.setProperty('--break-delay',(rand()*.08).toFixed(2)+'s');
-      impactor.appendChild(rock);
-    });
-  }
-
-  function buildEjecta(){
-    ejectaLayer.replaceChildren();
-    const target = placeImpactFx();
-    const rand = seededRandom(9182026);
-    const p = planet.getBoundingClientRect();
-    const centerX = p.left + p.width / 2;
-    const centerY = p.top + p.height / 2;
-    const normalAngle = Math.atan2(target.y - centerY, target.x - centerX);
-
-    for (let i = 0; i < 72; i++) {
-      const fragment = document.createElement('span');
-      fragment.className = 'ejecta-fragment';
-
-      const isDust = i >= 50;
-      const isHot = i < 9;
-      const isFast = i < 34;
-
-      if (isDust) fragment.classList.add('dust');
-      else if (isHot) fragment.classList.add('hot');
-
-      const spread = isDust ? 1.22 : (isFast ? .54 : .88);
-      let angle = normalAngle + (rand() - .5) * spread * 2;
-
-      // Slight downrange bias from the oblique impactor path.
-      if (!isDust && i % 5 === 0) angle -= .16 + rand()*.15;
-
-      const distance = target.planetDiameter * (
-        isDust ? (.14 + rand()*.26) :
-        isFast ? (.38 + rand()*.62) :
-        (.20 + rand()*.34)
-      );
-
-      const vx = Math.cos(angle) * distance;
-      const vy = Math.sin(angle) * distance;
-
-      // Gravity bends the outer part of the trajectory back toward the planet.
-      const gravityMag = target.planetDiameter * (isDust ? .10 : .14);
-      const gravityAngle = normalAngle + Math.PI;
-      const gx = Math.cos(gravityAngle) * gravityMag;
-      const gy = Math.sin(gravityAngle) * gravityMag;
-
-      const size = target.planetDiameter * (
-        isDust ? (.0025 + rand()*.006) :
-        isHot ? (.0035 + rand()*.006) :
-        isFast ? (.0035 + rand()*.008) :
-        (.006 + rand()*.012)
-      );
-
-      const rot0 = Math.round(rand()*180);
-      const rot1 = rot0 + (rand()>.5?1:-1)*(180+rand()*620);
-      const alpha = isDust ? (.12+rand()*.24) : (.50+rand()*.42);
-      const duration = isDust ? 2700+rand()*1500 : (isFast ? 1450+rand()*1150 : 1900+rand()*1400);
-      const delay = rand()*90;
-
-      fragment.style.left = target.x + 'px';
-      fragment.style.top = target.y + 'px';
-      fragment.style.setProperty('--size',Math.max(1.3,size).toFixed(1)+'px');
-      fragment.style.setProperty('--rot',rot0+'deg');
-      fragment.style.setProperty('--alpha',alpha.toFixed(2));
-      ejectaLayer.appendChild(fragment);
-
-      const k1x = vx*.28;
-      const k1y = vy*.28;
-      const k2x = vx*.64 + gx*.04;
-      const k2y = vy*.64 + gy*.04;
-      const k3x = vx + gx*.34;
-      const k3y = vy + gy*.34;
-
-      fragment.animate([
-        {
-          opacity:0,
-          transform:'translate(-50%,-50%) translate(0px,0px) rotate('+rot0+'deg) scale(.28)'
-        },
-        {
-          opacity:alpha,
-          offset:.10,
-          transform:'translate(-50%,-50%) translate('+(k1x).toFixed(1)+'px,'+(k1y).toFixed(1)+'px) rotate('+(rot0+(rot1-rot0)*.28).toFixed(0)+'deg) scale(.72)'
-        },
-        {
-          opacity:alpha*.82,
-          offset:.56,
-          transform:'translate(-50%,-50%) translate('+(k2x).toFixed(1)+'px,'+(k2y).toFixed(1)+'px) rotate('+(rot0+(rot1-rot0)*.64).toFixed(0)+'deg) scale(.88)'
-        },
-        {
-          opacity:0,
-          transform:'translate(-50%,-50%) translate('+(k3x).toFixed(1)+'px,'+(k3y).toFixed(1)+'px) rotate('+rot1.toFixed(0)+'deg) scale(.62)'
-        }
-      ],{
-        duration,
-        delay,
-        easing:'cubic-bezier(.12,.58,.20,1)',
-        fill:'forwards'
-      });
-    }
-  }
-
-  function buildPlanetDestruction(){
-    destructionLayer.replaceChildren();
-
-    const p = planet.getBoundingClientRect();
-    const cx = p.left + p.width / 2;
-    const cy = p.top + p.height / 2;
-    const r = p.width / 2;
-    const rand = seededRandom(25091926);
-    const clips = [
-      'polygon(7% 19%,64% 0,100% 31%,84% 86%,38% 100%,0 63%)',
-      'polygon(15% 3%,79% 12%,100% 58%,63% 100%,8% 78%,0 34%)',
-      'polygon(3% 33%,38% 0,91% 15%,100% 72%,54% 100%,9% 82%)',
-      'polygon(12% 7%,68% 0,100% 42%,84% 96%,29% 100%,0 57%)',
-      'polygon(0 27%,43% 0,94% 21%,100% 67%,65% 100%,17% 90%)'
-    ];
-
-    destructionCore.style.left = cx + 'px';
-    destructionCore.style.top = cy + 'px';
-
-    // Large and medium chunks: the planet itself, not just surface ejecta.
-    for (let i = 0; i < 48; i++) {
-      const shard = document.createElement('span');
-      shard.className = 'planet-shard';
-      if (i < 12) shard.classList.add('hot');
-
-      const a0 = rand() * Math.PI * 2;
-      const rr = Math.sqrt(rand()) * r * .72;
-      const sx = cx + Math.cos(a0) * rr;
-      const sy = cy + Math.sin(a0) * rr;
-
-      let out = Math.atan2(sy - cy, sx - cx);
-      if (rr < r * .12) out = rand() * Math.PI * 2;
-      out += (rand() - .5) * .34;
-
-      const large = i < 11;
-      const size = p.width * (large ? (.075 + rand()*.085) : (.026 + rand()*.055));
-      const dist = p.width * (large ? (.70 + rand()*1.10) : (.90 + rand()*1.65));
-      const dx = Math.cos(out) * dist;
-      const dy = Math.sin(out) * dist;
-      const rot0 = Math.round(rand()*180);
-      const rot1 = rot0 + (rand()>.5?1:-1) * (240 + rand()*900);
-      const duration = (large ? 2900 : 2100) + rand()*1900;
-      const delay = 70 + rand()*150;
-
-      shard.style.left = sx + 'px';
-      shard.style.top = sy + 'px';
-      shard.style.setProperty('--size', size.toFixed(1) + 'px');
-      shard.style.setProperty('--aspect', (.54 + rand()*.48).toFixed(2));
-      shard.style.setProperty('--clip', clips[i % clips.length]);
-      destructionLayer.appendChild(shard);
-
-      const k1x = dx*.16, k1y = dy*.16;
-      const k2x = dx*.52, k2y = dy*.52;
-      shard.animate([
-        {
-          opacity:0,
-          transform:'translate(-50%,-50%) translate(0px,0px) rotate('+rot0+'deg) scale(.35)'
-        },
-        {
-          opacity:1,
-          offset:.07,
-          transform:'translate(-50%,-50%) translate('+(k1x).toFixed(1)+'px,'+(k1y).toFixed(1)+'px) rotate('+(rot0+(rot1-rot0)*.20).toFixed(0)+'deg) scale(1.02)'
-        },
-        {
-          opacity:.95,
-          offset:.55,
-          transform:'translate(-50%,-50%) translate('+(k2x).toFixed(1)+'px,'+(k2y).toFixed(1)+'px) rotate('+(rot0+(rot1-rot0)*.58).toFixed(0)+'deg) scale(.92)'
-        },
-        {
-          opacity:.06,
-          transform:'translate(-50%,-50%) translate('+dx.toFixed(1)+'px,'+dy.toFixed(1)+'px) rotate('+rot1.toFixed(0)+'deg) scale(.74)'
-        }
-      ],{
-        duration,
-        delay,
-        easing:'cubic-bezier(.08,.55,.16,1)',
-        fill:'forwards'
-      });
-    }
-
-    // Fine debris cloud gives the breakup mass and depth.
-    for (let i = 0; i < 92; i++) {
-      const dust = document.createElement('span');
-      dust.className = 'planet-dust';
-      const a = rand() * Math.PI * 2;
-      const rr = Math.sqrt(rand()) * r * .42;
-      const sx = cx + Math.cos(a) * rr;
-      const sy = cy + Math.sin(a) * rr;
-      const out = a + (rand()-.5)*.75;
-      const dist = p.width * (.35 + rand()*1.65);
-      const dx = Math.cos(out)*dist;
-      const dy = Math.sin(out)*dist;
-      const size = 1.2 + rand()*4.2;
-      const alpha = .20 + rand()*.56;
-
-      dust.style.left = sx+'px';
-      dust.style.top = sy+'px';
-      dust.style.setProperty('--size',size.toFixed(1)+'px');
-      destructionLayer.appendChild(dust);
-
-      dust.animate([
-        {opacity:0, transform:'translate(-50%,-50%) scale(.4)'},
-        {opacity:alpha, offset:.06, transform:'translate(-50%,-50%) translate('+(dx*.12).toFixed(1)+'px,'+(dy*.12).toFixed(1)+'px) scale(1)'},
-        {opacity:alpha*.55, offset:.55, transform:'translate(-50%,-50%) translate('+(dx*.55).toFixed(1)+'px,'+(dy*.55).toFixed(1)+'px) scale(.85)'},
-        {opacity:0, transform:'translate(-50%,-50%) translate('+dx.toFixed(1)+'px,'+dy.toFixed(1)+'px) scale(.55)'}
-      ],{
-        duration:1800+rand()*2300,
-        delay:40+rand()*180,
-        easing:'cubic-bezier(.08,.58,.18,1)',
-        fill:'forwards'
-      });
-    }
+  function setStatus(text){
+    status.innerHTML = '<span class="dot"></span> ' + text;
   }
 
   function resetPreview(){
-    clearTimeout(resetTimer);
-    resetTimer = null;
-    page.classList.remove('impact');
-    ejectaLayer.replaceChildren();
-    destructionLayer.replaceChildren();
-
-    simulationStart = null;
-    simulationTarget = null;
-    impacted = false;
-    impactWasPreview = false;
+    clearStageTimers();
+    page.classList.remove('reveal-start','scan','open','online','message');
+    previewTarget = null;
+    revealStarted = false;
+    previewReveal = false;
 
     label.textContent = 'next signal';
+    setStatus('something is forming');
     testButton.disabled = false;
-    testButton.textContent = 'simulate impact · 10s';
+    testButton.textContent = 'simulate reveal · 10s';
 
-    // Restore the intact rubble cluster and the original subtle scene.
-    buildComet();
+    // Restart CSS animations cleanly.
     void page.offsetWidth;
     update();
   }
 
-  function triggerImpact(preview){
-    if (impacted) return;
-    impacted = true;
-    impactWasPreview = preview;
+  function startReveal(isPreview){
+    if (revealStarted) return;
+    revealStarted = true;
+    previewReveal = isPreview;
 
-    buildEjecta();
-    buildPlanetDestruction();
-    page.classList.add('impact');
-    label.textContent = 'impact';
+    page.classList.add('reveal-start');
+    label.textContent = 'signal acquired';
+    setStatus('signal acquired');
     testButton.disabled = true;
-    testButton.textContent = preview ? 'impact confirmed' : 'signal open';
+    testButton.textContent = isPreview ? 'signal acquired' : 'system event';
 
-    // Preview is temporary: show the collision, then return to the real weekly countdown.
-    if (preview) {
-      resetTimer = setTimeout(resetPreview, 6500);
+    // A deliberate pause first: the scene stops before anything explains itself.
+    timers.push(setTimeout(() => {
+      page.classList.add('scan');
+      label.textContent = 'structure detected';
+      setStatus('structure detected');
+    }, 950));
+
+    timers.push(setTimeout(() => {
+      page.classList.add('open');
+      label.textContent = 'opening';
+      setStatus('opening');
+    }, 2850));
+
+    timers.push(setTimeout(() => {
+      page.classList.add('online');
+      label.textContent = 'system online';
+      setStatus('system online');
+    }, 5000));
+
+    timers.push(setTimeout(() => {
+      page.classList.add('message');
+    }, 6750));
+
+    // A preview always returns to the real weekly countdown.
+    if (isPreview) {
+      timers.push(setTimeout(resetPreview, 11200));
     }
   }
 
   function update(){
-    const now = Date.now();
-    const state = activeWindow();
-    const remaining = Math.max(0, state.target - now);
-    const elapsed = Math.min(state.duration, Math.max(0, now - state.start));
-    const progress = state.duration > 0 ? Math.min(1, Math.max(0, elapsed / state.duration)) : 1;
+    const target = activeTarget();
+    const remaining = Math.max(0,target-Date.now());
+    const totalSeconds = Math.floor(remaining/1000);
+    const days = Math.floor(totalSeconds/86400);
+    const hours = Math.floor((totalSeconds%86400)/3600);
+    const minutes = Math.floor((totalSeconds%3600)/60);
+    const secs = totalSeconds%60;
 
-    if (!impacted) placeImpactor(progress);
-
-    const totalSeconds = Math.floor(remaining / 1000);
-    const days = Math.floor(totalSeconds / 86400);
-    const hours = Math.floor((totalSeconds % 86400) / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const secs = totalSeconds % 60;
-
-    main.textContent = pad(days) + 'D ' + pad(hours) + ':' + pad(minutes) + ':';
+    main.textContent = pad(days)+'D '+pad(hours)+':'+pad(minutes)+':';
     seconds.textContent = pad(secs);
 
-    if (remaining <= 0 && !impacted) {
-      triggerImpact(state.preview);
+    if (remaining <= 0 && !revealStarted) {
+      // Keep the countdown visibly at zero while the dormant object wakes.
+      main.textContent = '00D 00:00:';
+      seconds.textContent = '00';
+      startReveal(previewTarget !== null);
     }
   }
 
-  testButton.addEventListener('click', () => {
-    if (simulationTarget !== null || impacted) return;
+  testButton.addEventListener('click',() => {
+    if (previewTarget !== null || revealStarted) return;
 
-    clearTimeout(resetTimer);
-    page.classList.remove('impact');
-    ejectaLayer.replaceChildren();
-    destructionLayer.replaceChildren();
+    clearStageTimers();
+    page.classList.remove('reveal-start','scan','open','online','message');
+    previewTarget = Date.now()+10000;
+    revealStarted = false;
+    previewReveal = true;
 
-    const now = Date.now();
-    simulationStart = now;
-    simulationTarget = now + 10000;
-    impacted = false;
-    impactWasPreview = false;
-
-    label.textContent = 'accelerated approach';
+    label.textContent = 'accelerated signal';
+    setStatus('signal approaching');
     testButton.disabled = true;
-    testButton.textContent = 'impact in 10s';
+    testButton.textContent = 'reveal in 10s';
     update();
   });
 
-  window.addEventListener('resize', () => {
-    if (page.classList.contains('impact')) {
-      placeImpactFx();
-    }
-    if (!impacted) update();
-  });
-
-  buildComet();
   update();
-  setInterval(update, 100);
+  setInterval(update,100);
 })();
 </script>
 </body>
