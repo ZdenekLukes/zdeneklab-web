@@ -168,7 +168,9 @@ body{
   width:min(49vw,635px);
   aspect-ratio:1;
   border-radius:50%;
-  transform:translateY(18%);
+  --planet-scale:.035;
+  transform:translateY(18%) scale(var(--planet-scale));
+  transform-origin:center center;
   background:
     radial-gradient(circle at 48% 33%,
       rgba(19,29,38,.95) 0%,
@@ -180,11 +182,7 @@ body{
     0 -18px 42px rgba(165,205,236,.10),
     0 -40px 110px rgba(93,136,170,.10),
     0 0 220px rgba(55,85,108,.10);
-  animation:planetBreath 13s ease-in-out infinite alternate;
-}
-@keyframes planetBreath{
-  from{transform:translateY(19%) scale(.988)}
-  to{transform:translateY(16.5%) scale(1.016)}
+  will-change:transform;
 }
 .planet::before{
   content:"";
@@ -235,6 +233,56 @@ body{
     transparent 70%);
   filter:blur(20px);
   opacity:.76;
+}
+
+
+/* reveal at zero */
+.reveal-flash{
+  position:absolute;
+  z-index:2;
+  left:50%;
+  top:50%;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  transform:translate(-50%,-10%);
+  opacity:0;
+  pointer-events:none;
+  background:rgba(228,242,252,.92);
+  box-shadow:
+    0 0 32px rgba(215,236,252,.75),
+    0 0 100px rgba(135,185,220,.45);
+}
+.page.revealed .reveal-flash{
+  animation:revealFlash 1.35s ease-out forwards;
+}
+.page.revealed .planet{
+  animation:revealPlanet 1.55s cubic-bezier(.16,.82,.2,1) forwards;
+}
+.page.revealed .rings{
+  animation:revealRings 1.8s ease-out forwards;
+}
+.page.revealed .halo{
+  animation:revealHalo 1.8s ease-out forwards;
+}
+@keyframes revealPlanet{
+  0%{transform:translateY(18%) scale(1.82)}
+  35%{transform:translateY(18%) scale(2.16)}
+  100%{transform:translateY(18%) scale(2)}
+}
+@keyframes revealFlash{
+  0%{opacity:0;transform:translate(-50%,-10%) scale(.4)}
+  18%{opacity:1}
+  100%{opacity:0;transform:translate(-50%,-10%) scale(34)}
+}
+@keyframes revealRings{
+  0%{transform:scale(1);opacity:.72}
+  100%{transform:scale(1.8);opacity:0}
+}
+@keyframes revealHalo{
+  0%{transform:scale(1);opacity:.8}
+  45%{transform:scale(1.55);opacity:1}
+  100%{transform:scale(1.35);opacity:.4}
 }
 
 /* quiet edge interface */
@@ -327,8 +375,8 @@ body{
   text-shadow:0 0 18px rgba(170,210,240,.08);
 }
 .countdown-time .seconds{
-  color:rgba(205,222,235,.68);
-  text-shadow:0 0 14px rgba(185,220,245,.16);
+  color:inherit;
+  text-shadow:inherit;
 }
 
 /* moving story */
@@ -469,8 +517,9 @@ body{
   <div class="cosmos" aria-hidden="true">
     <div class="halo"></div>
     <div class="rings"></div>
-    <div class="planet"></div>
+    <div class="planet" id="reveal-planet"></div>
     <div class="horizon"></div>
+    <div class="reveal-flash"></div>
   </div>
 
   <div class="countdown" aria-label="Countdown to next reveal">
@@ -516,20 +565,36 @@ body{
   </div>
 
   <div class="edge bottom-left">Experiment 001 · AI HEAD / AI CUBE</div>
-  <div class="edge bottom-right">temporary interface · v0.9</div>
+  <div class="edge bottom-right">temporary interface · v1.0</div>
 </main>
 
 <script>
 (() => {
+  const start = new Date('2026-09-18T20:56:00+02:00').getTime();
   const target = new Date('2026-09-25T20:56:00+02:00').getTime();
+  const duration = target - start;
+
+  const page = document.querySelector('.page');
+  const planet = document.getElementById('reveal-planet');
   const main = document.getElementById('countdown-main');
   const seconds = document.getElementById('countdown-seconds');
-  if (!main || !seconds) return;
+  const label = document.querySelector('.countdown-label');
+
+  if (!page || !planet || !main || !seconds || !label) return;
 
   const pad = n => String(n).padStart(2, '0');
+  let revealed = false;
 
-  function updateCountdown(){
-    const remaining = Math.max(0, target - Date.now());
+  function update(){
+    const now = Date.now();
+    const remaining = Math.max(0, target - now);
+    const elapsed = Math.min(duration, Math.max(0, now - start));
+    const progress = Math.min(1, Math.max(0, elapsed / duration));
+
+    // Starts as a small point and grows continuously to 2x the original planet.
+    const scale = 0.035 + (2 - 0.035) * progress;
+    planet.style.setProperty('--planet-scale', scale.toFixed(5));
+
     const totalSeconds = Math.floor(remaining / 1000);
     const days = Math.floor(totalSeconds / 86400);
     const hours = Math.floor((totalSeconds % 86400) / 3600);
@@ -539,14 +604,16 @@ body{
     main.textContent = `${pad(days)}D ${pad(hours)}:${pad(minutes)}:`;
     seconds.textContent = pad(secs);
 
-    if (remaining <= 0) {
-      document.querySelector('.countdown-label').textContent = 'signal open';
-      clearInterval(timer);
+    if (remaining <= 0 && !revealed) {
+      revealed = true;
+      planet.style.setProperty('--planet-scale', '2');
+      label.textContent = 'signal open';
+      page.classList.add('revealed');
     }
   }
 
-  updateCountdown();
-  const timer = setInterval(updateCountdown, 1000);
+  update();
+  setInterval(update, 250);
 })();
 </script>
 </body>
