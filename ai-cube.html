@@ -204,20 +204,41 @@ h1 strong{
   z-index:3;
   width:min(48vw,690px);
   height:620px;
-  display:grid;
-  place-items:center;
 }
-.machine-image{
-  width:100%;height:100%;object-fit:contain;
+.machine-base,
+.machine-head{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
   opacity:.95;
   filter:
-    brightness(.62)
-    contrast(1.10)
-    saturate(.52)
-    drop-shadow(0 24px 38px rgba(0,0,0,.50))
-    drop-shadow(0 0 16px rgba(67,131,170,.04));
-  -webkit-mask-image:radial-gradient(ellipse at 50% 54%,#000 60%,rgba(0,0,0,.98) 75%,transparent 98%);
-  mask-image:radial-gradient(ellipse at 50% 54%,#000 60%,rgba(0,0,0,.98) 75%,transparent 98%);
+    brightness(.56)
+    contrast(1.08)
+    saturate(.46)
+    drop-shadow(0 22px 34px rgba(0,0,0,.46));
+  -webkit-mask-image:radial-gradient(ellipse at 50% 54%,#000 62%,rgba(0,0,0,.98) 78%,transparent 99%);
+  mask-image:radial-gradient(ellipse at 50% 54%,#000 62%,rgba(0,0,0,.98) 78%,transparent 99%);
+}
+.machine-base{
+  z-index:1;
+  clip-path:inset(66% 0 0 0);
+}
+.machine-head-wrap{
+  position:absolute;
+  inset:0;
+  z-index:2;
+  transform:
+    rotateZ(var(--neck-roll,0deg))
+    rotateX(var(--neck-tilt,0deg));
+  transform-origin:50% 72%;
+  transform-style:preserve-3d;
+  transition:transform 3.4s cubic-bezier(.42,.04,.32,1);
+  will-change:transform;
+}
+.machine-head{
+  clip-path:inset(0 0 27% 0);
 }
 .hud{
   position:absolute;z-index:5;inset:0;pointer-events:none;
@@ -435,12 +456,21 @@ h1 strong{
     <div class="visual" aria-hidden="true">
       <div class="machine">
         <img
-          class="machine-image"
+          class="machine-base"
           src="assets/ai-cube-gimbal-dark.webp"
           alt=""
           width="720"
           height="540"
         >
+        <div class="machine-head-wrap" id="machine-head">
+          <img
+            class="machine-head"
+            src="assets/ai-cube-gimbal-dark.webp"
+            alt=""
+            width="720"
+            height="540"
+          >
+        </div>
       </div>
 
       <div class="hud">
@@ -509,5 +539,32 @@ h1 strong{
 
   <div class="footer">Independent experiments · Prague</div>
 </main>
+<script>
+(() => {
+  const head = document.getElementById('machine-head');
+  if (!head || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const rand = (min,max) => Math.random() * (max-min) + min;
+
+  function pose(){
+    const roll = rand(-4.2,4.2);
+    const tilt = rand(-2.4,2.4);
+    head.style.setProperty('--neck-roll', roll.toFixed(2) + 'deg');
+    head.style.setProperty('--neck-tilt', tilt.toFixed(2) + 'deg');
+  }
+
+  function schedule(){
+    setTimeout(() => {
+      pose();
+      schedule();
+    }, 3200 + Math.random() * 3600);
+  }
+
+  setTimeout(() => {
+    pose();
+    schedule();
+  }, 1400);
+})();
+</script>
 </body>
 </html>
