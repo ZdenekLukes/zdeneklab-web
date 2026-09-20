@@ -20,8 +20,8 @@ input{width:100%;padding:13px 14px;border-radius:14px;border:1px solid #475569;b
 .feedback{min-height:31px;text-align:center;font-weight:900;margin-top:11px}.feedback.ok{color:#86efac}.feedback.bad{color:#fca5a5}.tip{background:#172033;border-radius:15px;padding:11px 13px;color:#cbd5e1;line-height:1.4;font-size:.9rem;margin-top:10px}
 .hidden{display:none!important}.result{text-align:center}.big-star{font-size:4.4rem}.result h2{font-size:1.85rem;margin:3px 0 7px}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:14px 0}.mistakes{text-align:left;margin:14px 0}.mistake-row{display:flex;justify-content:space-between;background:#172033;padding:9px 11px;border-radius:11px;margin:6px 0}
 .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}.tab-btn{background:#263244;color:#cbd5e1;min-height:43px;padding:6px;font-size:.78rem}.tab-btn.active{background:#0c4a6e;color:white;outline:1px solid var(--a)}
-.record-row{display:grid;grid-template-columns:34px 1fr 74px 72px;gap:6px;align-items:center;padding:9px 5px;border-bottom:1px solid #ffffff12;font-size:.88rem}.rank{font-weight:950;color:var(--gold)}.name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.score{text-align:right;font-weight:900}.meta{text-align:right;color:var(--m);font-size:.78rem}.empty{color:var(--m);text-align:center;padding:16px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}.footer{text-align:center;color:#64748b;font-size:.78rem}
-@media(max-width:430px){.mode-grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.tabs{grid-template-columns:1fr 1fr}.record-row{grid-template-columns:28px 1fr 60px 58px;font-size:.81rem}}
+.record-row{display:grid;grid-template-columns:34px 1fr 74px 112px;gap:6px;align-items:center;padding:9px 5px;border-bottom:1px solid #ffffff12;font-size:.88rem}.rank{font-weight:950;color:var(--gold)}.name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.score{text-align:right;font-weight:900}.meta{text-align:right;color:var(--m);font-size:.78rem}.empty{color:var(--m);text-align:center;padding:16px}.sync{display:flex;align-items:center;gap:7px;color:var(--m);font-size:.82rem;margin-top:10px}.sync.online{color:#86efac}.sync.offline{color:#fbbf24}.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}.footer{text-align:center;color:#64748b;font-size:.78rem}
+@media(max-width:430px){.mode-grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.tabs{grid-template-columns:1fr 1fr}.record-row{grid-template-columns:28px 1fr 58px 94px;font-size:.78rem}}
 </style></head><body><div class="app">
 <div class="header"><div class="brand">🚀 Matematická mise</div><div class="badge" id="bestBadge">🏆 rekord 0</div></div>
 
@@ -38,11 +38,11 @@ input{width:100%;padding:13px 14px;border-radius:14px;border:1px solid #475569;b
 <button class="mode-btn" data-m="20"><b>🧠 Trénink</b><small>20 příkladů</small></button>
 <button class="mode-btn" data-m="time"><b>⏱️ Na čas</b><small>60 sekund</small></button>
 </div></div>
-<div class="card"><div class="section-title">3. Hráč</div><input id="player" maxlength="14" value="Karolinka" placeholder="Jméno hráče"><div class="note">Rekordy zůstávají jen v tomto zařízení.</div></div>
+<div class="card"><div class="section-title">3. Hráč</div><input id="player" maxlength="14" value="Karolinka" placeholder="Jméno hráče"><div class="note">Časová výzva se zapisuje do společného rodinného žebříčku. Bodování: +10 za správně, bonus za sérii až +10, chyba −3 body.</div></div>
 <button class="main-btn" id="startBtn">START MISE</button>
 <div class="card"><div class="section-title">🏆 Tabulka rekordů — 60 sekund</div><div class="tabs">
 <button class="tab-btn active" data-r="mul">Násobilka</button><button class="tab-btn" data-r="add">Sčítání</button><button class="tab-btn" data-r="sub">Odčítání</button><button class="tab-btn" data-r="mix">MIX</button>
-</div><div id="records"></div></div>
+</div><div id="records"></div><div class="sync" id="syncStatus">☁️ Připojuji rodinný žebříček…</div></div>
 </section>
 
 <section id="game" class="hidden"><div class="card">
@@ -58,11 +58,58 @@ input{width:100%;padding:13px 14px;border-radius:14px;border:1px solid #475569;b
 <div class="mistakes hidden" id="mistakes"><div class="section-title">Tyhle ještě potrénujeme</div><div id="mistakeList"></div></div>
 <div class="actions"><button class="ghost-btn" id="home">Menu</button><button class="main-btn" id="again">Hrát znovu</button></div></div></section>
 
-<div class="footer">Offline • bez reklam • bez účtu</div></div>
+<div class="footer">Trénink funguje i bez serveru • rodinné rekordy potřebují internet</div></div>
 <script>
 (()=>{const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const S={subject:'mul',mode:'10',count:10,index:0,score:0,streak:0,bestStreak:0,correct:0,wrong:0,answered:0,current:null,locked:false,queue:[],timerId:null,left:60,mistakes:{}};
-const RK='mathMissionRecordsV3',WK='mathMissionWeakV3';
+const RK='mathMissionRecordsV4',WK='mathMissionWeakV4',PK='mathMissionPlayerV4';
+const FAMILY_ID='b6e6a9f8-2df1-4f65-8a1b-61b9d4d7f42e';
+const SUPABASE_URL='https://ftcqhalsmkipdguuwtpn.supabase.co';
+const SUPABASE_KEY='sb_publishable_lA3LHSZDlhhwRO_zO8yZQA_tTdaNABp';
+const CLOUD_READY=SUPABASE_URL.startsWith('https://')&&!SUPABASE_URL.includes('__SUPABASE_')&&SUPABASE_KEY.startsWith('sb_publishable_');
+function cloudHeaders(extra={}){return Object.assign({'apikey':SUPABASE_KEY,'Content-Type':'application/json'},extra)}
+function setSync(text,cls=''){const el=$('#syncStatus');if(!el)return;el.textContent=text;el.className='sync '+cls}
+async function submitCloudRecord(r){
+  if(!CLOUD_READY)return false;
+  try{
+    const res=await fetch(SUPABASE_URL+'/rest/v1/math_scores',{
+      method:'POST',
+      headers:cloudHeaders({'Prefer':'return=minimal'}),
+      body:JSON.stringify({
+        family_id:FAMILY_ID,player_name:r.name,subject:r.subject,score:r.score,
+        correct:r.correct,wrong:r.wrong,answered:r.answered,
+        accuracy:r.accuracy,best_streak:r.bestStreak,duration_seconds:60
+      })
+    });
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    setSync('☁️ Rodinný žebříček je online','online');
+    return true;
+  }catch(e){setSync('⚠️ Server nedostupný — výsledek zůstal v tomto telefonu','offline');return false}
+}
+async function loadCloudRecords(subject){
+  if(!CLOUD_READY)return null;
+  try{
+    const q=new URLSearchParams({
+      select:'player_name,subject,score,correct,wrong,answered,accuracy,best_streak,created_at',
+      family_id:'eq.'+FAMILY_ID,subject:'eq.'+subject,
+      order:'score.desc,correct.desc,created_at.asc',limit:'100'
+    });
+    const res=await fetch(SUPABASE_URL+'/rest/v1/math_scores?'+q.toString(),{headers:cloudHeaders()});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const raw=await res.json(),seen=new Set(),out=[];
+    for(const x of raw){
+      const k=String(x.player_name||'').trim().toLocaleLowerCase('cs');
+      if(!k||seen.has(k))continue;
+      seen.add(k);out.push({
+        name:x.player_name,score:x.score,correct:x.correct,wrong:x.wrong,
+        answered:x.answered,accuracy:Number(x.accuracy)||0,bestStreak:x.best_streak||0,date:x.created_at
+      });
+      if(out.length>=10)break;
+    }
+    setSync('☁️ Rodinný žebříček je online','online');
+    return out;
+  }catch(e){setSync('⚠️ Server nedostupný — zobrazuji místní rekordy','offline');return null}
+}
 function records(){try{const r=JSON.parse(localStorage.getItem(RK)||'{}');return{mul:r.mul||[],add:r.add||[],sub:r.sub||[],mix:r.mix||[]}}catch{return{mul:[],add:[],sub:[],mix:[]}}}
 function saveRecords(r){localStorage.setItem(RK,JSON.stringify(r))}
 function weak(){try{return JSON.parse(localStorage.getItem(WK)||'{}')}catch{return{}}}function saveWeak(w){localStorage.setItem(WK,JSON.stringify(w))}
@@ -78,10 +125,10 @@ function choices(p){const set=new Set([p.result]);let c=p.type==='mul'?[p.result
 function startGame(){clearInterval(S.timerId);Object.assign(S,{count:S.mode==='20'?20:10,index:0,score:0,streak:0,bestStreak:0,correct:0,wrong:0,answered:0,left:60,locked:false,mistakes:{}});S.queue=S.mode==='time'?[]:Array.from({length:S.count},problem);$('#start').classList.add('hidden');$('#result').classList.add('hidden');$('#game').classList.remove('hidden');$('#timerBox').classList.remove('hot');if(S.mode==='time'){$('#round').textContent='⏱️ Časová výzva';$('#timer').textContent='60 s';$('#bar').style.width='100%';S.timerId=setInterval(()=>{S.left--;$('#timer').textContent=S.left+' s';$('#timerBox').classList.toggle('hot',S.left<=10);$('#bar').style.width=(S.left/60*100)+'%';if(S.left<=0){clearInterval(S.timerId);S.timerId=null;finish()}},1000)}else $('#timer').textContent='—';show()}
 function show(){if(S.mode==='time'&&S.left<=0)return;S.locked=false;S.current=S.mode==='time'?problem():S.queue[S.index];if(S.mode!=='time'){$('#round').textContent=(S.index+1)+' / '+S.count;$('#bar').style.width=(S.index/S.count*100)+'%'}$('#score').textContent=S.score;$('#streak').textContent=S.streak;$('#correct').textContent=S.correct;$('#q').textContent=S.current.text;$('#op').textContent=S.current.type==='mul'?'Násobilka':S.current.type==='add'?'Sčítání':'Odčítání';$('#feedback').textContent='';$('#feedback').className='feedback';$('#tip').classList.add('hidden');const a=$('#answers');a.innerHTML='';choices(S.current).forEach(v=>{const b=document.createElement('button');b.className='answer-btn';b.textContent=v;b.onclick=()=>answer(v,b);a.appendChild(b)})}
 function hint(p){if(p.type==='mul'){if(p.a===10||p.b===10)return'Násobení deseti: přidej nulu.';if(p.a===5||p.b===5)return'Násobky pěti končí na 0 nebo 5.';if(p.a===2||p.b===2)return'×2 znamená číslo zdvojnásobit.';return'Rozlož si příklad na něco, co už znáš.'}return p.type==='add'?'Zkus nejdřív doplnit do celé desítky.':'Zkontroluj odečtení opačně pomocí sčítání.'}
-function answer(v,btn){if(S.locked||(S.mode==='time'&&S.left<=0))return;S.locked=true;const p=S.current,ok=v===p.result,w=weak();S.answered++;$$('#answers .answer-btn').forEach(b=>{if(+b.textContent===p.result)b.classList.add('correct')});if(ok){S.correct++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);S.score+=10+Math.min(S.streak,5)*2;$('#feedback').textContent=S.streak>=4?'🔥 Série '+S.streak+'!':'✅ Správně!';$('#feedback').className='feedback ok';w[p.key]=Math.max(0,(w[p.key]||0)-1)}else{S.wrong++;S.streak=0;btn.classList.add('wrong');S.mistakes[p.key]={text:p.text,result:p.result};w[p.key]=(w[p.key]||0)+2;$('#feedback').textContent='❌ '+p.text+' = '+p.result;$('#feedback').className='feedback bad';$('#tip').textContent=hint(p);$('#tip').classList.remove('hidden')}saveWeak(w);$('#score').textContent=S.score;$('#streak').textContent=S.streak;$('#correct').textContent=S.correct;setTimeout(()=>{if(S.mode==='time'){if(S.left>0)show()}else{S.index++;S.index>=S.count?finish():show()}},ok?350:800)}
-function addRecord(){if(S.mode!=='time')return;const r=records(),name=($('#player').value||'Karolinka').trim().slice(0,14)||'Karolinka';r[S.subject].push({name,score:S.score,correct:S.correct,answered:S.answered,date:new Date().toISOString()});r[S.subject].sort((a,b)=>b.score-a.score||b.correct-a.correct);r[S.subject]=r[S.subject].slice(0,10);saveRecords(r)}
+function answer(v,btn){if(S.locked||(S.mode==='time'&&S.left<=0))return;S.locked=true;const p=S.current,ok=v===p.result,w=weak();S.answered++;$('#answers .answer-btn').forEach(b=>{if(+b.textContent===p.result)b.classList.add('correct')});if(ok){S.correct++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);const bonus=Math.min(Math.max(S.streak-1,0),5)*2;S.score+=10+bonus;$('#feedback').textContent=S.streak>=4?'🔥 Série '+S.streak+'!':'✅ Správně!';$('#feedback').className='feedback ok';w[p.key]=Math.max(0,(w[p.key]||0)-1)}else{S.wrong++;S.streak=0;S.score=Math.max(0,S.score-3);btn.classList.add('wrong');S.mistakes[p.key]={text:p.text,result:p.result};w[p.key]=(w[p.key]||0)+2;$('#feedback').textContent='❌ '+p.text+' = '+p.result+'  (−3 body)';$('#feedback').className='feedback bad';$('#tip').textContent=hint(p);$('#tip').classList.remove('hidden')}saveWeak(w);$('#score').textContent=S.score;$('#streak').textContent=S.streak;$('#correct').textContent=S.correct;setTimeout(()=>{if(S.mode==='time'){if(S.left>0)show()}else{S.index++;S.index>=S.count?finish():show()}},ok?350:800)}
+function addRecord(){if(S.mode!=='time')return;const r=records(),name=($('#player').value||'Karolinka').trim().slice(0,14)||'Karolinka',accuracy=Math.round(S.correct/Math.max(1,S.answered)*100);localStorage.setItem(PK,name);const entry={name,subject:S.subject,score:S.score,correct:S.correct,wrong:S.wrong,answered:S.answered,accuracy,bestStreak:S.bestStreak,date:new Date().toISOString()};r[S.subject].push(entry);r[S.subject].sort((a,b)=>b.score-a.score||b.correct-a.correct);r[S.subject]=r[S.subject].slice(0,20);saveRecords(r);submitCloudRecord(entry).then(()=>renderRecords(currentTab))}
 function finish(){if($('#game').classList.contains('hidden'))return;clearInterval(S.timerId);S.timerId=null;$('#game').classList.add('hidden');$('#result').classList.remove('hidden');addRecord();best();const denom=Math.max(1,S.answered),acc=Math.round(S.correct/denom*100);$('#rc').textContent=S.mode==='time'?S.correct:(S.correct+'/'+S.count);$('#ra').textContent=acc+'%';$('#rs').textContent=S.bestStreak;$('#scoreLine').textContent=S.mode==='time'?('Za 60 sekund: '+S.correct+' správně, '+S.score+' bodů.'):('Získáno '+S.score+' bodů.');$('#title').textContent=acc===100?'Dokonalá mise!':acc>=80?'Skvělá práce!':acc>=60?'Mise splněna!':'Ještě jeden trénink!';$('#icon').textContent=acc===100?'🏆':acc>=80?'🌟':acc>=60?'🚀':'💪';const list=$('#mistakeList');list.innerHTML='';const m=Object.values(S.mistakes);$('#mistakes').classList.toggle('hidden',!m.length);m.slice(0,6).forEach(x=>{const d=document.createElement('div');d.className='mistake-row';d.innerHTML='<span>'+x.text+'</span><b>'+x.result+'</b>';list.appendChild(d)});renderRecords(currentTab)}
 let currentTab='mul';function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function renderRecords(t){currentTab=t;$$('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.r===t));const arr=records()[t],box=$('#records');box.innerHTML='';if(!arr.length){box.innerHTML='<div class="empty">Zatím žádný rekord. Zahraj časovou výzvu.</div>';return}arr.forEach((r,i)=>{const d=new Date(r.date),date=isNaN(d)?'':(d.getDate()+'.'+(d.getMonth()+1)+'.');const row=document.createElement('div');row.className='record-row';row.innerHTML='<div class="rank">'+(i+1)+'.</div><div class="name">'+esc(r.name)+'</div><div class="score">'+r.score+' b.</div><div class="meta">'+r.correct+' ✓ '+date+'</div>';box.appendChild(row)})}
-$$('.tab-btn').forEach(b=>b.onclick=()=>renderRecords(b.dataset.r));$('#startBtn').onclick=startGame;$('#again').onclick=startGame;$('#home').onclick=()=>{$('#result').classList.add('hidden');$('#start').classList.remove('hidden');renderRecords(currentTab)};$('#quit').onclick=()=>{clearInterval(S.timerId);S.timerId=null;$('#game').classList.add('hidden');$('#start').classList.remove('hidden')};renderRecords('mul');best()})();
+async function renderRecords(t){currentTab=t;$('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.r===t));const box=$('#records');box.innerHTML='<div class="empty">Načítám rekordy…</div>';let arr=await loadCloudRecords(t);if(!arr){arr=records()[t]||[];if(!CLOUD_READY)setSync('📱 Místní žebříček — cloud ještě není nastaven','offline')}if(!arr.length){box.innerHTML='<div class="empty">Zatím žádný rekord. Zahraj 60sekundovou výzvu.</div>';return}box.innerHTML='';arr.slice(0,10).forEach((r,i)=>{const d=new Date(r.date),date=isNaN(d)?'':(d.getDate()+'.'+(d.getMonth()+1)+'.'),answered=Math.max(1,Number(r.answered)||0),acc=Math.round((Number(r.correct)||0)/answered*100);const row=document.createElement('div');row.className='record-row';row.innerHTML='<div class="rank">'+(i+1)+'.</div><div class="name">'+esc(r.name)+'</div><div class="score">'+r.score+' b.</div><div class="meta">'+r.correct+'/'+answered+' · '+acc+'%</div>';box.appendChild(row)})}
+$('.tab-btn').forEach(b=>b.onclick=()=>renderRecords(b.dataset.r));const savedPlayer=localStorage.getItem(PK);if(savedPlayer)$('#player').value=savedPlayer;$('#player').addEventListener('change',()=>localStorage.setItem(PK,($('#player').value||'Karolinka').trim().slice(0,14)||'Karolinka'));$('#startBtn').onclick=startGame;$('#again').onclick=startGame;$('#home').onclick=()=>{$('#result').classList.add('hidden');$('#start').classList.remove('hidden');renderRecords(currentTab)};$('#quit').onclick=()=>{clearInterval(S.timerId);S.timerId=null;$('#game').classList.add('hidden');$('#start').classList.remove('hidden')};renderRecords('mul');best()})();
 </script></body></html>
