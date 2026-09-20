@@ -64,8 +64,8 @@ input{width:100%;padding:13px 14px;border-radius:14px;border:1px solid #475569;b
 const S={subject:'mul',mode:'10',count:10,index:0,score:0,streak:0,bestStreak:0,correct:0,wrong:0,answered:0,current:null,locked:false,queue:[],timerId:null,left:60,mistakes:{}};
 const RK='mathMissionRecordsV4',WK='mathMissionWeakV4',PK='mathMissionPlayerV4';
 const FAMILY_ID='b6e6a9f8-2df1-4f65-8a1b-61b9d4d7f42e';
-const SUPABASE_URL='__SUPABASE_URL__';
-const SUPABASE_KEY='__SUPABASE_PUBLISHABLE_KEY__';
+const SUPABASE_URL='https://ftcqhalsmkipdguuwtpn.supabase.co';
+const SUPABASE_KEY='sb_publishable_lA3LHSZDlhhwRO_zO8yZQA_tTdaNABp';
 const CLOUD_READY=SUPABASE_URL.startsWith('https://')&&!SUPABASE_URL.includes('__SUPABASE_')&&SUPABASE_KEY.startsWith('sb_publishable_');
 function cloudHeaders(extra={}){return Object.assign({'apikey':SUPABASE_KEY,'Content-Type':'application/json'},extra)}
 function setSync(text,cls=''){const el=$('#syncStatus');if(!el)return;el.textContent=text;el.className='sync '+cls}
