@@ -135,174 +135,132 @@ h1{
 }
 .visual{
   position:relative;
-  width:min(41vw,490px);
-  aspect-ratio:1;
+  width:min(46vw,600px);
+  aspect-ratio:4/3;
   justify-self:end;
-  perspective:900px;
+  perspective:1200px;
 }
 
 .stage-glow{
   position:absolute;
-  inset:-10%;
+  inset:-12%;
   border-radius:50%;
   background:
-    radial-gradient(circle,
-      rgba(120,170,200,.10) 0%,
-      rgba(52,84,106,.05) 28%,
-      transparent 66%);
-  filter:blur(18px);
+    radial-gradient(circle at 52% 48%,
+      rgba(98,154,191,.12) 0%,
+      rgba(46,78,100,.055) 32%,
+      transparent 68%);
+  filter:blur(24px);
+  pointer-events:none;
 }
 
 .stage-rings,.stage-rings::before,.stage-rings::after{
   position:absolute;
   border-radius:50%;
-  border:1px solid rgba(190,214,232,.05);
+  border:1px solid rgba(190,214,232,.045);
+  pointer-events:none;
 }
-.stage-rings{inset:-2%}
-.stage-rings::before,.stage-rings::after{content:"";position:absolute}
-.stage-rings::before{inset:10%}
-.stage-rings::after{inset:23%;border-color:rgba(190,214,232,.03)}
-
-.robot{
-  position:absolute;
+.stage-rings{
+  width:86%;
+  aspect-ratio:1;
   left:50%;
-  top:52%;
-  width:min(22vw,230px);
-  height:min(28vw,300px);
+  top:50%;
   transform:translate(-50%,-50%);
 }
+.stage-rings::before,.stage-rings::after{content:"";position:absolute}
+.stage-rings::before{inset:11%}
+.stage-rings::after{inset:25%;border-color:rgba(190,214,232,.025)}
 
-.pedestal{
+.machine{
   position:absolute;
-  left:50%;
-  bottom:0;
-  width:42%;
-  height:14%;
-  transform:translateX(-50%);
-  border-radius:10px;
-  background:linear-gradient(180deg,#141a1e,#06090b 55%,#020304);
-  box-shadow:
-    0 0 0 1px rgba(188,216,232,.06),
-    0 14px 30px rgba(0,0,0,.45);
+  inset:2% -3% 4%;
+  display:grid;
+  place-items:center;
+  transform-style:preserve-3d;
+  pointer-events:none;
 }
 
-.column{
-  position:absolute;
-  left:50%;
-  bottom:12%;
-  width:14%;
-  height:20%;
-  transform:translateX(-50%);
-  border-radius:10px;
-  background:linear-gradient(180deg,#1d252a,#070a0d 58%,#020304);
-  box-shadow:0 0 0 1px rgba(188,216,232,.05);
-}
-
-.pan{
-  position:absolute;
-  left:50%;
-  bottom:30%;
-  width:72%;
-  height:52%;
-  transform:translateX(-50%) rotate(var(--pan,0deg));
-  transform-origin:50% 84%;
-  transition:transform 2.8s cubic-bezier(.45,.05,.35,1);
-}
-
-.tilt{
-  position:absolute;
-  left:50%;
-  bottom:0;
+.machine-motion{
+  position:relative;
   width:100%;
   height:100%;
-  transform:translateX(-50%) rotateX(var(--tilt,0deg));
-  transform-origin:50% 82%;
+  display:grid;
+  place-items:center;
+  transform:
+    rotateY(var(--pan,0deg))
+    rotateX(var(--tilt,0deg))
+    translate3d(var(--shift-x,0px),var(--shift-y,0px),0);
+  transform-origin:50% 72%;
   transform-style:preserve-3d;
-  transition:transform 2.8s cubic-bezier(.45,.05,.35,1);
+  transition:transform 3.2s cubic-bezier(.42,.04,.32,1);
+  will-change:transform;
 }
 
-.yoke{
-  position:absolute;
-  left:50%;
-  bottom:10%;
-  width:78%;
-  height:56%;
-  transform:translateX(-50%);
-}
-.yoke::before,
-.yoke::after{
-  content:"";
-  position:absolute;
-  bottom:14%;
-  width:10%;
-  height:52%;
-  border-radius:12px;
-  background:linear-gradient(180deg,#1f272c,#080b0d 62%,#020304);
-  box-shadow:0 0 0 1px rgba(188,216,232,.05);
-}
-.yoke::before{left:4%}
-.yoke::after{right:4%}
-
-.cube{
-  position:absolute;
-  left:50%;
-  bottom:24%;
-  width:58%;
-  aspect-ratio:1;
-  transform:translateX(-50%);
-  transform-origin:50% 65%;
-  border-radius:18px;
-  background:
-    linear-gradient(145deg,#2a343a 0%,#11171b 22%,#05080a 66%,#020304 100%);
-  box-shadow:
-    inset 0 0 0 1px rgba(214,232,243,.08),
-    inset 0 14px 18px rgba(208,228,240,.04),
-    inset 0 -18px 24px rgba(0,0,0,.48),
-    0 18px 36px rgba(0,0,0,.34),
-    0 0 40px rgba(86,136,168,.08);
+.machine-image{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+  opacity:.95;
+  filter:
+    brightness(.82)
+    contrast(1.12)
+    saturate(.72)
+    drop-shadow(0 26px 38px rgba(0,0,0,.44))
+    drop-shadow(0 0 34px rgba(74,126,161,.10));
+  -webkit-mask-image:radial-gradient(ellipse at center,#000 58%,rgba(0,0,0,.96) 70%,transparent 96%);
+  mask-image:radial-gradient(ellipse at center,#000 58%,rgba(0,0,0,.96) 70%,transparent 96%);
 }
 
-.cube::before{
-  content:"";
+.motion-hud{
   position:absolute;
-  inset:12%;
-  border-radius:12px;
-  background:
-    radial-gradient(circle at 50% 38%,rgba(18,30,38,.94),rgba(2,4,5,.98) 70%);
-  box-shadow:inset 0 0 0 1px rgba(146,182,204,.08);
+  inset:0;
+  pointer-events:none;
+  font:500 7px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:#60717c;
 }
-
-.eye{
+.motion-hud::before{
+  content:"PAN";
   position:absolute;
-  z-index:2;
-  top:44%;
+  right:2%;
+  top:47%;
+}
+.motion-hud::after{
+  content:"TILT";
+  position:absolute;
+  right:7%;
+  top:39%;
+  color:#53636d;
+}
+.hud-line{
+  position:absolute;
+  right:7%;
+  top:50%;
   width:22%;
-  height:3px;
-  border-radius:3px;
-  opacity:.72;
-  background:linear-gradient(90deg,transparent,rgba(220,244,255,.98),transparent);
-  box-shadow:
-    0 0 7px rgba(186,226,248,.34),
-    0 0 18px rgba(101,167,205,.18);
-  transition:opacity .08s linear,transform .08s linear;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(143,190,218,.20));
+  transform-origin:right center;
+  transform:rotate(var(--hud-angle,0deg));
+  transition:transform 3.2s cubic-bezier(.42,.04,.32,1);
 }
-.eye.left{left:22%;transform:rotate(3deg)}
-.eye.right{right:22%;transform:rotate(-3deg)}
-
-.face-grid{
+.hud-dot{
   position:absolute;
-  inset:18%;
-  border-radius:10px;
-  background:
-    linear-gradient(90deg,transparent 49.4%,rgba(146,182,204,.04) 50%,transparent 50.6%),
-    linear-gradient(180deg,transparent 49.4%,rgba(146,182,204,.03) 50%,transparent 50.6%);
-  opacity:.55;
+  right:6.4%;
+  top:49.3%;
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background:#a8d8f3;
+  box-shadow:0 0 10px rgba(130,203,242,.55);
+  opacity:.72;
 }
 
 .visual-label{
   position:absolute;
   left:50%;
-  bottom:2%;
+  bottom:-1%;
   transform:translateX(-50%);
   white-space:nowrap;
   color:#59646c;
@@ -460,10 +418,12 @@ h1{
     justify-self:center;
     margin-top:20px;
   }
-  .robot{
-    width:min(48vw,220px);
-    height:min(62vw,290px);
+  .visual{
+    width:min(92vw,520px);
+    margin-top:4px;
   }
+  .machine{inset:0 -5% 4%}
+  .motion-hud{display:none}
   .copy{text-align:left}
   h1{font-size:clamp(44px,14vw,68px)}
   .lead{font-size:18px}
@@ -561,24 +521,24 @@ h1{
       <div class="stage-glow"></div>
       <div class="stage-rings"></div>
 
-      <div class="robot" id="robot">
-        <div class="pedestal"></div>
-        <div class="column"></div>
-
-        <div class="pan" id="pan">
-          <div class="tilt" id="tilt">
-            <div class="yoke"></div>
-
-            <div class="cube" id="cube">
-              <div class="face-grid"></div>
-              <span class="eye left"></span>
-              <span class="eye right"></span>
-            </div>
-          </div>
+      <div class="machine">
+        <div class="machine-motion" id="machine-motion">
+          <img
+            class="machine-image"
+            src="assets/ai-cube-gimbal-dark.webp"
+            alt=""
+            width="720"
+            height="540"
+          >
         </div>
       </div>
 
-      <div class="visual-label">AI_CUBE · pan / tilt prototype</div>
+      <div class="motion-hud">
+        <span class="hud-line" id="hud-line"></span>
+        <span class="hud-dot"></span>
+      </div>
+
+      <div class="visual-label">AI_CUBE · physical pan / tilt prototype</div>
     </div>
   </section>
 
@@ -639,54 +599,34 @@ h1{
 </main>
 <script>
 (() => {
-  const pan = document.getElementById('pan');
-  const tilt = document.getElementById('tilt');
-  const cube = document.getElementById('cube');
-  if (!pan || !tilt || !cube) return;
+  const machine = document.getElementById('machine-motion');
+  const hud = document.getElementById('hud-line');
+  if (!machine) return;
 
-  function rand(min,max){
-    return Math.random() * (max - min) + min;
+  const rand = (min,max) => Math.random() * (max-min) + min;
+
+  function pose(){
+    const pan = rand(-3.4,3.4);
+    const tilt = rand(-2.2,2.2);
+
+    machine.style.setProperty('--pan',pan.toFixed(2)+'deg');
+    machine.style.setProperty('--tilt',tilt.toFixed(2)+'deg');
+    machine.style.setProperty('--shift-x',(pan*1.05).toFixed(1)+'px');
+    machine.style.setProperty('--shift-y',(tilt*.8).toFixed(1)+'px');
+
+    if (hud) hud.style.setProperty('--hud-angle',(pan*1.8).toFixed(1)+'deg');
   }
 
-  function setPose(){
-    const panDeg = rand(-18,18).toFixed(1) + 'deg';
-    const tiltDeg = rand(-10,10).toFixed(1) + 'deg';
-
-    pan.style.setProperty('--pan',panDeg);
-    tilt.style.setProperty('--tilt',tiltDeg);
-  }
-
-  function scheduleMove(){
-    const delay = 2400 + Math.random() * 2600;
+  function schedule(){
+    const delay = 2800 + Math.random()*3200;
     setTimeout(() => {
-      setPose();
-      scheduleMove();
+      pose();
+      schedule();
     },delay);
   }
 
-  function scheduleBlink(){
-    const delay = 5000 + Math.random() * 5000;
-    setTimeout(doubleBlink,delay);
-  }
-
-  function doubleBlink(){
-    const eyes = cube.querySelectorAll('.eye');
-    eyes.forEach(el => el.style.opacity = '.05');
-    setTimeout(() => {
-      eyes.forEach(el => el.style.opacity = '.88');
-      setTimeout(() => {
-        eyes.forEach(el => el.style.opacity = '.05');
-        setTimeout(() => {
-          eyes.forEach(el => el.style.opacity = '.72');
-          scheduleBlink();
-        },105);
-      },145);
-    },115);
-  }
-
-  setPose();
-  scheduleMove();
-  setTimeout(doubleBlink,3500);
+  pose();
+  setTimeout(schedule,1800);
 })();
 </script>
 </body>
