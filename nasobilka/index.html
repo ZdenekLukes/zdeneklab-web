@@ -1,0 +1,87 @@
+<!doctype html><html lang="cs"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f172a"><title>Matematická mise</title>
+<style>
+:root{--p:#111827;--p2:#1f2937;--t:#f8fafc;--m:#94a3b8;--ok:#22c55e;--bad:#ef4444;--a:#38bdf8;--a2:#a78bfa;--gold:#fbbf24}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(circle at 15% 5%,rgba(56,189,248,.15),transparent 28%),radial-gradient(circle at 90% 12%,rgba(167,139,250,.15),transparent 28%),linear-gradient(#020617,#0f172a 55%,#111827);color:var(--t)}
+body{display:flex;justify-content:center}button,input{font:inherit}button{touch-action:manipulation}.app{width:min(100%,700px);padding:16px 14px 30px;display:flex;flex-direction:column;gap:13px}
+.header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.brand{font-size:1.12rem;font-weight:950}.badge{background:#ffffff14;border:1px solid #ffffff14;padding:8px 11px;border-radius:999px;font-weight:850;font-size:.88rem}
+.card{background:linear-gradient(#1f2937f7,#111827f7);border:1px solid #ffffff14;border-radius:22px;padding:17px;box-shadow:0 18px 50px #00000047}.hero{text-align:center;padding:23px 17px;overflow:hidden}.hero h1{font-size:clamp(2rem,9vw,3.1rem);line-height:1;margin:4px 0 9px}.hero p,.note{color:var(--m);line-height:1.45}
+.section-title{font-size:.82rem;text-transform:uppercase;letter-spacing:.12em;color:var(--m);font-weight:950;margin:0 0 11px}.subjects{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.subject-btn,.mode-btn,.table-btn,.answer-btn,.main-btn,.ghost-btn,.tab-btn{border:0;border-radius:15px;cursor:pointer;font-weight:900;transition:.1s}button:active{transform:scale(.97)}
+.subject-btn{min-height:68px;padding:10px;background:#273449;color:white;text-align:left}.subject-btn b{display:block}.subject-btn small,.mode-btn small{display:block;color:#a5b4fc;margin-top:3px;font-weight:700}.subject-btn.active{background:linear-gradient(135deg,#075985,#312e81);outline:2px solid var(--a)}
+.mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.mode-btn{padding:12px 8px;background:#273449;color:#e2e8f0;min-height:68px}.mode-btn.active{background:#3b2e63;outline:2px solid var(--a2)}
+input{width:100%;padding:13px 14px;border-radius:14px;border:1px solid #475569;background:#0f172a;color:white;font-size:16px;outline:none}.tables{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.table-btn{min-height:50px;background:#334155;color:white}.table-btn.active{background:linear-gradient(135deg,var(--a),#2563eb)}.table-btn[data-v="all"]{grid-column:span 5}
+.main-btn{width:100%;padding:16px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#052e16;font-size:1.08rem}.ghost-btn{padding:11px 13px;background:#334155;color:white}.toprow{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.progress{height:11px;background:#1e293b;border-radius:999px;overflow:hidden;margin-top:11px}.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--a),var(--a2));transition:width .2s}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:11px}.stat{background:#0f172a;border-radius:14px;padding:9px 5px;text-align:center}.stat b{display:block;font-size:1.18rem}.stat span{font-size:.7rem;color:var(--m);font-weight:750}.hot b{color:#fca5a5}
+.question-wrap{text-align:center;padding:7px 0}.prompt{font-size:.8rem;color:var(--m);font-weight:850;text-transform:uppercase;letter-spacing:.11em}.question{font-size:clamp(3rem,17vw,5.7rem);font-weight:1000;letter-spacing:-.05em;line-height:1.04;margin:9px 0 17px}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}.answer-btn{min-height:72px;background:#334155;color:white;font-size:1.5rem}.answer-btn.correct{background:var(--ok);color:#052e16}.answer-btn.wrong{background:var(--bad)}
+.feedback{min-height:31px;text-align:center;font-weight:900;margin-top:11px}.feedback.ok{color:#86efac}.feedback.bad{color:#fca5a5}.tip{background:#172033;border-radius:15px;padding:11px 13px;color:#cbd5e1;line-height:1.4;font-size:.9rem;margin-top:10px}
+.hidden{display:none!important}.result{text-align:center}.big-star{font-size:4.4rem}.result h2{font-size:1.85rem;margin:3px 0 7px}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:14px 0}.mistakes{text-align:left;margin:14px 0}.mistake-row{display:flex;justify-content:space-between;background:#172033;padding:9px 11px;border-radius:11px;margin:6px 0}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}.tab-btn{background:#263244;color:#cbd5e1;min-height:43px;padding:6px;font-size:.78rem}.tab-btn.active{background:#0c4a6e;color:white;outline:1px solid var(--a)}
+.record-row{display:grid;grid-template-columns:34px 1fr 74px 72px;gap:6px;align-items:center;padding:9px 5px;border-bottom:1px solid #ffffff12;font-size:.88rem}.rank{font-weight:950;color:var(--gold)}.name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.score{text-align:right;font-weight:900}.meta{text-align:right;color:var(--m);font-size:.78rem}.empty{color:var(--m);text-align:center;padding:16px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}.footer{text-align:center;color:#64748b;font-size:.78rem}
+@media(max-width:430px){.mode-grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.tabs{grid-template-columns:1fr 1fr}.record-row{grid-template-columns:28px 1fr 60px 58px;font-size:.81rem}}
+</style></head><body><div class="app">
+<div class="header"><div class="brand">🚀 Matematická mise</div><div class="badge" id="bestBadge">🏆 rekord 0</div></div>
+
+<section id="start">
+<div class="card hero"><h1>Počítání bez nudy</h1><p>Krátké mise, časová výzva a rekordy. Násobilka se vždy losuje náhodně z celé řady 2–10.</p></div>
+<div class="card"><div class="section-title">1. Co procvičíme?</div><div class="subjects">
+<button class="subject-btn active" data-s="mul"><b>✖️ Násobilka</b><small>malá násobilka 2–10</small></button>
+<button class="subject-btn" data-s="add"><b>➕ Sčítání</b><small>výsledky do 100</small></button>
+<button class="subject-btn" data-s="sub"><b>➖ Odčítání</b><small>bez záporných výsledků</small></button>
+<button class="subject-btn" data-s="mix"><b>🎲 MIX</b><small>násobení + sčítání + odčítání</small></button>
+</div></div>
+<div class="card"><div class="section-title">2. Režim hry</div><div class="mode-grid">
+<button class="mode-btn active" data-m="10"><b>⚡ Rychlovka</b><small>10 příkladů</small></button>
+<button class="mode-btn" data-m="20"><b>🧠 Trénink</b><small>20 příkladů</small></button>
+<button class="mode-btn" data-m="time"><b>⏱️ Na čas</b><small>60 sekund</small></button>
+</div></div>
+<div class="card"><div class="section-title">3. Hráč</div><input id="player" maxlength="14" value="Karolinka" placeholder="Jméno hráče"><div class="note">Rekordy zůstávají jen v tomto zařízení.</div></div>
+<button class="main-btn" id="startBtn">START MISE</button>
+<div class="card"><div class="section-title">🏆 Tabulka rekordů — 60 sekund</div><div class="tabs">
+<button class="tab-btn active" data-r="mul">Násobilka</button><button class="tab-btn" data-r="add">Sčítání</button><button class="tab-btn" data-r="sub">Odčítání</button><button class="tab-btn" data-r="mix">MIX</button>
+</div><div id="records"></div></div>
+</section>
+
+<section id="game" class="hidden"><div class="card">
+<div class="toprow"><button class="ghost-btn" id="quit">← Konec</button><div class="badge" id="round">1 / 10</div></div>
+<div class="progress"><div id="bar"></div></div><div class="stats">
+<div class="stat"><b id="score">0</b><span>body</span></div><div class="stat"><b id="streak">0</b><span>série</span></div><div class="stat"><b id="correct">0</b><span>správně</span></div><div class="stat" id="timerBox"><b id="timer">—</b><span>čas</span></div>
+</div></div>
+<div class="card"><div class="question-wrap"><div class="prompt" id="op">Kolik je?</div><div class="question" id="q">7 × 8</div><div class="answers" id="answers"></div><div class="feedback" id="feedback"></div><div class="tip hidden" id="tip"></div></div></div>
+</section>
+
+<section id="result" class="hidden"><div class="card result"><div class="big-star" id="icon">⭐</div><h2 id="title">Mise splněna!</h2><div id="scoreLine"></div>
+<div class="summary"><div class="stat"><b id="rc">0</b><span>správně</span></div><div class="stat"><b id="ra">0%</b><span>úspěšnost</span></div><div class="stat"><b id="rs">0</b><span>nej série</span></div></div>
+<div class="mistakes hidden" id="mistakes"><div class="section-title">Tyhle ještě potrénujeme</div><div id="mistakeList"></div></div>
+<div class="actions"><button class="ghost-btn" id="home">Menu</button><button class="main-btn" id="again">Hrát znovu</button></div></div></section>
+
+<div class="footer">Offline • bez reklam • bez účtu</div></div>
+<script>
+(()=>{const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const S={subject:'mul',mode:'10',count:10,index:0,score:0,streak:0,bestStreak:0,correct:0,wrong:0,answered:0,current:null,locked:false,queue:[],timerId:null,left:60,mistakes:{}};
+const RK='mathMissionRecordsV3',WK='mathMissionWeakV3';
+function records(){try{const r=JSON.parse(localStorage.getItem(RK)||'{}');return{mul:r.mul||[],add:r.add||[],sub:r.sub||[],mix:r.mix||[]}}catch{return{mul:[],add:[],sub:[],mix:[]}}}
+function saveRecords(r){localStorage.setItem(RK,JSON.stringify(r))}
+function weak(){try{return JSON.parse(localStorage.getItem(WK)||'{}')}catch{return{}}}function saveWeak(w){localStorage.setItem(WK,JSON.stringify(w))}
+const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+function best(){const a=Object.values(records()).flat();$('#bestBadge').textContent='🏆 rekord '+(a.length?Math.max(...a.map(x=>x.score||0)):0)}
+$$('.subject-btn').forEach(b=>b.onclick=()=>{S.subject=b.dataset.s;$$('.subject-btn').forEach(x=>x.classList.toggle('active',x===b))});
+$$('.mode-btn').forEach(b=>b.onclick=()=>{S.mode=b.dataset.m;$$('.mode-btn').forEach(x=>x.classList.toggle('active',x===b))});
+function mul(){let a=rnd(2,10),b=rnd(2,10);return{type:'mul',a,b,result:a*b,key:'mul:'+a+'x'+b,text:a+' × '+b}}
+function add(){const a=rnd(0,100),b=rnd(0,100-a);return{type:'add',a,b,result:a+b,key:'add:'+a+'+'+b,text:a+' + '+b}}
+function sub(){const a=rnd(0,100),b=rnd(0,a);return{type:'sub',a,b,result:a-b,key:'sub:'+a+'-'+b,text:a+' − '+b}}
+function problem(){let t=S.subject;if(t==='mix')t=['mul','add','sub'][rnd(0,2)];return t==='mul'?mul():t==='add'?add():sub()}
+function choices(p){const set=new Set([p.result]);let c=p.type==='mul'?[p.result+p.a,p.result-p.a,p.result+p.b,p.result-p.b,p.result+1,p.result-1] : [p.result+1,p.result-1,p.result+2,p.result-2,p.result+10,p.result-10,p.result+5,p.result-5];c=c.filter(n=>n>=0&&n<=100&&n!==p.result);while(set.size<4&&c.length){const i=rnd(0,c.length-1);set.add(c.splice(i,1)[0])}while(set.size<4)set.add(rnd(0,100));return[...set].sort(()=>Math.random()-.5)}
+function startGame(){clearInterval(S.timerId);Object.assign(S,{count:S.mode==='20'?20:10,index:0,score:0,streak:0,bestStreak:0,correct:0,wrong:0,answered:0,left:60,locked:false,mistakes:{}});S.queue=S.mode==='time'?[]:Array.from({length:S.count},problem);$('#start').classList.add('hidden');$('#result').classList.add('hidden');$('#game').classList.remove('hidden');$('#timerBox').classList.remove('hot');if(S.mode==='time'){$('#round').textContent='⏱️ Časová výzva';$('#timer').textContent='60 s';$('#bar').style.width='100%';S.timerId=setInterval(()=>{S.left--;$('#timer').textContent=S.left+' s';$('#timerBox').classList.toggle('hot',S.left<=10);$('#bar').style.width=(S.left/60*100)+'%';if(S.left<=0){clearInterval(S.timerId);S.timerId=null;finish()}},1000)}else $('#timer').textContent='—';show()}
+function show(){if(S.mode==='time'&&S.left<=0)return;S.locked=false;S.current=S.mode==='time'?problem():S.queue[S.index];if(S.mode!=='time'){$('#round').textContent=(S.index+1)+' / '+S.count;$('#bar').style.width=(S.index/S.count*100)+'%'}$('#score').textContent=S.score;$('#streak').textContent=S.streak;$('#correct').textContent=S.correct;$('#q').textContent=S.current.text;$('#op').textContent=S.current.type==='mul'?'Násobilka':S.current.type==='add'?'Sčítání':'Odčítání';$('#feedback').textContent='';$('#feedback').className='feedback';$('#tip').classList.add('hidden');const a=$('#answers');a.innerHTML='';choices(S.current).forEach(v=>{const b=document.createElement('button');b.className='answer-btn';b.textContent=v;b.onclick=()=>answer(v,b);a.appendChild(b)})}
+function hint(p){if(p.type==='mul'){if(p.a===10||p.b===10)return'Násobení deseti: přidej nulu.';if(p.a===5||p.b===5)return'Násobky pěti končí na 0 nebo 5.';if(p.a===2||p.b===2)return'×2 znamená číslo zdvojnásobit.';return'Rozlož si příklad na něco, co už znáš.'}return p.type==='add'?'Zkus nejdřív doplnit do celé desítky.':'Zkontroluj odečtení opačně pomocí sčítání.'}
+function answer(v,btn){if(S.locked||(S.mode==='time'&&S.left<=0))return;S.locked=true;const p=S.current,ok=v===p.result,w=weak();S.answered++;$$('#answers .answer-btn').forEach(b=>{if(+b.textContent===p.result)b.classList.add('correct')});if(ok){S.correct++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);S.score+=10+Math.min(S.streak,5)*2;$('#feedback').textContent=S.streak>=4?'🔥 Série '+S.streak+'!':'✅ Správně!';$('#feedback').className='feedback ok';w[p.key]=Math.max(0,(w[p.key]||0)-1)}else{S.wrong++;S.streak=0;btn.classList.add('wrong');S.mistakes[p.key]={text:p.text,result:p.result};w[p.key]=(w[p.key]||0)+2;$('#feedback').textContent='❌ '+p.text+' = '+p.result;$('#feedback').className='feedback bad';$('#tip').textContent=hint(p);$('#tip').classList.remove('hidden')}saveWeak(w);$('#score').textContent=S.score;$('#streak').textContent=S.streak;$('#correct').textContent=S.correct;setTimeout(()=>{if(S.mode==='time'){if(S.left>0)show()}else{S.index++;S.index>=S.count?finish():show()}},ok?350:800)}
+function addRecord(){if(S.mode!=='time')return;const r=records(),name=($('#player').value||'Karolinka').trim().slice(0,14)||'Karolinka';r[S.subject].push({name,score:S.score,correct:S.correct,answered:S.answered,date:new Date().toISOString()});r[S.subject].sort((a,b)=>b.score-a.score||b.correct-a.correct);r[S.subject]=r[S.subject].slice(0,10);saveRecords(r)}
+function finish(){if($('#game').classList.contains('hidden'))return;clearInterval(S.timerId);S.timerId=null;$('#game').classList.add('hidden');$('#result').classList.remove('hidden');addRecord();best();const denom=Math.max(1,S.answered),acc=Math.round(S.correct/denom*100);$('#rc').textContent=S.mode==='time'?S.correct:(S.correct+'/'+S.count);$('#ra').textContent=acc+'%';$('#rs').textContent=S.bestStreak;$('#scoreLine').textContent=S.mode==='time'?('Za 60 sekund: '+S.correct+' správně, '+S.score+' bodů.'):('Získáno '+S.score+' bodů.');$('#title').textContent=acc===100?'Dokonalá mise!':acc>=80?'Skvělá práce!':acc>=60?'Mise splněna!':'Ještě jeden trénink!';$('#icon').textContent=acc===100?'🏆':acc>=80?'🌟':acc>=60?'🚀':'💪';const list=$('#mistakeList');list.innerHTML='';const m=Object.values(S.mistakes);$('#mistakes').classList.toggle('hidden',!m.length);m.slice(0,6).forEach(x=>{const d=document.createElement('div');d.className='mistake-row';d.innerHTML='<span>'+x.text+'</span><b>'+x.result+'</b>';list.appendChild(d)});renderRecords(currentTab)}
+let currentTab='mul';function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderRecords(t){currentTab=t;$$('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.r===t));const arr=records()[t],box=$('#records');box.innerHTML='';if(!arr.length){box.innerHTML='<div class="empty">Zatím žádný rekord. Zahraj časovou výzvu.</div>';return}arr.forEach((r,i)=>{const d=new Date(r.date),date=isNaN(d)?'':(d.getDate()+'.'+(d.getMonth()+1)+'.');const row=document.createElement('div');row.className='record-row';row.innerHTML='<div class="rank">'+(i+1)+'.</div><div class="name">'+esc(r.name)+'</div><div class="score">'+r.score+' b.</div><div class="meta">'+r.correct+' ✓ '+date+'</div>';box.appendChild(row)})}
+$$('.tab-btn').forEach(b=>b.onclick=()=>renderRecords(b.dataset.r));$('#startBtn').onclick=startGame;$('#again').onclick=startGame;$('#home').onclick=()=>{$('#result').classList.add('hidden');$('#start').classList.remove('hidden');renderRecords(currentTab)};$('#quit').onclick=()=>{clearInterval(S.timerId);S.timerId=null;$('#game').classList.add('hidden');$('#start').classList.remove('hidden')};renderRecords('mul');best()})();
+</script></body></html>
