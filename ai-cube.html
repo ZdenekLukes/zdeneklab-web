@@ -188,46 +188,24 @@ h1 strong{
   z-index:3;
   width:min(48vw,690px);
   height:620px;
+  display:grid;
+  place-items:center;
+  background:transparent;
 }
-.machine-base,
-.machine-head{
-  position:absolute;
-  inset:0;
+.machine-image{
   width:100%;
   height:100%;
   object-fit:contain;
+  display:block;
+  opacity:.96;
+  mix-blend-mode:screen;
+  filter:
+    brightness(.58)
+    contrast(1.22)
+    saturate(.38)
+    drop-shadow(0 20px 30px rgba(0,0,0,.42));
+  clip-path:polygon(18% 0,82% 0,88% 100%,12% 100%);
   background:transparent;
-}
-.machine-base{
-  z-index:1;
-  opacity:.90;
-  filter:
-    brightness(.46)
-    contrast(1.18)
-    saturate(.34)
-    drop-shadow(0 18px 28px rgba(0,0,0,.42));
-  clip-path:polygon(23% 58%,77% 58%,82% 100%,18% 100%);
-}
-.machine-head-wrap{
-  position:absolute;
-  inset:0;
-  z-index:2;
-  transform:
-    rotateZ(var(--neck-roll,0deg))
-    rotateX(var(--neck-tilt,0deg));
-  transform-origin:50% 70%;
-  transform-style:preserve-3d;
-  transition:transform 3.4s cubic-bezier(.42,.04,.32,1);
-  will-change:transform;
-}
-.machine-head{
-  opacity:.92;
-  filter:
-    brightness(.34)
-    contrast(1.28)
-    saturate(.28)
-    drop-shadow(0 16px 24px rgba(0,0,0,.34));
-  clip-path:polygon(14% 4%,86% 4%,88% 72%,12% 72%);
 }
 .hud{
   position:absolute;z-index:5;inset:0;pointer-events:none;
@@ -445,21 +423,12 @@ h1 strong{
     <div class="visual" aria-hidden="true">
       <div class="machine">
         <img
-          class="machine-base"
+          class="machine-image"
           src="assets/ai-cube-gimbal-dark.webp"
           alt=""
           width="720"
           height="540"
         >
-        <div class="machine-head-wrap" id="machine-head">
-          <img
-            class="machine-head"
-            src="assets/ai-cube-gimbal-dark.webp"
-            alt=""
-            width="720"
-            height="540"
-          >
-        </div>
       </div>
 
       <div class="hud">
@@ -528,32 +497,6 @@ h1 strong{
 
   <div class="footer">Independent experiments · Prague</div>
 </main>
-<script>
-(() => {
-  const head = document.getElementById('machine-head');
-  if (!head || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  const rand = (min,max) => Math.random() * (max-min) + min;
-
-  function pose(){
-    const roll = rand(-4.2,4.2);
-    const tilt = rand(-2.4,2.4);
-    head.style.setProperty('--neck-roll', roll.toFixed(2) + 'deg');
-    head.style.setProperty('--neck-tilt', tilt.toFixed(2) + 'deg');
-  }
-
-  function schedule(){
-    setTimeout(() => {
-      pose();
-      schedule();
-    }, 3200 + Math.random() * 3600);
-  }
-
-  setTimeout(() => {
-    pose();
-    schedule();
-  }, 1400);
-})();
-</script>
 </body>
 </html>
