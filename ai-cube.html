@@ -261,8 +261,8 @@ h1 strong{
   width:min(54vw,680px);
   aspect-ratio:1;
   border-radius:50%;
-  background:radial-gradient(circle,rgba(70,121,151,.09),rgba(30,55,70,.035) 40%,transparent 68%);
-  filter:blur(24px);
+  background:radial-gradient(circle,rgba(56,96,120,.05),rgba(22,40,52,.02) 38%,transparent 68%);
+  filter:blur(20px);
 }
 .machine{
   position:relative;
@@ -279,27 +279,26 @@ h1 strong{
   display:grid;
   place-items:center;
   transform:
-    rotateY(var(--pan,0deg))
-    rotateX(var(--tilt,0deg))
-    translate3d(var(--shift-x,0px),var(--shift-y,0px),0);
-  transform-origin:50% 70%;
+    rotateZ(var(--pan,0deg))
+    rotateX(var(--tilt,0deg));
+  transform-origin:50% 84%;
   transform-style:preserve-3d;
-  transition:transform 3.2s cubic-bezier(.42,.04,.32,1);
+  transition:transform 3.4s cubic-bezier(.42,.04,.32,1);
   will-change:transform;
 }
 .machine-image{
   width:100%;
   height:100%;
   object-fit:contain;
-  opacity:.97;
+  opacity:.94;
   filter:
-    brightness(.80)
-    contrast(1.14)
-    saturate(.76)
-    drop-shadow(0 30px 46px rgba(0,0,0,.50))
-    drop-shadow(0 0 42px rgba(67,131,170,.12));
-  -webkit-mask-image:radial-gradient(ellipse at 50% 52%,#000 58%,rgba(0,0,0,.98) 72%,transparent 98%);
-  mask-image:radial-gradient(ellipse at 50% 52%,#000 58%,rgba(0,0,0,.98) 72%,transparent 98%);
+    brightness(.64)
+    contrast(1.08)
+    saturate(.55)
+    drop-shadow(0 22px 34px rgba(0,0,0,.46))
+    drop-shadow(0 0 18px rgba(67,131,170,.05));
+  -webkit-mask-image:radial-gradient(ellipse at 50% 55%,#000 60%,rgba(0,0,0,.98) 75%,transparent 98%);
+  mask-image:radial-gradient(ellipse at 50% 55%,#000 60%,rgba(0,0,0,.98) 75%,transparent 98%);
 }
 .hud{
   position:absolute;
@@ -735,19 +734,17 @@ h1 strong{
   const rand = (min,max) => Math.random() * (max-min) + min;
 
   function pose(){
-    const pan = rand(-3.2,3.2);
-    const tilt = rand(-2.0,2.0);
+    const pan = rand(-5.5,5.5);
+    const tilt = rand(-4.0,4.0);
 
     machine.style.setProperty('--pan',pan.toFixed(2)+'deg');
     machine.style.setProperty('--tilt',tilt.toFixed(2)+'deg');
-    machine.style.setProperty('--shift-x',(pan*1.25).toFixed(1)+'px');
-    machine.style.setProperty('--shift-y',(tilt*.9).toFixed(1)+'px');
 
-    if (hud) hud.style.setProperty('--hud-angle',(pan*2).toFixed(1)+'deg');
+    if (hud) hud.style.setProperty('--hud-angle',(pan*1.7).toFixed(1)+'deg');
   }
 
   function schedule(){
-    const delay = 3000 + Math.random()*3300;
+    const delay = 3200 + Math.random()*3600;
     setTimeout(() => {
       pose();
       schedule();
