@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- MOBILE HOSTED SNAPSHOT from AI_HEAD commit 516da073097a7564969a7ac3673bc8d4cbf12415; standalone snapshot commit c2a49cd7462448ed6474b61e79df3db1cedc743e. Source of truth remains AI_HEAD Mechanical Studio. -->
+<!-- GENERATED STANDALONE SNAPSHOT from AI_HEAD feature/mechanical-studio-builder-v1. Includes Mac mini front USB-C visual markers. Do not edit as source of truth. -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -970,10 +970,10 @@ var BR_ROT = {
 };
 var SEG = 64, SEG_S = 40, NCOL = 14, NRIB = 18;
 
-/* Purchased Mac mini M4, reference v2.  Mac-local XY, centred; FRONT -Y, REAR +Y, LEFT -X.
+/* Purchased Mac mini M4, reference v4.  Mac-local XY, centred; FRONT -Y, REAR +Y, LEFT -X.
    MEASURED and UNKNOWN are kept apart on purpose: nothing in here is a guess. */
 var MAC_MINI_M4 = {
-  version: 3,
+  version: 4,
   measured: {
     envelope: [128, 128, 49],                       /* from the table, raised underside region included */
     powerButton: { face: "underside", corner: "rear-left", fromLeftEdge: 15, fromRearEdge: 15,
@@ -1057,7 +1057,7 @@ var COMPONENTS = [
                  "honeycomb cells are pointy-top, the rear is open. The captive M3 nut slots are 5.8 mm wide; their " +
                  "ceiling is the only bridged surface." },
   groups: ["neckbase_plate", "neckbase_posts", "neckbase_joint", "neckbase_shell"],
-  refs: ["ref_weight", "ref_mac"],
+  refs: ["ref_weight", "ref_mac", "ref_mac_usb"],
   params: [
     ["weight_diameter",        "Weight diameter",            40, 300, 0.1, 137.0, "MEA"],
     ["weight_height",          "Weight height",               2,  60, 0.1,  13.0, "MEA"],
@@ -1576,6 +1576,21 @@ var COMPONENTS = [
          outer underside support plane. Rounded case corners and vent-slot detail remain omitted. */
       addCyl(M, "ref_mac", 0, 0, d.macZ0, d.padTop, d.macFootD/2, 0, SEG);
       addBox(M, "ref_mac", -d.macW/2, d.macW/2, -d.macD/2, d.macD/2, d.padTop, d.macZ1);
+    }
+    /* Visible FRONT USB-C markers.  These are visual-only reference geometry, never printable:
+       two bright tabs sit just proud of the -Y face so a front view can show whether ordinary
+       honeycomb cells really expose the measured-approximate socket positions. */
+    var U = MAC_MINI_M4.frontUsbC;
+    if (U && U.status === "MEASURED_APPROX") {
+      var usbZ = d.macZ1 - U.centreFromTop;
+      var usbY0 = -d.macD/2 - 0.8, usbY1 = -d.macD/2 + 0.05;
+      [U.leftCentreFromLeft, U.rightCentreFromLeft].forEach(function (fromLeft) {
+        var usbX = -d.macW/2 + fromLeft;
+        addBox(M, "ref_mac_usb",
+               usbX - U.portOpening.width/2, usbX + U.portOpening.width/2,
+               usbY0, usbY1,
+               usbZ - U.portOpening.height/2, usbZ + U.portOpening.height/2);
+      });
     }
   },
 
@@ -3209,13 +3224,19 @@ var REF_PARTS = [
            "centre collar OD 47 mm reaches the same top level as the outer rim. Shallow face recess omitted." },
   { id: "ref_mac",     name: "Mac mini M4",          owner: "neckbase", color: [0.68,0.70,0.72],
     category: "ELECTRONICS", source: "PURCHASED", status: "VERIFIED", accuracy: "L1", version: MAC_MINI_M4.version,
-    measured: MAC_MINI_M4.measured, unknown: MAC_MINI_M4.unknown, rules: MAC_MINI_M4.rules,
+    measured: MAC_MINI_M4.measured, frontUsbC: MAC_MINI_M4.frontUsbC,
+    unknown: MAC_MINI_M4.unknown, rules: MAC_MINI_M4.rules,
     keepouts: [{ id: "MAC_POWER_ACCESS", x: MAC_MINI_M4.powerAccessKeepout.x, y: MAC_MINI_M4.powerAccessKeepout.y,
                  z: "cradle top .. Mac underside", about: "rear-left 40 x 40 mm finger zone for the power button" }],
     about: "Measured fit-level reference: envelope 128 x 128 x 49 mm; central raised underside Ø100 x 8 mm; " +
            "FRONT is -Y (2x USB-C + 3.5 mm audio), REAR is +Y (main cable bundle). Power button: underside, " +
            "rear-left, centre 15 mm from left and rear edges (-49, +49), dia 10; its 40 x 40 mm corner is a " +
-           "structure-free keep-out. Vent-slot detail and case corner radii are intentionally omitted." },
+           "structure-free keep-out. Two bright front markers show the MEASURED_APPROX USB-C positions for visual access checking. " +
+           "Vent-slot detail and case corner radii are intentionally omitted." },
+  { id: "ref_mac_usb", name: "Mac mini front USB-C markers", owner: "neckbase", color: [0.20,0.82,1.00],
+    category: "ELECTRONICS", source: "MEASURED_APPROX", status: "UNVERIFIED", accuracy: "approx +/- 1-2 mm",
+    about: "Visual-only markers for the two hand-measured front USB-C sockets: 28 and 45 mm from the left edge, " +
+           "28 mm below the top edge. Marker size follows the approximate 2 x 10 mm socket opening. Never exported." },
   { id: "ref_servo",   name: "Servo (ref)",         owner: "cassette", color: [1.00,0.35,0.35] },
   { id: "ref_bearing", name: "Bearing (ref)",       owner: "adapter",  color: [1.00,0.85,0.30] },
   { id: "ref_hub",     name: "Rotating hub (ref)",  owner: "adapter",  color: [1.00,0.45,0.90] },
@@ -3446,7 +3467,7 @@ function partGroups(id) {
  * 6. EXPLODED VIEW (never applied to an STL)
  * ---------------------------------------------------------------- */
 var EXPLODE_Z = {
-  neckbase: 0, ref_weight: -1.0, ref_mac: 0, neckshoulder: 0.5,
+  neckbase: 0, ref_weight: -1.0, ref_mac: 0, ref_mac_usb: 0, neckshoulder: 0.5,
   crown: 1.0, adapter: 2.0, ref_bearing: 2.4, ref_hub: 2.8,
   cagebase: 3.6, ref_usbhub: 4.0, cradle: 4.4, ref_bracket: 5.0,
   cagebody: 5.8, cagelid: 7.2
@@ -7791,77 +7812,43 @@ CAD.init();                                   /* one status read; file:// asks n
 (function(){
   var canvas=document.getElementById("gl");
   if(!canvas) return;
-
   var state=null, moved=0;
-
   function dist(a,b){var dx=a.clientX-b.clientX,dy=a.clientY-b.clientY;return Math.hypot(dx,dy);}
   function mid(a,b){return {x:(a.clientX+b.clientX)/2,y:(a.clientY+b.clientY)/2};}
-
   canvas.addEventListener("touchstart",function(e){
     if(!window.viewer || !viewer.ok) return;
     moved=0;
-    if(e.touches.length===1){
-      state={mode:"orbit",x:e.touches[0].clientX,y:e.touches[0].clientY,startX:e.touches[0].clientX,startY:e.touches[0].clientY};
-    } else if(e.touches.length===2){
-      var m=mid(e.touches[0],e.touches[1]);
-      state={mode:"pinchpan",x:m.x,y:m.y,d:dist(e.touches[0],e.touches[1]),startDist:viewer.cam.dist};
-    }
+    if(e.touches.length===1){state={mode:"orbit",x:e.touches[0].clientX,y:e.touches[0].clientY};}
+    else if(e.touches.length===2){var m=mid(e.touches[0],e.touches[1]);state={mode:"pinchpan",x:m.x,y:m.y,d:dist(e.touches[0],e.touches[1])};}
     e.preventDefault();
   },{passive:false});
-
   canvas.addEventListener("touchmove",function(e){
     if(!state || !window.viewer || !viewer.ok) return;
     var c=viewer.cam;
     if(e.touches.length===1 && state.mode==="orbit"){
       var t=e.touches[0],dx=t.clientX-state.x,dy=t.clientY-state.y;
-      moved+=Math.abs(dx)+Math.abs(dy);
-      state.x=t.clientX;state.y=t.clientY;
-      c.az-=dx*0.010;
-      c.el=Math.max(-1.553,Math.min(1.553,c.el+dy*0.010));
-      if(window.render) render();
+      moved+=Math.abs(dx)+Math.abs(dy);state.x=t.clientX;state.y=t.clientY;
+      c.az-=dx*0.010;c.el=Math.max(-1.553,Math.min(1.553,c.el+dy*0.010));if(window.render)render();
     } else if(e.touches.length===2){
       var m=mid(e.touches[0],e.touches[1]),d=dist(e.touches[0],e.touches[1]);
-      if(state.mode!=="pinchpan"){state={mode:"pinchpan",x:m.x,y:m.y,d:d,startDist:c.dist};}
-      var dx=m.x-state.x,dy=m.y-state.y;
+      if(state.mode!=="pinchpan")state={mode:"pinchpan",x:m.x,y:m.y,d:d};
+      var dx=m.x-state.x,dy=m.y-state.y,sc=c.dist*0.0018,rx=[-Math.sin(c.az),Math.cos(c.az),0],ce=Math.cos(c.el),se=Math.sin(c.el),uy=[-se*Math.cos(c.az),-se*Math.sin(c.az),ce];
       moved+=Math.abs(dx)+Math.abs(dy)+Math.abs(d-state.d);
-      var sc=c.dist*0.0018;
-      var rx=[-Math.sin(c.az),Math.cos(c.az),0];
-      var ce=Math.cos(c.el),se=Math.sin(c.el);
-      var uy=[-se*Math.cos(c.az),-se*Math.sin(c.az),ce];
-      c.target[0]+=(-dx*rx[0]+dy*uy[0])*sc;
-      c.target[1]+=(-dx*rx[1]+dy*uy[1])*sc;
-      c.target[2]+=(-dx*rx[2]+dy*uy[2])*sc;
-      if(state.d>0)c.dist=Math.max(15,Math.min(6000,c.dist*(state.d/d)));
-      state.x=m.x;state.y=m.y;state.d=d;
-      if(window.render) render();
+      c.target[0]+=(-dx*rx[0]+dy*uy[0])*sc;c.target[1]+=(-dx*rx[1]+dy*uy[1])*sc;c.target[2]+=(-dx*rx[2]+dy*uy[2])*sc;
+      if(state.d>0)c.dist=Math.max(15,Math.min(6000,c.dist*(state.d/d)));state.x=m.x;state.y=m.y;state.d=d;if(window.render)render();
     }
     e.preventDefault();
   },{passive:false});
-
   canvas.addEventListener("touchend",function(e){
     if(state && state.mode==="orbit" && moved<10 && e.changedTouches.length && window.pickInstance && window.selectInstance && window.S && (S.mode==="assembly"||S.mode==="build")){
-      var t=e.changedTouches[0],r=canvas.getBoundingClientRect();
-      var hit=pickInstance(t.clientX-r.left,t.clientY-r.top);
-      if(hit!==null)selectInstance(hit);
+      var t=e.changedTouches[0],r=canvas.getBoundingClientRect(),hit=pickInstance(t.clientX-r.left,t.clientY-r.top);if(hit!==null)selectInstance(hit);
     }
-    if(e.touches.length===0)state=null;
-    e.preventDefault();
+    if(e.touches.length===0)state=null;e.preventDefault();
   },{passive:false});
-
-  var b=document.createElement("button");
-  b.id="mobileViewToggle";b.className="btn";b.textContent="VIEW ONLY";
-  b.title="Hide panels and maximize the 3D view";
-  b.onclick=function(){
-    document.body.classList.toggle("mobile-view-only");
-    b.textContent=document.body.classList.contains("mobile-view-only")?"SHOW PANELS":"VIEW ONLY";
-    setTimeout(function(){if(window.render)render();},40);
-  };
-  var h=document.querySelector("header"); if(h) h.appendChild(b);
-
-  if(/iPhone|iPad|iPod/i.test(navigator.userAgent)){
-    document.body.classList.add("mobile-view-only");
-    b.textContent="SHOW PANELS";
-  }
+  var b=document.createElement("button");b.id="mobileViewToggle";b.className="btn";b.textContent="VIEW ONLY";b.title="Hide panels and maximize the 3D view";
+  b.onclick=function(){document.body.classList.toggle("mobile-view-only");b.textContent=document.body.classList.contains("mobile-view-only")?"SHOW PANELS":"VIEW ONLY";setTimeout(function(){if(window.render)render();},40);};
+  var h=document.querySelector("header");if(h)h.appendChild(b);
+  if(/iPhone|iPad|iPod/i.test(navigator.userAgent)){document.body.classList.add("mobile-view-only");b.textContent="SHOW PANELS";}
 })();
 </script>
 \n</body>
