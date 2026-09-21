@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<!-- GENERATED STANDALONE SNAPSHOT from AI_HEAD feature/mechanical-studio-builder-v1. Includes Mac mini front USB-C visual markers. Do not edit as source of truth. -->
+<!-- HOSTED MOBILE MIRROR of AI_HEAD Mechanical Studio standalone, synced from AI_HEAD commit f620b57876d8e42b486f7fbf32165fad1c9cb591. Source of truth remains AI_HEAD. DEPLOYMENT CONTRACT: whenever Mechanical Studio geometry/parts change, regenerate the AI_HEAD standalone and refresh this hosted mirror. -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">\n<meta name="robots" content="noindex,nofollow">\n<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>AI_CUBE Mechanical Studio Mobile</title>
 <style>
 :root{
@@ -308,7 +311,7 @@ body.mobile-view-only #left,
 body.mobile-view-only #right,
 body.mobile-view-only #bottom{display:none!important}
 body.mobile-view-only #center{height:calc(100dvh - 112px)!important;min-height:420px!important;border-bottom:0}
-\n</style>
+</style>
 </head>
 <body>
 <div id="app">
@@ -853,6 +856,36 @@ function addBox(mesh, g, x0, x1, y0, y1, z0, z1) {
   if (!(x1 > x0 + 1e-9 && y1 > y0 + 1e-9 && z1 > z0 + 1e-9)) return;
   addExtruded(mesh, g, rect2((x0+x1)/2, (y0+y1)/2, x1-x0, y1-y0), null, z0, z1, XF.XY(0), "box");
 }
+/* Closed rounded cuboid with a plan radius and a smaller top / bottom edge radius.
+   A plain rounded extrusion still has razor-sharp horizontal edges; this loft keeps
+   reference hardware recognisable without pretending it is manufacturing CAD. */
+function addRoundedCuboid(mesh, g, cx, cy, w, d, z0, z1, planR, edgeR, seg) {
+  if (!(w > 0 && d > 0 && z1 > z0)) return;
+  planR = Math.max(0, Math.min(planR || 0, Math.min(w, d)/2 - 1e-4));
+  edgeR = Math.max(0, Math.min(edgeR || 0, (z1-z0)/2 - 1e-4, Math.min(w, d)/2 - 1e-4));
+  seg = Math.max(2, seg || 6);
+  if (edgeR < 1e-6) {
+    addExtruded(mesh, g, roundRect2(cx, cy, w, d, planR, seg), null, z0, z1, XF.XY(0), "rounded cuboid");
+    return;
+  }
+  var sections = [], n = 4, i;
+  function section(z, inset) {
+    var ring = roundRect2(cx, cy, w-2*inset, d-2*inset, Math.max(0, planR-inset), seg);
+    return ring.map(function (q) { return [q[0], q[1], z]; });
+  }
+  /* Circular quarter-profile at the lower edge. */
+  for (i = 0; i <= n; i++) {
+    var a = Math.PI/2*i/n;
+    sections.push(section(z0 + edgeR*(1-Math.cos(a)), edgeR*(1-Math.sin(a))));
+  }
+  /* Same profile mirrored at the upper edge.  i=0 is required: it closes the
+     straight, constant-plan side wall before the upper fillet begins. */
+  for (i = 0; i <= n; i++) {
+    var b = Math.PI/2*i/n;
+    sections.push(section(z1 - edgeR + edgeR*Math.sin(b), edgeR*(1-Math.cos(b))));
+  }
+  addLoft(mesh, g, sections);
+}
 /* Rectangular ring (frame) from z0 to z1. */
 function addFrame(mesh, g, cx, cy, ow, od, iw, id, z0, z1, r) {
   if (!(ow > iw + 1e-9 && od > id + 1e-9)) return;
@@ -970,34 +1003,343 @@ var BR_ROT = {
 };
 var SEG = 64, SEG_S = 40, NCOL = 14, NRIB = 18;
 
-/* Purchased Mac mini M4, reference v4.  Mac-local XY, centred; FRONT -Y, REAR +Y, LEFT -X.
-   MEASURED and UNKNOWN are kept apart on purpose: nothing in here is a guess. */
+/* ================================================================ *
+ * MAC MINI M4 (2024) REFERENCE V6
+ *
+ * One independent builder for the purchased computer: its data, its I/O layout
+ * and its reference geometry.  The Neck Base only decides WHERE the Mac sits and
+ * consumes the mechanical facts (fit envelope, keep-outs, plug paths); it never
+ * draws the Mac itself.  Mac-local frame: origin at the plan centre on the RAIL
+ * SEAT (the flat outer underside of the aluminium enclosure), FRONT -Y, REAR +Y,
+ * LEFT -X, Z up.  Provenance classes never mix:
+ *   APPLE_SPEC           Apple's public Tech Specs (rounded product dimensions)
+ *   USER_MEASURED        ruler measurements on the project machine (about +/- 1 mm)
+ *   MEASURED_APPROX      hand measurement kept in the form it was taken (+/- 1-2 mm)
+ *   IMAGE_DERIVED_APPROX scaled from Apple's product imagery against the 127 mm width;
+ *                        never a fit measurement (v5 values, not re-calibrated in v6)
+ *   ESTIMATED            a plausible working value with no measurement or image behind it;
+ *                        PENDING_MEASUREMENT until a caliper or a calibrated image replaces it
+ *   UNKNOWN              deliberately not modelled to any precision
+ *   DESIGN_KEEP_OUT      a conservative design rule of this project, not a Mac fact
+ *   VISUAL_ONLY          appearance cues with no mechanical meaning at all
+ * ---------------------------------------------------------------- */
 var MAC_MINI_M4 = {
-  version: 4,
-  measured: {
-    envelope: [128, 128, 49],                       /* from the table, raised underside region included */
-    powerButton: { face: "underside", corner: "rear-left", fromLeftEdge: 15, fromRearEdge: 15,
-                   centre: [-49, 49], diameter: 10 },
-    undersideRaisedHeight: 8,                       /* the centre underside foot stands 8 mm proud */
-    undersideRaisedDiameter: 100                    /* measured footprint / central raised circle */
+  version: 6,
+  frame: "origin at the plan centre on the rail seat (flat outer underside of the enclosure); FRONT -Y, REAR +Y, LEFT -X, Z up",
+  official: {
+    model: "Mac mini (2024), Apple M4",
+    nominalEnvelope: [127, 127, 50],
+    source: "Apple Mac mini (2024) Tech Specs",
+    sourceUrl: "https://support.apple.com/en-us/121555",
+    status: "APPLE_SPEC",
+    ports: { front: ["2x USB-C (USB 3, 10 Gb/s)", "status light", "3.5 mm headphone jack"],
+             rear: ["power", "Gigabit Ethernet", "HDMI", "3x Thunderbolt 4 / USB-C (M4)"] }
   },
-  unknown: ["flatness of the outer underside annulus", "plan corner radius",
-            "front USB-C port positions to better than about 2 mm (they are MEASURED_APPROX)"],
+  measured: {
+    status: "USER_MEASURED", precision: "ruler on the project machine, about +/- 1 mm",
+    physicalApprox: [128, 128, 49],                 /* from the table, raised underside region included */
+    powerButton: { face: "underside", corner: "rear-left", fromLeftEdge: 15, fromRearEdge: 15, diameter: 10,
+                   status: "USER_MEASURED" },
+    /* the CENTRAL RAISED underside region: about dia 100, standing about 8 mm proud of the rail seat.
+       This is all the ruler proved.  It does NOT say that every black underside feature is one
+       dia 100 cylinder, nor how the black area meets the aluminium around it. */
+    undersideRaisedHeight: 8,
+    undersideRaisedDiameter: 100
+  },
+  /* CONSERVATIVE mechanical envelope for every holder: per axis the larger of the ruler value and
+     Apple's nominal.  49 mm measured against Apple's 50 mm is NOT a conservative fit height. */
+  fit: { envelope: [128, 128, 50], status: "CONSERVATIVE_FIT",
+         rule: "max(USER_MEASURED, APPLE_SPEC) per axis until a caliper confirms the height" },
+  /* Visual enclosure: Apple's nominal plan and height.  The radii are NOT measured and were NOT
+     derived from imagery in v6 (no access to Apple imagery on 2026-09-21). */
+  shape: {
+    status: "ESTIMATED", pending: "PENDING_MEASUREMENT", precision: "unknown; treat as +/- 5 mm",
+    planCornerRadius: 20.0,
+    planCornerRadiusStatus: "ESTIMATED / PENDING_MEASUREMENT",
+    planCornerRadiusNote: "working value only. v5 carried 25.5 mm as IMAGE_DERIVED_APPROX; that value is inconsistent with " +
+                          "v5's own image-derived rear I/O row (the power inlet would lie on the curved corner), so one of the two " +
+                          "v5 derivations is wrong and neither could be re-checked. 20 mm is a plausible value chosen so the model " +
+                          "stays self-consistent - it is not evidence about the enclosure. Measure the corner on the machine.",
+    topEdgeRadius: 3.0, bottomEdgeRadius: 3.0,
+    edgeRadiusStatus: "IMAGE_DERIVED_APPROX (v5), not re-verified",
+    bodyHeightAboveSeat: 42,     /* 50 nominal (APPLE_SPEC) overall minus the 8 mm USER_MEASURED raised region */
+    source: "planCornerRadius: none (ESTIMATED); edge radii: v5 image derivation, not re-verified; height: APPLE_SPEC minus USER_MEASURED"
+  },
+  /* Underside.  Only the central raised region is measured.  It is drawn as a simple disc because
+     nothing more is known - the shape of the black area around it, how it meets the aluminium and
+     the real grille are UNKNOWN / VISUAL_ONLY, never precision. */
+  base: {
+    raisedRegion: { diameter: 100, height: 8, status: "USER_MEASURED", precision: "ruler, about +/- 1 mm",
+                    about: "central raised underside region; the airflow keep-out and the rail bearing rule use exactly this" },
+    visual: { status: "ESTIMATED", bottomDiameter: 97, bottomEdgeRadius: 1.5,
+              about: "a slight taper and a rounded foot edge so the disc does not read as a bare cylinder; not measured, not image-derived" },
+    surroundingUnderside: { status: "UNKNOWN",
+                            about: "whether the black area extends beyond the dia 100 raised region, the profile of the aluminium " +
+                                   "annulus around it and the flat bearing width for the rails are not measured; the model draws the " +
+                                   "aluminium underside flat out to the 3 mm edge fillet" },
+    vents: { status: "VISUAL_ONLY", slots: 48, rInner: 35, rOuter: 46, fill: 0.55, depth: 0.8,
+             note: "a ring of radial slots reads like Apple's circular bottom grille; count, width and radii are not measured" }
+  },
   /* Hand measured, APPROXIMATELY - good to about 1-2 mm, and kept in the form it was taken: from the LEFT
-     edge and from the TOP edge of the front face.  It is never converted into a "precise" number, and it
-     is never VERIFIED.  It is good enough for one thing: steering the honeycomb so that both ports sit
-     behind ordinary cells, with room for a plug and for this uncertainty.  No dedicated opening is cut. */
-  frontUsbC: { status: "MEASURED_APPROX", precision: "hand measurement, about +/- 1-2 mm",
-               leftCentreFromLeft: 28, rightCentreFromLeft: 45, centreFromTop: 28,
-               portOpening: { width: 2, height: 10, orientation: "vertical" },
-               /* what has to pass: the USB-C spec's largest plug overmold, standing like the port */
-               plugEnvelope: { width: 6.5, height: 12.35, source: "USB Type-C spec, maximum overmold" },
-               positionalTolerance: { x: 2, z: 2 } },
+     edge and from the TOP edge of the front face.  Never converted into a "precise" number, never
+     VERIFIED.  It steers the honeycomb so that both ports sit behind ordinary cells with room for a plug
+     and for this uncertainty.  No dedicated opening is cut in the shell. */
+  frontUsbC: {
+    status: "MEASURED_APPROX", precision: "hand measurement, about +/- 1-2 mm",
+    leftCentreFromLeft: 28, rightCentreFromLeft: 45, centreFromTop: 28,
+    orientation: "vertical",                        /* the pill stands upright on this machine (owner's statement) */
+    caseOpening: { across: 3.4, along: 9.2, radius: 1.7, status: "ESTIMATED",
+                   source: "a typical USB-C case cut-out, larger than the 8.34 x 2.56 receptacle; not measured on this machine" },
+    plugEnvelope: { across: 6.5, along: 12.35, source: "USB Type-C spec, maximum plug overmold" },
+    positionalTolerance: { x: 2, z: 2 }
+  },
+  frontOther: {
+    status: "IMAGE_DERIVED_APPROX", precision: "about +/- 1.5 mm",
+    source: "scaled from Apple's 2024 front-port illustration",
+    statusLight: { centreFromLeft: 87.6, centreFromTop: 27.0, diameter: 1.8 },
+    headphone: { centreFromLeft: 99.8, centreFromTop: 27.0, diameter: 5.6, diameterStatus: "ESTIMATED (v5 drew 4.2)" },
+    note: "positions are v5 image derivations, not re-verified in v6"
+  },
+  rearIO: {
+    status: "IMAGE_DERIVED_APPROX", precision: "about +/- 1.5 mm",
+    source: "scaled from Apple's 2024 M4 rear-port illustration; retained from v5, not re-calibrated in this session",
+    datum: "centre from the left edge as viewed directly from the rear",
+    /* opening is [across X, along Z] of the case cut-out; cable is the DESIGN_KEEP_OUT plug / finger
+       envelope that must stay clear from the rear face outwards. */
+    ports: [
+      { id: "POWER",    kind: "roundrect", centreFromLeft: 31.4,  centreFromTop: 26.5, opening: [20.5, 11.5], radius: 5.2,  cable: [25, 17] },
+      { id: "ETHERNET", kind: "roundrect", centreFromLeft: 53.4,  centreFromTop: 26.5, opening: [13.5, 12.0], radius: 1.4,  cable: [20, 18] },
+      { id: "HDMI",     kind: "hdmi",      centreFromLeft: 72.5,  centreFromTop: 26.5, opening: [15.0, 6.5],  radius: 0,    cable: [22, 13] },
+      { id: "TB1",      kind: "usbc",      centreFromLeft: 87.1,  centreFromTop: 26.5, opening: [3.4, 9.2],   radius: 1.7,  cable: [7, 13] },
+      { id: "TB2",      kind: "usbc",      centreFromLeft: 95.7,  centreFromTop: 26.5, opening: [3.4, 9.2],   radius: 1.7,  cable: [7, 13] },
+      { id: "TB3",      kind: "usbc",      centreFromLeft: 104.3, centreFromTop: 26.5, opening: [3.4, 9.2],   radius: 1.7,  cable: [7, 13] }
+    ],
+    orientationTB: "vertical",
+    orientationStatus: "IMAGE_DERIVED_APPROX (v5): the 8.6 mm pitch only fits upright ports; not re-verified",
+    openingStatus: "ESTIMATED: cut-out sizes are typical connector cut-outs, not measured; only the centres are image-derived",
+    cableReach: 42, cableStatus: "DESIGN_KEEP_OUT"
+  },
+  logo: { status: "VISUAL_ONLY", diameter: 18, note: "a plain grey orientation mark on the top face, not the Apple logo outline" },
   /* design rule, not a measurement: a whole finger has to reach the 10 mm button */
-  powerAccessKeepout: { size: [40, 40], x: [-64, -24], y: [24, 64] },
-  rules: ["the centre underside stays open - no structure under the ventilation region",
-          "nothing structural inside the rear-left power-access keep-out, up to the Mac underside"]
+  powerAccessKeepout: { status: "DESIGN_KEEP_OUT", size: [40, 40], x: [-64, -24], y: [24, 64] },
+  airflowKeepout: { status: "DESIGN_KEEP_OUT", diameter: 100, about: "no structure under the black base, down to the ballast" },
+  rules: ["the centre underside stays open - no structure under the ventilation base",
+          "nothing structural inside the rear-left power-access keep-out, up to the Mac underside",
+          "every rear connector keeps a straight plug path through the open rear",
+          "the holder fits the CONSERVATIVE 128 x 128 x 50 envelope, never the 127 x 127 x 50 visual body"],
+  unknown: ["overall height to better than 1 mm: ruler says 49, Apple says 50 (fit uses 50)",
+            "plan corner radius of the enclosure (20 mm is ESTIMATED / PENDING_MEASUREMENT, not image-derived)",
+            "flatness and width of the outer underside annulus the rails bear on",
+            "shape of the black underside beyond the measured dia 100 raised region (UNKNOWN; drawn as a plain disc)",
+            "exact enclosure edge fillet radii (3 mm is a v5 image derivation, not re-verified)",
+            "front USB-C port positions to better than about 2 mm (they are MEASURED_APPROX)",
+            "exact rear-port positions and the rear Thunderbolt pitch / orientation (IMAGE_DERIVED_APPROX, not re-calibrated)",
+            "vent slot count and width (VISUAL_ONLY)"]
 };
+
+/* Everything a holder or the builder needs, in WORLD coordinates for a Mac whose rail seat plane
+   is at seatZ and whose plan centre is at (0, 0).  Two datums, on purpose:
+   - MECHANICAL: the CONSERVATIVE fit envelope (128 x 128 x 50).  Hand-measured port centres were taken
+     from the edges of the ruler-measured machine, so the honeycomb steering, the plug paths and the
+     keep-outs count from the fit faces - exactly as v5 did.
+   - VISUAL: Apple's nominal 127 x 127 x 50 body the enclosure is drawn as; the sockets are cut where
+     the same edge distances land on that body (0.5 mm inboard of the mechanical datum). */
+function macMiniLayout(seatZ, opt) {
+  opt = opt || {};
+  var D = MAC_MINI_M4, hv = D.official.nominalEnvelope[0]/2, fit = D.fit.envelope.slice();
+  if (opt.fitEnvelope) { var fe = opt.fitEnvelope; fit = [Math.max(fe[0], fit[0]), Math.max(fe[1], fit[1]), Math.max(fe[2], fit[2])]; }
+  var hf = [fit[0]/2, fit[1]/2], baseH = D.base.raisedRegion.height, topZ = seatZ + D.shape.bodyHeightAboveSeat, baseZ = seatZ - baseH;
+  var U = D.frontUsbC, vert = U.orientation === "vertical";
+  var open = vert ? [U.caseOpening.across, U.caseOpening.along] : [U.caseOpening.along, U.caseOpening.across];
+  var plug = vert ? [U.plugEnvelope.across, U.plugEnvelope.along] : [U.plugEnvelope.along, U.plugEnvelope.across];
+  var tol = [U.positionalTolerance.x, U.positionalTolerance.z], usbReach = opt.usbReach || 38, cableReach = opt.cableReach || D.rearIO.cableReach;
+  var fitTopZ = baseZ + fit[2];                     /* the fit envelope's top edge: the mechanical datum for "from the top edge" */
+  var usb = [U.leftCentreFromLeft, U.rightCentreFromLeft].map(function (fromLeft, i) {
+    var c = [-hf[0] + fromLeft, fitTopZ - U.centreFromTop], vc = [-hv + fromLeft, topZ - U.centreFromTop];
+    return { id: "USB_C_" + (i+1), centre: c, visualCentre: vc, datum: "fit envelope edges", opening: open.slice(), radius: U.caseOpening.radius,
+             orientation: U.orientation, status: U.status, precision: U.precision, plug: plug.slice(), tolerance: tol.slice(),
+             /* the plug and the measurement uncertainty, from the FIT front face out to the shell */
+             envelope: [c[0] - plug[0]/2 - tol[0], -hf[1] - usbReach, c[1] - plug[1]/2 - tol[1],
+                        c[0] + plug[0]/2 + tol[0], -hf[1] - 0.05,     c[1] + plug[1]/2 + tol[1]] };
+  });
+  var FO = D.frontOther, RI = D.rearIO;
+  var rear = RI.ports.map(function (q) {
+    /* looking at the REAR (+Y) reverses screen X: the left edge of Apple's rear view is model +X */
+    var c = [hf[0] - q.centreFromLeft, fitTopZ - q.centreFromTop], vc = [hv - q.centreFromLeft, topZ - q.centreFromTop];
+    return { id: q.id, kind: q.kind, centre: c, visualCentre: vc, datum: "fit envelope edges, seen from the rear",
+             opening: q.opening.slice(), radius: q.radius || 0, cable: q.cable.slice(), cableStatus: RI.cableStatus,
+             cableBox: [c[0] - q.cable[0]/2, hf[1] + 0.05, c[1] - q.cable[1]/2, c[0] + q.cable[0]/2, hf[1] + cableReach, c[1] + q.cable[1]/2] };
+  });
+  var PB = D.measured.powerButton, KO = D.powerAccessKeepout, k0 = opt.keepoutZ0 === undefined ? baseZ : opt.keepoutZ0;
+  return {
+    version: D.version, seatZ: seatZ, topZ: topZ, baseZ: baseZ, halfVisual: hv, halfFit: hf, fit: fit,
+    visualBody: [2*hv, 2*hv, D.official.nominalEnvelope[2]],
+    fitBox: [-hf[0], -hf[1], baseZ, hf[0], hf[1], baseZ + fit[2]],
+    front: { status: FO.status, precision: FO.precision, source: FO.source, usbC: usb,
+             statusLight: { centre: [-hv + FO.statusLight.centreFromLeft, topZ - FO.statusLight.centreFromTop], diameter: FO.statusLight.diameter },
+             headphone:   { centre: [-hv + FO.headphone.centreFromLeft,   topZ - FO.headphone.centreFromTop],   diameter: FO.headphone.diameter } },
+    rear: { status: RI.status, precision: RI.precision, source: RI.source, ports: rear },
+    powerButton: { centre: [-hv + PB.fromLeftEdge, hv - PB.fromRearEdge], diameter: PB.diameter, z: seatZ, status: PB.status,
+                   fromLeftEdge: PB.fromLeftEdge, fromRearEdge: PB.fromRearEdge },
+    powerKeepout: [-hf[0], hf[1] - KO.size[1], k0, -hf[0] + KO.size[0], hf[1], seatZ],
+    airflowKeepout: { centre: [0, 0], diameter: D.airflowKeepout.diameter, z: [k0, baseZ] }
+  };
+}
+
+/* ---- planar faces with real pockets (no CSG) ------------------------------
+   A face is given in its own (u, v) frame: origin O, unit axes U and V, outward
+   normal N = U x V.  The outer ring is CCW in (u, v), holes are cut by the
+   triangulator, and every hole gets a pocket: walls and a back face whose
+   normals point INTO the cavity, so the union stays one closed solid. */
+function addFaceWithPockets(mesh, gFace, gPocket, gBack, F, outer, holes, depth, label) {
+  var T = triangulate(outer, holes), i, k;
+  if (!T.tris) { mesh.fails.push((label || gFace) + ": " + T.why); return false; }
+  function W(u, v, dp) { return [F.O[0] + u*F.U[0] + v*F.V[0] - dp*F.N[0], F.O[1] + u*F.U[1] + v*F.V[1] - dp*F.N[1], F.O[2] + u*F.U[2] + v*F.V[2] - dp*F.N[2]]; }
+  for (i = 0; i < T.tris.length; i++) { var t = T.tris[i]; mesh.tri(gFace, W(t[0][0], t[0][1], 0), W(t[1][0], t[1][1], 0), W(t[2][0], t[2][1], 0)); }
+  T.holes.forEach(function (h) {                     /* h is CW in (u, v): material on its left */
+    for (k = 0; k < h.length; k++) {
+      var p = h[k], q = h[(k+1) % h.length];
+      mesh.quad(gPocket, W(p[0], p[1], 0), W(p[0], p[1], depth), W(q[0], q[1], depth), W(q[0], q[1], 0));
+    }
+    var back = triangulate(h.slice().reverse(), null);
+    if (!back.tris) { mesh.fails.push((label || gFace) + ": pocket back face"); return; }
+    back.tris.forEach(function (t) { mesh.tri(gBack || gPocket, W(t[0][0], t[0][1], depth), W(t[1][0], t[1][1], depth), W(t[2][0], t[2][1], depth)); });
+  });
+  return true;
+}
+function faceFrame(O, U, V) {
+  return { O: O, U: U, V: V, N: [U[1]*V[2]-U[2]*V[1], U[2]*V[0]-U[0]*V[2], U[0]*V[1]-U[1]*V[0]] };
+}
+/* lateral skin between stacked rings (same point count, CCW seen from +Z, rising) - no caps */
+function addLateral(mesh, g, sections) {
+  var l, i, m = sections[0].length;
+  for (l = 0; l < sections.length - 1; l++) {
+    var A = sections[l], B = sections[l+1];
+    for (i = 0; i < m; i++) { var j = (i+1) % m; mesh.quad(g, A[i], A[j], B[j], B[i]); }
+  }
+}
+function hdmiProfile2(x, z, w, h) {                  /* the trapezoid, wider at the top */
+  return [[x-w/2+1.7, z-h/2], [x+w/2-1.7, z-h/2], [x+w/2, z+h/2], [x-w/2, z+h/2]];
+}
+function sectorProfile2(r0, r1, a0, a1, n) {
+  var out = [], i;
+  for (i = 0; i <= n; i++) { var a = a0 + (a1-a0)*i/n; out.push([r0*Math.cos(a), r0*Math.sin(a)]); }
+  for (i = n; i >= 0; i--) { var b = a0 + (a1-a0)*i/n; out.push([r1*Math.cos(b), r1*Math.sin(b)]); }
+  return out;
+}
+
+/* The V6 reference itself.  `L` is a macMiniLayout(); everything is drawn in world
+   coordinates.  Realistic groups look like the machine; service groups are
+   diagnostics, hidden by default.  None of it is ever printable. */
+var MAC_GROUPS = {
+  realistic: ["ref_mac", "ref_mac_bottom", "ref_mac_underside_vents", "ref_mac_front_io", "ref_mac_front_led",
+              "ref_mac_rear_io", "ref_mac_power_button", "ref_mac_logo"],
+  service:   ["ref_mac_service_fit_envelope", "ref_mac_service_front_usb", "ref_mac_service_cable_keepouts",
+              "ref_mac_service_power_keepout", "ref_mac_service_airflow_keepout"]
+};
+function buildMacMiniM4Reference(mesh, L, opt) {
+  opt = opt || {};
+  var D = MAC_MINI_M4, S = D.shape, hv = L.halfVisual, w = 2*hv, seat = L.seatZ, H = L.topZ - seat;
+  var planR = S.planCornerRadius, rB = S.bottomEdgeRadius, rT = S.topEdgeRadius, seg = opt.cornerSegments || 8, nF = 4;
+  var pocket = opt.pocketDepth || 5.0, out = { fails: [], groups: MAC_GROUPS, layout: L };
+  var T = new Mesh(), i;
+  function ring(z, inset) {
+    return roundRect2(0, 0, w - 2*inset, w - 2*inset, Math.max(0, planR - inset), seg).map(function (q) { return [q[0], q[1], seat + z]; });
+  }
+  if (opt.body !== false) {
+    /* ---- aluminium enclosure: bottom face, bottom fillet, straight walls, top fillet, top face ---- */
+    var flat = hv - planR, zb = rB, zt = H - rT;
+    var bottom = [], top = [];
+    for (i = 0; i <= nF; i++) { var a = Math.PI/2*i/nF; bottom.push(ring(rB*(1-Math.cos(a)), rB*(1-Math.sin(a)))); }
+    for (i = 0; i <= nF; i++) { var b = Math.PI/2*i/nF; top.push(ring(zt + rT*Math.sin(b), rT*(1-Math.cos(b)))); }
+    addLateral(T, "ref_mac", bottom);
+    addLateral(T, "ref_mac", top);
+    /* the straight band: quads everywhere except the front and rear flats, which are faces with pockets */
+    var lo = bottom[nF], hi = top[0], m = lo.length, k;
+    for (k = 0; k < m; k++) {
+      var p = lo[k], q = lo[(k+1) % m], y0 = p[1], y1 = q[1];
+      var front = Math.abs(y0 + hv) < 1e-9 && Math.abs(y1 + hv) < 1e-9 && Math.abs(q[0] - p[0]) > 1;
+      var rear  = Math.abs(y0 - hv) < 1e-9 && Math.abs(y1 - hv) < 1e-9 && Math.abs(q[0] - p[0]) > 1;
+      if (!front && !rear) T.quad("ref_mac", p, q, hi[(k+1) % m], hi[k]);
+    }
+    var faceRect = [[-flat, seat + zb], [flat, seat + zb], [flat, seat + zt], [-flat, seat + zt]];
+    function within(prof, name) {
+      var ok = prof.every(function (v) { return v[0] > -flat + 0.2 && v[0] < flat - 0.2 && v[1] > seat + zb + 0.2 && v[1] < seat + zt - 0.2; });
+      if (!ok) out.fails.push(name + " leaves the flat face: it would sit on the rounded corner");
+      return ok;
+    }
+    /* FRONT (-Y): u = x, v = z, outward -Y */
+    var fh = [];
+    L.front.usbC.forEach(function (q) {
+      var pr = roundRect2(q.visualCentre[0], q.visualCentre[1], q.opening[0], q.opening[1], Math.min(q.radius, Math.min(q.opening[0], q.opening[1])/2 - 0.05), 5);
+      if (within(pr, q.id)) fh.push(pr);
+    });
+    var jack = circle2(L.front.headphone.centre[0], L.front.headphone.centre[1], L.front.headphone.diameter/2, 24);
+    if (within(jack, "headphone jack")) fh.push(jack);
+    addFaceWithPockets(T, "ref_mac", "ref_mac_front_io", "ref_mac_front_io",
+                       faceFrame([0, -hv, 0], [1, 0, 0], [0, 0, 1]), faceRect, fh, pocket, "Mac front face");
+    /* REAR (+Y): u = -x (the rear view's own left-to-right), v = z, outward +Y */
+    var rh = [];
+    L.rear.ports.forEach(function (q) {
+      var x = -q.visualCentre[0], z = q.visualCentre[1], ow = q.opening[0], oh = q.opening[1], pr;
+      if (q.kind === "hdmi") pr = hdmiProfile2(x, z, ow, oh);
+      else pr = roundRect2(x, z, ow, oh, Math.min(q.radius || 0.8, Math.min(ow, oh)/2 - 0.05), 5);
+      if (within(pr, q.id)) rh.push(pr);
+    });
+    addFaceWithPockets(T, "ref_mac", "ref_mac_rear_io", "ref_mac_rear_io",
+                       faceFrame([0, hv, 0], [-1, 0, 0], [0, 0, 1]), faceRect, rh, pocket, "Mac rear face");
+    /* UNDERSIDE (rail seat, z = seat): u = x, v = -y, outward -Z; the power button is a shallow recess */
+    var under = ring(0, rB).map(function (v) { return [v[0], -v[1]]; });
+    var pb = L.powerButton, btn = circle2(pb.centre[0], -pb.centre[1], pb.diameter/2, 28);
+    addFaceWithPockets(T, "ref_mac", "ref_mac", "ref_mac_power_button",
+                       faceFrame([0, 0, seat], [1, 0, 0], [0, -1, 0]), under, [btn], 0.4, "Mac underside");
+    /* TOP: u = x, v = y, outward +Z */
+    addFaceWithPockets(T, "ref_mac", "ref_mac", null,
+                       faceFrame([0, 0, seat + H], [1, 0, 0], [0, 1, 0]), ring(0, rT).map(function (v) { return [v[0], v[1]]; }), [], 0, "Mac top");
+    /* status light: a white dot just proud of the front face */
+    var sl = L.front.statusLight;
+    addExtruded(T, "ref_mac_front_led", circle2(sl.centre[0], sl.centre[1], sl.diameter/2, 16), null, 0, 0.35, XF.XZ(-hv + 0.30), "status light");
+    /* top orientation mark */
+    addExtruded(T, "ref_mac_logo", circle2(0, 0, D.logo.diameter/2, 40), null, seat + H - 0.30, seat + H + 0.05, XF.XY(0), "top mark");
+
+    /* ---- underside: the USER_MEASURED dia 100 x 8 raised region as a plain disc (nothing more is known),
+            an ESTIMATED taper so it does not read as a bare cylinder, VISUAL_ONLY vent slots ---- */
+    var B = D.base, rTop = B.raisedRegion.diameter/2, rBot = B.visual.bottomDiameter/2, rE = B.visual.bottomEdgeRadius, bz = L.baseZ, nS = 64;
+    function disc(r, z) { return circle2(0, 0, r, nS).map(function (q) { return [q[0], q[1], z]; }); }
+    var levels = [];
+    for (i = 0; i <= 3; i++) { var c = Math.PI/2*i/3; levels.push(disc(rBot - rE + rE*Math.sin(c), bz + rE - rE*Math.cos(c))); }
+    levels.push(disc(rTop, seat), disc(rTop, seat + 0.5));
+    addLateral(T, "ref_mac_bottom", levels);
+    var Vn = B.vents, slots = [], pitch = 2*Math.PI/Vn.slots;
+    for (i = 0; i < Vn.slots; i++) {
+      var a0 = i*pitch + pitch*(1 - Vn.fill)/2, a1 = a0 + pitch*Vn.fill;
+      slots.push(sectorProfile2(Vn.rInner, Vn.rOuter, a0, a1, 2).map(function (q) { return [q[0], -q[1]]; }));
+    }
+    addFaceWithPockets(T, "ref_mac_bottom", "ref_mac_underside_vents", "ref_mac_underside_vents",
+                       faceFrame([0, 0, bz], [1, 0, 0], [0, -1, 0]), circle2(0, 0, rBot - rE, nS), slots, Vn.depth, "Mac base underside");
+    addFaceWithPockets(T, "ref_mac_bottom", "ref_mac_bottom", null,
+                       faceFrame([0, 0, seat + 0.5], [1, 0, 0], [0, 1, 0]), circle2(0, 0, rTop, nS), [], 0, "Mac base top");
+  }
+  if (opt.service !== false) {
+    var fb = L.fitBox;
+    addBox(T, "ref_mac_service_fit_envelope", fb[0], fb[3], fb[1], fb[4], fb[2], fb[5]);
+    L.front.usbC.forEach(function (q) { var e = q.envelope; addBox(T, "ref_mac_service_front_usb", e[0], e[3], e[1], e[4], e[2], e[5]); });
+    L.rear.ports.forEach(function (q) { var e = q.cableBox; addBox(T, "ref_mac_service_cable_keepouts", e[0], e[3], e[1], e[4], e[2], e[5]); });
+    var K = L.powerKeepout;
+    if (K[5] > K[2]) addBox(T, "ref_mac_service_power_keepout", K[0], K[3], K[1], K[4], K[2], K[5]);
+    var A = L.airflowKeepout;
+    if (A.z[1] > A.z[0]) addCyl(T, "ref_mac_service_airflow_keepout", A.centre[0], A.centre[1], A.z[0], A.z[1], A.diameter/2, 0, 48);
+  }
+  Object.keys(T.groups).forEach(function (g) {
+    var src = T.groups[g], G = mesh._g(g);
+    for (i = 0; i < src.pos.length; i++) G.pos.push(src.pos[i]);
+    for (i = 0; i < src.nor.length; i++) G.nor.push(src.nor[i]);
+    G.n += src.n;
+  });
+  T.fails.forEach(function (f) { out.fails.push(f); });
+  out.fails.forEach(function (f) { mesh.fails.push("Mac mini reference: " + f); });
+  return out;
+}
 /* Circle of radius R with a straight notch of half-width hw cut in from the rim along `ang`,
    reaching back to u0 (measured from the centre along `ang`). */
 function notchedCircle2(cx, cy, R, ang, u0, hw, seg) {
@@ -1057,7 +1399,7 @@ var COMPONENTS = [
                  "honeycomb cells are pointy-top, the rear is open. The captive M3 nut slots are 5.8 mm wide; their " +
                  "ceiling is the only bridged surface." },
   groups: ["neckbase_plate", "neckbase_posts", "neckbase_joint", "neckbase_shell"],
-  refs: ["ref_weight", "ref_mac", "ref_mac_usb"],
+  refs: ["ref_weight"].concat(MAC_GROUPS.realistic, MAC_GROUPS.service),
   params: [
     ["weight_diameter",        "Weight diameter",            40, 300, 0.1, 137.0, "MEA"],
     ["weight_height",          "Weight height",               2,  60, 0.1,  13.0, "MEA"],
@@ -1068,9 +1410,9 @@ var COMPONENTS = [
     ["ballast_drop",           "Ballast gravity seat drop",    0,   6, 0.1,   2.0],
     ["ballast_side_clearance", "Ballast side clearance (way in)", 0.5, 10, 0.05, 2.0],
     ["cradle_wall_height",     "Ballast front stop height",    2,  40, 0.1,   8.0],
-    ["mac_width",              "Mac width  (X)",             50, 320, 0.1, 128.0, "MEA"],
-    ["mac_depth",              "Mac depth  (Y)",             50, 320, 0.1, 128.0, "MEA"],
-    ["mac_height",             "Mac height (Z)",             10, 140, 0.1,  49.0, "MEA"],
+    ["mac_width",              "Mac fit width  (X)",         50, 320, 0.1, 128.0, "MEA"],
+    ["mac_depth",              "Mac fit depth  (Y)",         50, 320, 0.1, 128.0, "MEA"],
+    ["mac_height",             "Mac fit height (Z), >= 50",  10, 140, 0.1,  50.0],
     ["mac_clearance_xy",       "Mac clearance XY / side",     0,  25, 0.05,  1.00],
     ["mac_clearance_z",        "Mac clearance Z above",       0,  40, 0.05,  5.00],
     ["mac_support_height",     "Mac underside service gap",   0,  40, 0.1,  18.5],
@@ -1115,11 +1457,27 @@ var COMPONENTS = [
 
   derive: function (p, ctx) {
     var d = {};
-    var mac = ctx && ctx.ref ? ctx.ref("mac_mini") : null;
-    d.mac = mac;
-    d.macW = mac ? mac.envelope.size[0] : p.mac_width;
-    d.macD = mac ? mac.envelope.size[1] : p.mac_depth;
-    d.macH = mac ? mac.envelope.size[2] : p.mac_height;
+    /* --- which Mac is in charge: the built-in V6, unless the Library binds a real part that is at
+       least FIT level and not a placeholder.  A rough L0 block must never quietly replace it. --- */
+    var ext = ctx && ctx.ref ? ctx.ref("mac_mini") : null, nominal = MAC_MINI_M4.official.nominalEnvelope;
+    d.macExternal = null; d.macIgnored = null;
+    if (ext) {
+      var rank = ACCURACY_LEVELS.map(function (q) { return q.id; }).indexOf(ext.accuracy);
+      var usable = ext.status !== "PLACEHOLDER" && rank >= 1 && !!ext.mesh && !!(ext.envelope && ext.envelope.size);
+      if (usable) d.macExternal = ext;
+      else d.macIgnored = { name: ext.name + " v" + ext.version, accuracy: ext.accuracy, status: ext.status,
+                            why: !ext.mesh ? "it has no geometry" : ext.status === "PLACEHOLDER" ? "its status is PLACEHOLDER"
+                               : rank < 1 ? "its accuracy " + ext.accuracy + " is below L1 (FIT)" : "it has no envelope" };
+    }
+    d.mac = d.macExternal;
+    d.macSource = d.macExternal
+      ? { kind: "LIBRARY", label: "LIBRARY: " + ext.name + " v" + ext.version, accuracy: ext.accuracy, status: ext.status }
+      : { kind: "BUILT-IN", label: "BUILT-IN V" + MAC_MINI_M4.version, accuracy: "L1", status: "VERIFIED", ignored: d.macIgnored };
+    /* CONSERVATIVE fit: per axis the larger of what was measured / bound and Apple's nominal 127 x 127 x 50 */
+    var want = d.macExternal ? d.macExternal.envelope.size.slice() : [p.mac_width, p.mac_depth, p.mac_height];
+    d.macFit = [Math.max(want[0], nominal[0]), Math.max(want[1], nominal[1]), Math.max(want[2], nominal[2])];
+    d.macFitRaised = want.map(function (v, i) { return Math.max(0, d.macFit[i] - v); });
+    d.macW = d.macFit[0]; d.macD = d.macFit[1]; d.macH = d.macFit[2];
     var hx = d.macW/2, hy = d.macD/2;
     d.weightR       = p.weight_diameter/2;
     d.weightCavityR = d.weightR + p.weight_clearance;
@@ -1141,16 +1499,16 @@ var COMPONENTS = [
     d.padTop        = d.baseTop + p.mac_support_height;
     d.macZ0         = d.padTop - p.mac_foot_height;
     d.macZ1         = d.macZ0 + d.macH;
-    d.macFootD      = MAC_MINI_M4.measured.undersideRaisedDiameter;
+    d.macFootD      = MAC_MINI_M4.base.raisedRegion.diameter;
     d.macOuterBand  = (Math.min(d.macW, d.macD) - d.macFootD) / 2;
     d.postCorners   = [[1,1],[-1,1],[-1,-1],[1,-1]].map(function (s) { return [s[0]*d.postX, s[1]*d.postY]; });
     d.postR0        = Math.min(p.post_width, p.post_depth)/2;
     d.spigotR       = p.joint_spigot_diameter/2;
     d.screws        = (p.joint_screws === "Enabled");
     /* --- power button + the structure-free finger zone (Mac is centred, so Mac XY = base XY) --- */
-    var KO = MAC_MINI_M4.powerAccessKeepout.size, PB = MAC_MINI_M4.measured.powerButton;
-    d.powerButton  = { centre: [-hx + PB.fromLeftEdge, hy - PB.fromRearEdge], diameter: PB.diameter };
-    d.powerKeepout = [-hx, hy - KO[1], d.baseTop, -hx + KO[0], hy, d.padTop];
+    d.macLayout    = macMiniLayout(d.padTop, { fitEnvelope: d.macFit, keepoutZ0: d.baseTop });
+    d.powerButton  = d.macLayout.powerButton;
+    d.powerKeepout = d.macLayout.powerKeepout;
     /* --- two rails.  x is given for the RIGHT one; the left one is its mirror, cut short at the keep-out. --- */
     d.ribT  = Math.max(p.base_wall_thickness, p.min_wall);
     var R = d.rail = {
@@ -1204,10 +1562,16 @@ var COMPONENTS = [
     /* --- front USB-C: never an opening of its own.  Approximate measurements steer the honeycomb instead. --- */
     var U = MAC_MINI_M4.frontUsbC, usbOk = (U.status === "MEASURED_APPROX" || U.status === "MEASURED") &&
         [U.leftCentreFromLeft, U.rightCentreFromLeft, U.centreFromTop].every(function (q) { return typeof q === "number" && isFinite(q); });
-    d.usb = usbOk ? { status: U.status, precision: U.precision, dedicatedOpening: false, verified: false,
-                      ports: [[-hx + U.leftCentreFromLeft, d.macZ1 - U.centreFromTop], [-hx + U.rightCentreFromLeft, d.macZ1 - U.centreFromTop]],
-                      plug: [U.plugEnvelope.width, U.plugEnvelope.height], tolerance: [U.positionalTolerance.x, U.positionalTolerance.z] }
+    var LU = d.macLayout.front.usbC;
+    d.usb = usbOk ? { status: U.status, precision: U.precision, dedicatedOpening: false, verified: false, orientation: U.orientation,
+                      ports: LU.map(function (q) { return q.centre.slice(); }),
+                      plug: LU[0].plug.slice(), tolerance: LU[0].tolerance.slice() }
                   : { status: "PENDING MEASUREMENT", dedicatedOpening: false, verified: false, ports: null };
+
+    /* Visual I/O map and the access volumes that matter to the printed holder come from the one
+       Mac layout; Apple publishes the connector set but not its coordinates, so the non-USB
+       coordinates keep their IMAGE_DERIVED_APPROX provenance all the way into the interface. */
+    d.macIO = { front: d.macLayout.front, rear: d.macLayout.rear };
 
     /* --- honeycomb shell --- */
     d.shell = null;
@@ -1254,6 +1618,8 @@ var COMPONENTS = [
         sh.usbRow = sh.rows.length; sh.rows.push({ z: zp, v: vPort });
         if (sh.H - bandTop - zp - vPort/2 - link - a >= 0) sh.rows.push({ z: zp + vPort/2 + link + vTop/2, v: vTop });
         sh.usbOffset = ox;
+        d.macLayout = macMiniLayout(d.padTop, { fitEnvelope: d.macFit, keepoutZ0: d.baseTop, usbReach: (sh.Yb - sh.ky*zp) - hy });
+        d.macIO = { front: d.macLayout.front, rear: d.macLayout.rear };
       } else {
         var v0 = 0.35*w, pz0 = v0 + link, nR = Math.floor((sh.H - band - bandTop - v0 - 2*a)/pz0) + 1, zb = band + v0/2 + a + ((sh.H - band - bandTop - v0 - 2*a) - (nR - 1)*pz0)/2;
         sh.rows = []; for (var ri = 0; ri < nR; ri++) sh.rows.push({ z: zb + ri*pz0, v: v0 });
@@ -1376,9 +1742,21 @@ var COMPONENTS = [
                            boltRunsFreeBelowNut: true } : null,
       clear: { radius: Math.hypot(d.postX + d.padR, d.postY + d.padR), belowZ: d.seatZ },
       service: {
-        front: "-Y, continuous honeycomb panel; the 2x USB-C ports sit behind two ordinary cells (" + d.usb.status + ", no dedicated opening)",
-        rear: "+Y, completely open: ballast first, then the Mac, then the power / Ethernet / HDMI / USB-C cable bundle",
-        powerButton: "rear-left underside, centre " + d.powerButton.centre.join(", ") + ", dia " + d.powerButton.diameter +
+        macReference: { activeSource: d.macSource.label, kind: d.macSource.kind, accuracy: d.macSource.accuracy, status: d.macSource.status,
+                        ignored: d.macIgnored, builtInVersion: MAC_MINI_M4.version },
+        macDimensions: { fitEnvelope: d.macFit.slice(), fitSource: MAC_MINI_M4.fit.status + ": " + MAC_MINI_M4.fit.rule,
+                         raisedToNominal: d.macFitRaised.slice(),
+                         officialNominal: MAC_MINI_M4.official.nominalEnvelope.slice(), officialSource: MAC_MINI_M4.official.source,
+                         officialStatus: MAC_MINI_M4.official.status,
+                         measuredPhysical: MAC_MINI_M4.measured.physicalApprox.slice(), measuredStatus: MAC_MINI_M4.measured.status,
+                         visualBody: d.macLayout.visualBody.slice(),
+                         note: "the holder fits the conservative envelope; the visual body is Apple's nominal; the ruler value is kept, not merged" },
+        front: "-Y, continuous honeycomb panel; the 2x USB-C ports sit behind two ordinary cells (" + d.usb.status +
+               ", no dedicated opening); headphone jack and status light are visual references",
+        rear: "+Y, completely open: ballast first, then the Mac, then power / Ethernet / HDMI / 3x Thunderbolt cable paths",
+        macIO: d.macIO,
+        rearCableKeepouts: d.macIO.rear.ports.map(function (q) { return { id: q.id, box: q.cableBox.slice(), about: "straight plug path to the open rear" }; }),
+        powerButton: "rear-left underside, centre " + d.powerButton.centre.join(", ") + " (15 mm from the left and rear edges), dia " + d.powerButton.diameter +
                      "; the whole 40 x 40 mm corner is structure-free, open to the rear and, through one enlarged cell, to the left",
         powerButtonAt: d.powerButton,
         powerAccess: { box: d.powerKeepout, about: "structure-free finger zone, cradle top to Mac underside" },
@@ -1570,31 +1948,19 @@ var COMPONENTS = [
   buildRefs: function (M, p, ctx, d) {
     addCyl(M, "ref_weight", 0, 0, d.cavityZ0, d.cavityZ0 + p.weight_height,
            p.weight_diameter/2, 15.0, SEG);
-    if (d.mac && d.mac.mesh) addStaticMesh(M, "ref_mac", d.mac.mesh, 0, 0, d.macZ0);
-    else {
-      /* Measured fit-level Mac reference: the central Ø100 foot hangs 8 mm below the
-         outer underside support plane. Rounded case corners and vent-slot detail remain omitted. */
-      addCyl(M, "ref_mac", 0, 0, d.macZ0, d.padTop, d.macFootD/2, 0, SEG);
-      addBox(M, "ref_mac", -d.macW/2, d.macW/2, -d.macD/2, d.macD/2, d.padTop, d.macZ1);
-    }
-    /* Visible FRONT USB-C markers.  These are visual-only reference geometry, never printable:
-       two bright tabs sit just proud of the -Y face so a front view can show whether ordinary
-       honeycomb cells really expose the measured-approximate socket positions. */
-    var U = MAC_MINI_M4.frontUsbC;
-    if (U && U.status === "MEASURED_APPROX") {
-      var usbZ = d.macZ1 - U.centreFromTop;
-      var usbY0 = -d.macD/2 - 0.8, usbY1 = -d.macD/2 + 0.05;
-      [U.leftCentreFromLeft, U.rightCentreFromLeft].forEach(function (fromLeft) {
-        var usbX = -d.macW/2 + fromLeft;
-        addBox(M, "ref_mac_usb",
-               usbX - U.portOpening.width/2, usbX + U.portOpening.width/2,
-               usbY0, usbY1,
-               usbZ - U.portOpening.height/2, usbZ + U.portOpening.height/2);
-      });
-    }
+    /* The Mac is built by its own reference builder from the shared layout.  A bound Library Mac
+       that passed the rule above replaces the enclosure only; the service volumes are holder rules. */
+    if (d.macExternal) addStaticMesh(M, "ref_mac", d.macExternal.mesh, 0, 0, d.macZ0);
+    buildMacMiniM4Reference(M, d.macLayout, { body: !d.macExternal, service: true });
   },
 
   validate: function (p, ctx, d, err, warn, f, env) {
+    if (d.macIgnored)
+      warn("Library Mac mini '" + d.macIgnored.name + "' (" + d.macIgnored.accuracy + " / " + d.macIgnored.status + ") is IGNORED because " +
+           d.macIgnored.why + ". The built-in Mac mini M4 reference V" + MAC_MINI_M4.version + " stays in charge.");
+    if (d.macFitRaised.some(function (v) { return v > 1e-9; }))
+      warn("Mac fit envelope raised to Apple's nominal " + MAC_MINI_M4.official.nominalEnvelope.join(" x ") + " mm (by " +
+           d.macFitRaised.map(f).join(" / ") + " mm): a holder must never be sized below the published body.");
     if (p.base_floor_thickness < p.min_wall - 1e-9)
       err(["base_floor_thickness"], "Weight shelf " + f(p.base_floor_thickness) +
           " is below min wall " + f(p.min_wall) + ".");
@@ -1663,6 +2029,17 @@ var COMPONENTS = [
             " degrees: over 45 it cannot print without support.");
       if (2*sh.returnX < Math.max(p.weight_diameter, d.macW) + 2)
         err(["post_width"], "The shell's rear opening is " + f(2*sh.returnX) + " mm: the ballast and the Mac do not fit through it.");
+      d.macIO.rear.ports.forEach(function (q) {
+        var b=q.cableBox, margin=1.0;
+        if (b[0] < -sh.returnX + margin || b[3] > sh.returnX - margin)
+          err(["post_width","mac_width"], q.id + " plug envelope x " + f(b[0]) + " .. " + f(b[3]) +
+              " does not fit the shell's open rear (" + f(-sh.returnX) + " .. " + f(sh.returnX) + ").");
+        [-1,1].forEach(function (sx) {
+          var x0=sx*d.postX-p.post_width/2, x1=sx*d.postX+p.post_width/2;
+          if (b[3] > x0 + margin && b[0] < x1 - margin)
+            err(["post_width","mac_width"], q.id + " straight cable path overlaps the " + (sx<0 ? "left" : "right") + " rear post.");
+        });
+      });
       if (Math.min(sh.cellsFront.length, sh.cellsLeft.length, sh.cellsRight.length) < 6)
         err(["shell_cell_width","shell_cell_web"], "A shell panel holds fewer than six cells: that is not a honeycomb.");
       if (sh.cellsFront.length + sh.cellsLeft.length + sh.cellsRight.length > 240)
@@ -3222,21 +3599,60 @@ var REF_PARTS = [
     category: "BALLAST", source: "PURCHASED", status: "VERIFIED", accuracy: "L1",
     about: "Measured fit-level reference: OD 137 mm, bore 30 mm, overall thickness 13 mm; " +
            "centre collar OD 47 mm reaches the same top level as the outer rim. Shallow face recess omitted." },
-  { id: "ref_mac",     name: "Mac mini M4",          owner: "neckbase", color: [0.68,0.70,0.72],
+  /* Mac mini M4 (2024) reference V6: realistic groups (opaque, default visible) and service
+     overlays (translucent, hidden by default).  One Library document, many groups; none printable. */
+  { id: "ref_mac",     name: "Mac mini M4 (2024)",   owner: "neckbase", color: [0.80,0.81,0.83], opaque: true,
     category: "ELECTRONICS", source: "PURCHASED", status: "VERIFIED", accuracy: "L1", version: MAC_MINI_M4.version,
-    measured: MAC_MINI_M4.measured, frontUsbC: MAC_MINI_M4.frontUsbC,
+    groups: MAC_GROUPS.realistic.concat(MAC_GROUPS.service), realisticGroups: MAC_GROUPS.realistic, serviceGroups: MAC_GROUPS.service,
+    official: MAC_MINI_M4.official, measured: MAC_MINI_M4.measured, fit: MAC_MINI_M4.fit, shape: MAC_MINI_M4.shape, base: MAC_MINI_M4.base,
+    frontUsbC: MAC_MINI_M4.frontUsbC, frontOther: MAC_MINI_M4.frontOther, rearIO: MAC_MINI_M4.rearIO,
     unknown: MAC_MINI_M4.unknown, rules: MAC_MINI_M4.rules,
     keepouts: [{ id: "MAC_POWER_ACCESS", x: MAC_MINI_M4.powerAccessKeepout.x, y: MAC_MINI_M4.powerAccessKeepout.y,
                  z: "cradle top .. Mac underside", about: "rear-left 40 x 40 mm finger zone for the power button" }],
-    about: "Measured fit-level reference: envelope 128 x 128 x 49 mm; central raised underside Ø100 x 8 mm; " +
-           "FRONT is -Y (2x USB-C + 3.5 mm audio), REAR is +Y (main cable bundle). Power button: underside, " +
-           "rear-left, centre 15 mm from left and rear edges (-49, +49), dia 10; its 40 x 40 mm corner is a " +
-           "structure-free keep-out. Two bright front markers show the MEASURED_APPROX USB-C positions for visual access checking. " +
-           "Vent-slot detail and case corner radii are intentionally omitted." },
-  { id: "ref_mac_usb", name: "Mac mini front USB-C markers", owner: "neckbase", color: [0.20,0.82,1.00],
-    category: "ELECTRONICS", source: "MEASURED_APPROX", status: "UNVERIFIED", accuracy: "approx +/- 1-2 mm",
-    about: "Visual-only markers for the two hand-measured front USB-C sockets: 28 and 45 mm from the left edge, " +
-           "28 mm below the top edge. Marker size follows the approximate 2 x 10 mm socket opening. Never exported." },
+    about: "Mac mini M4 (2024), reference V6.1. APPLE_SPEC body 127 x 127 x 50 mm; USER_MEASURED about 128 x 128 x 49 mm; " +
+           "the holder fits the CONSERVATIVE 128 x 128 x 50 mm envelope. Silver enclosure with a rounded-square plan whose " +
+           "corner radius (20 mm) is ESTIMATED / PENDING_MEASUREMENT, the USER_MEASURED dia 100 x 8 raised underside region " +
+           "drawn as a plain disc with VISUAL_ONLY vent slots (the black underside beyond it is UNKNOWN), recessed front " +
+           "(2x USB-C, status light, 3.5 mm jack) and rear (power, Ethernet, HDMI, 3x Thunderbolt 4) I/O, and the measured " +
+           "underside power button 15 mm from the left and rear edges. USB-C centres are hand-measured MEASURED_APPROX; the " +
+           "other I/O centres are v5 IMAGE_DERIVED_APPROX values (not re-verified); cut-out sizes are ESTIMATED. Never exported." },
+  { id: "ref_mac_bottom", name: "Mac mini underside raised region", owner: "neckbase", color: [0.13,0.13,0.14], opaque: true, library: false,
+    category: "ELECTRONICS", source: "USER_MEASURED (dia 100 x 8) + ESTIMATED taper", status: "UNVERIFIED", accuracy: "L1 for the dia 100 x 8 region only",
+    about: "The measured central raised underside region, drawn as a plain black disc; its slight taper is ESTIMATED and the " +
+           "black underside beyond the region is UNKNOWN. Never exported." },
+  { id: "ref_mac_underside_vents", name: "Mac mini vent ring", owner: "neckbase", color: [0.02,0.02,0.025], opaque: true, library: false,
+    category: "AIRFLOW", source: "VISUAL_ONLY", status: "UNVERIFIED", accuracy: "-",
+    about: "Ring of recessed radial vent slots on the black base. Visual cue only: the airflow keep-out, not these slots, is the rule. Never exported." },
+  { id: "ref_mac_front_io", name: "Mac mini front I/O", owner: "neckbase", color: [0.05,0.05,0.06], opaque: true, library: false,
+    category: "ELECTRONICS", source: "MEASURED_APPROX + IMAGE_DERIVED_APPROX", status: "UNVERIFIED", accuracy: "approx +/- 1-2 mm",
+    about: "Recessed sockets of the two hand-measured front USB-C ports (vertical) and the image-derived 3.5 mm jack. Never exported." },
+  { id: "ref_mac_front_led", name: "Mac mini status light", owner: "neckbase", color: [0.96,0.96,0.93], opaque: true, library: false,
+    category: "ELECTRONICS", source: "IMAGE_DERIVED_APPROX", status: "UNVERIFIED", accuracy: "approx +/- 1.5 mm",
+    about: "White status light on the front face. Never exported." },
+  { id: "ref_mac_rear_io", name: "Mac mini rear I/O", owner: "neckbase", color: [0.05,0.05,0.06], opaque: true, library: false,
+    category: "ELECTRONICS", source: "IMAGE_DERIVED_APPROX", status: "UNVERIFIED", accuracy: "approx +/- 1.5 mm",
+    about: "Recessed power, Ethernet, HDMI and three Thunderbolt 4 sockets, left-to-right as seen from the rear. Never exported." },
+  { id: "ref_mac_power_button", name: "Mac mini power button", owner: "neckbase", color: [0.20,0.20,0.21], opaque: true, library: false,
+    category: "SERVICE", source: "USER_MEASURED", status: "VERIFIED", accuracy: "L1",
+    about: "Measured underside power button in a shallow recess, rear-left. Never exported." },
+  { id: "ref_mac_logo", name: "Mac mini top mark", owner: "neckbase", color: [0.55,0.56,0.58], opaque: true, library: false,
+    category: "SERVICE / COSMETIC", source: "VISUAL_ONLY", status: "UNVERIFIED", accuracy: "-",
+    about: "Plain grey orientation mark on the top face. Never exported." },
+  { id: "ref_mac_service_fit_envelope", name: "Mac fit envelope 128 x 128 x 50", owner: "neckbase", color: [0.55,0.75,1.00], service: true, library: false, defaultVisible: false,
+    category: "KEEP-OUT", source: "CONSERVATIVE_FIT", status: "READY", accuracy: "-",
+    about: "Service overlay: the conservative mechanical envelope every holder is sized to. Never exported." },
+  { id: "ref_mac_service_front_usb", name: "Mac front USB-C plug paths", owner: "neckbase", color: [0.20,0.82,1.00], service: true, library: false, defaultVisible: false,
+    category: "KEEP-OUT", source: "MEASURED_APPROX + DESIGN_KEEP_OUT", status: "READY", accuracy: "approx +/- 1-2 mm",
+    about: "Service overlay: the two front USB-C plug envelopes with the measurement tolerance, to the outer face of the honeycomb. Never exported." },
+  { id: "ref_mac_service_cable_keepouts", name: "Mac rear cable paths", owner: "neckbase", color: [0.96,0.28,0.22], service: true, library: false, defaultVisible: false,
+    category: "KEEP-OUT", source: "DESIGN_KEEP_OUT", status: "READY", accuracy: "-",
+    about: "Service overlay: straight plug / finger envelopes for power, Ethernet, HDMI and Thunderbolt through the open rear. Never exported." },
+  { id: "ref_mac_service_power_keepout", name: "Mac power-button finger zone", owner: "neckbase", color: [1.00,0.42,0.10], service: true, library: false, defaultVisible: false,
+    category: "KEEP-OUT", source: "DESIGN_KEEP_OUT", status: "READY", accuracy: "-",
+    about: "Service overlay: the structure-free 40 x 40 mm rear-left corner under the power button. Never exported." },
+  { id: "ref_mac_service_airflow_keepout", name: "Mac airflow keep-out", owner: "neckbase", color: [0.30,0.55,1.00], service: true, library: false, defaultVisible: false,
+    category: "KEEP-OUT", source: "DESIGN_KEEP_OUT", status: "READY", accuracy: "-",
+    about: "Service overlay: no structure under the Ø100 black base, down to the ballast. Never exported." },
   { id: "ref_servo",   name: "Servo (ref)",         owner: "cassette", color: [1.00,0.35,0.35] },
   { id: "ref_bearing", name: "Bearing (ref)",       owner: "adapter",  color: [1.00,0.85,0.30] },
   { id: "ref_hub",     name: "Rotating hub (ref)",  owner: "adapter",  color: [1.00,0.45,0.90] },
@@ -3467,11 +3883,13 @@ function partGroups(id) {
  * 6. EXPLODED VIEW (never applied to an STL)
  * ---------------------------------------------------------------- */
 var EXPLODE_Z = {
-  neckbase: 0, ref_weight: -1.0, ref_mac: 0, ref_mac_usb: 0, neckshoulder: 0.5,
+  neckbase: 0, ref_weight: -1.0,
+  neckshoulder: 0.5,
   crown: 1.0, adapter: 2.0, ref_bearing: 2.4, ref_hub: 2.8,
   cagebase: 3.6, ref_usbhub: 4.0, cradle: 4.4, ref_bracket: 5.0,
   cagebody: 5.8, cagelid: 7.2
 };
+MAC_GROUPS.realistic.concat(MAC_GROUPS.service).forEach(function (g) { EXPLODE_Z[g] = 0; });
 function explodeOffset(id, P, R) {
   var e = P.exploded_distance;
   if (id === "cassette" || id === "ref_servo") {
@@ -4946,27 +5364,41 @@ function snapTargets(doc, R) {
   return Object.keys(R.ifaces).filter(function (k) { return want.indexOf(k) >= 0; });
 }
 function addInstanceMesh(M, group, mesh, place) {
-  var G = M._g(group), i;
+  var G = M._g(group), i, ps = [];
   for (i = 0; i < mesh.pos.length; i += 3) {
     var q = m3apply(place.m, [mesh.pos[i], mesh.pos[i+1], mesh.pos[i+2]]);
-    G.pos.push(q[0] + place.t[0], q[1] + place.t[1], q[2] + place.t[2]);
+    ps.push(q[0] + place.t[0], q[1] + place.t[1], q[2] + place.t[2]);
   }
+  var ns = [];
   for (i = 0; i < mesh.nor.length; i += 3) {
     var nq = m3apply(place.m, [mesh.nor[i], mesh.nor[i+1], mesh.nor[i+2]]);
-    G.nor.push(nq[0], nq[1], nq[2]);
+    ns.push(nq[0], nq[1], nq[2]);
   }
+  for (i = 0; i < ps.length; i++) { G.pos.push(ps[i]); G.nor.push(ns[i]); }
   G.n += mesh.n;
+  /* a multi-group reference (the built-in Mac mini) also lands part by part, so the viewer
+     can draw the enclosure silver and the sockets black; the whole stays in the instance group */
+  (mesh.parts || []).forEach(function (pt) {
+    var Gp = M._g(group + "/" + pt.group), a = pt.start*9, b = (pt.start + pt.n)*9;
+    for (i = a; i < b; i++) { Gp.pos.push(ps[i]); Gp.nor.push(ns[i]); }
+    Gp.n += pt.n;
+  });
 }
 function instanceBBox(mesh, place) {
   var lo = [Infinity,Infinity,Infinity], hi = [-Infinity,-Infinity,-Infinity], i, k;
-  for (i = 0; i < mesh.pos.length; i += 3) {
-    var q = m3apply(place.m, [mesh.pos[i], mesh.pos[i+1], mesh.pos[i+2]]);
-    for (k = 0; k < 3; k++) {
-      var val = q[k] + place.t[k];
-      if (val < lo[k]) lo[k] = val;
-      if (val > hi[k]) hi[k] = val;
+  /* service overlays (plug paths, keep-outs) are diagnostics: they never size the part */
+  var ranges = mesh.parts ? mesh.parts.filter(function (pt) { return !pt.service; }).map(function (pt) { return [pt.start*9, (pt.start + pt.n)*9]; })
+                          : [[0, mesh.pos.length]];
+  ranges.forEach(function (rg) {
+    for (i = rg[0]; i < rg[1]; i += 3) {
+      var q = m3apply(place.m, [mesh.pos[i], mesh.pos[i+1], mesh.pos[i+2]]);
+      for (k = 0; k < 3; k++) {
+        var val = q[k] + place.t[k];
+        if (val < lo[k]) lo[k] = val;
+        if (val > hi[k]) hi[k] = val;
+      }
     }
-  }
+  });
   return [lo[0],lo[1],lo[2],hi[0],hi[1],hi[2]];
 }
 function boxGap(a, b) {                          /* negative = overlapping */
@@ -5008,6 +5440,8 @@ function buildInstances(M, R, lib, instances, m) {
     var finite = bb.every(function (x) { return isFinite(x); });
     if (!finite) bad.push("non-finite coordinates");
     report.push({ iid: inst.iid, group: group, bbox: finite ? bb : null, place: place,
+                  parts: mesh.parts ? mesh.parts.map(function (pt) {
+                    return { group: group + "/" + pt.group, id: pt.group, color: pt.color, opaque: !!pt.opaque, service: !!pt.service }; }) : null,
                   attachKey: inst.attach && inst.attach.key ? inst.attach.key : null,
                   type: doc.type, name: doc.name, version: doc.version,
                   accuracy: doc.accuracy, status: doc.status,
@@ -5146,7 +5580,7 @@ return {
   WALL_PARAMS: WALL_PARAMS, DOUBLE_WALL_PARAMS: DOUBLE_WALL_PARAMS,
   resolve: resolve, build: build, validate: validate, metrics: metrics, summary: summary,
   analysePrint: analysePrint, collect: collect, bboxOf: bboxOf, volumeOf: volumeOf,
-  MAC_MINI_M4: MAC_MINI_M4,
+  MAC_MINI_M4: MAC_MINI_M4, MAC_GROUPS: MAC_GROUPS, macMiniLayout: macMiniLayout, buildMacMiniM4Reference: buildMacMiniM4Reference,
   partGroups: partGroups, exportTargets: exportTargets, dependentsOf: dependentsOf,
   rawBinarySTL: rawBinarySTL,
   ifacesOfParam: ifacesOfParam, explodeOffset: explodeOffset,
@@ -5169,7 +5603,7 @@ return {
   circle2: circle2, teardrop2: teardrop2, Mesh: Mesh,
   /* the same primitives the built-in components use, so a new component in the
      catalog is written exactly like an existing one */
-  mesh: { addBox: addBox, addFrame: addFrame, addExtruded: addExtruded, addRevolve: addRevolve,
+  mesh: { addBox: addBox, addRoundedCuboid: addRoundedCuboid, addFrame: addFrame, addExtruded: addExtruded, addRevolve: addRevolve,
           addLoft: addLoft, addCyl: addCyl, addCone: addCone, steppedRevolve: steppedRevolve, XF: XF },
   __probeExtrude: function (m, outer, holes) { addExtruded(m, "probe", outer, holes, 0, 3, null, "plate"); },
   __registerTestComponent: function (def) {           /* test harness only */
@@ -5186,7 +5620,6 @@ return {
 })();
 if (typeof module !== "undefined" && module.exports) module.exports = MS;
 /* ================= NECKGEN-CORE-END ============================== */
-
 </script>
 <script>
 "use strict";
@@ -5415,13 +5848,11 @@ Viewer.prototype.draw = function (opt) {
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     gl.depthMask(false);
-    opt.ghost.forEach(function (it) { drawGroups(it.groups, it.color, 0.30, it.off); });
+    opt.ghost.forEach(function (it) { drawGroups(it.groups, it.color, it.alpha === undefined ? 0.30 : it.alpha, it.off); });
     gl.depthMask(true);
     gl.disable(gl.BLEND);
   }
 };
-
-
 </script>
 <script>
 "use strict";
@@ -5809,7 +6240,6 @@ var CAD = (function () {
            exportRefusal: exportRefusal, exportExact: exportExact, exportNote: exportNote,
            currentVerifiedBuild: currentVerifiedBuild, ensureCurrentExact: ensureCurrentExact };
 })();
-
 </script>
 <script>
 "use strict";
@@ -5829,12 +6259,12 @@ var PROJECT = { name: "AI_CUBE_head_v01", note: "" };
 var S = {
   mode: "build", eng: false, sel: "neckbase", selInst: null, xform: "move",
   libSel: null, libQuery: "", libOpen: {}, legoTarget: "",
-  iso: false, wire: false, ghosts: true, exploded: false, section: false,
+  iso: false, wire: false, ghosts: true, exploded: false, section: false, service: false,
   vis: {}, instVis: {}, scene: null, buildMs: 0, deepMs: 0, fitted: false,
   tiers: { NORMAL: true, FIT: false, ADVANCED: false }
 };
 MS.COMPONENTS.forEach(function (c) { S.vis[c.id] = true; });
-MS.REF_PARTS.forEach(function (r) { S.vis[r.id] = true; });
+MS.REF_PARTS.forEach(function (r) { S.vis[r.id] = r.defaultVisible !== false; });
 
 var el = function (id) { return document.getElementById(id); };
 var canvas = el("gl"), viewer = null;
@@ -5861,26 +6291,34 @@ MS.COMPONENTS.forEach(function (c) {
     category: c.category, source: "PARAMETRIC", status: "READY", accuracy: "-", groups: c.groups.slice(), color: c.color };
 });
 MS.REF_PARTS.forEach(function (r) {
+  if (r.library === false) return;
   BUILTINS[BUILTIN + r.id] = { id: BUILTIN + r.id, part: null, name: r.name.replace(/ \(ref\)$/, ""), version: r.version || 1, type: "REFERENCE",
     category: r.category || "REFERENCE PARTS", source: r.source || "PLACEHOLDER",
     status: r.status || "PLACEHOLDER", accuracy: r.accuracy || "L0", about: r.about || "",
-    groups: [r.id], color: r.color };
+    groups: r.groups ? r.groups.slice() : [r.id],
+    envelope: r.fit && r.fit.envelope ? r.fit.envelope.slice() : r.measured && r.measured.envelope ? r.measured.envelope.slice() : null,
+    color: r.color };
 });
-var CAT = Object.create(LIB), CAT_MESH = null, CAT_CACHE = {};
+var CAT = Object.create(LIB), CAT_MESH = null, CAT_CACHE = {}, REF_BY_ID = {};
+MS.REF_PARTS.forEach(function (r) { REF_BY_ID[r.id] = r; });
 function builtinMesh(b) {
   if (CAT_CACHE[b.id] !== undefined) return CAT_CACHE[b.id];
-  var pos = [], nor = [], i;
+  var pos = [], nor = [], real = [], parts = [], i;
   b.groups.forEach(function (g) {
     var G = CAT_MESH && CAT_MESH.groups[g];
     if (!G || !G.n) return;
-    for (i = 0; i < G.pos.length; i++) { pos.push(G.pos[i]); nor.push(G.nor[i]); }
+    var r = REF_BY_ID[g] || {};
+    parts.push({ group: g, start: pos.length / 9, n: G.n, color: r.color || b.color, opaque: !!r.opaque, service: !!r.service });
+    for (i = 0; i < G.pos.length; i++) { pos.push(G.pos[i]); nor.push(G.nor[i]); if (!r.service) real.push(G.pos[i]); }
   });
   if (!pos.length) return (CAT_CACHE[b.id] = null);
-  var bb = MS.bboxOf(pos), r3 = function (x) { return Math.round(x * 1000) / 1000; };
+  var bb = MS.bboxOf(real.length ? real : pos), r3 = function (x) { return Math.round(x * 1000) / 1000; };
   var anchor = [r3((bb[0]+bb[3])/2), r3((bb[1]+bb[4])/2), r3(bb[2])];
   for (i = 0; i < pos.length; i++) pos[i] -= anchor[i % 3];
   return (CAT_CACHE[b.id] = { pos: new Float32Array(pos), nor: new Float32Array(nor), n: pos.length / 9,
-                              anchor: anchor, size: [bb[3]-bb[0], bb[4]-bb[1], bb[5]-bb[2]] });
+                              anchor: anchor, size: b.envelope ? b.envelope.slice() : [bb[3]-bb[0], bb[4]-bb[1], bb[5]-bb[2]],
+                              visualBounds: [bb[3]-bb[0], bb[4]-bb[1], bb[5]-bb[2]],
+                              parts: parts.length > 1 ? parts : null });
 }
 CAT.get = function (id, version) { return BUILTINS[id] || LIB.get(id, version); };
 CAT.meshOf = function (key) {
@@ -6081,6 +6519,7 @@ function libraryPanel() {
     '<div class="note" style="margin-bottom:6px">Generated from guessed numbers. They exist so the tool ' +
     'runs before the real parts are measured — never treat them as geometry truth.</div>');
   MS.REF_PARTS.forEach(function (r) {
+    if (r.library === false) return;
     H.push('<div class="cat soon"><span class="sw" style="background:' + rgb(r.color) + '"></span>' +
       '<span class="nm"><b>' + esc(r.name) + '</b> ' + statusChip("L0", "PLACEHOLDER") +
       '<br><span class="ifs">generated by ' + esc(MS.COMP[r.owner].name) + '</span></span></div>');
@@ -7087,6 +7526,8 @@ function visibleBox() {
   return any ? [lo[0],lo[1],lo[2],hi[0],hi[1],hi[2]] : S.scene.m.bbox;
 }
 function fitView() { if (viewer.ok && S.scene) viewer.fit(visibleBox()); }
+/* a service overlay shows when the Service toggle is on or it was switched on by hand; anything else follows its own switch */
+function refShown(r) { return r.service ? (S.service || S.vis[r.id] === true) : S.vis[r.id] !== false; }
 function dim(c) { return [c[0]*0.34+0.13, c[1]*0.34+0.13, c[2]*0.34+0.13]; }
 function render() {
   if (!viewer.ok || !S.scene) return;
@@ -7100,9 +7541,9 @@ function render() {
                  off: S.exploded ? MS.explodeOffset(c.id, P, R) : [0,0,0] });
   });
   if (S.ghosts && !build) MS.REF_PARTS.forEach(function (r) {
-    if (!S.vis[r.id] || want.indexOf(r.owner) < 0) return;
-    ghost.push({ groups: [r.id], color: r.color,
-                 off: S.exploded ? MS.explodeOffset(r.id, P, R) : [0,0,0] });
+    if (!refShown(r) || want.indexOf(r.owner) < 0) return;
+    var item = { groups: [r.id], color: r.color, off: S.exploded ? MS.explodeOffset(r.id, P, R) : [0,0,0] };
+    if (r.opaque && !r.service) solid.push(item); else ghost.push(item);
   });
   if (!S.iso && S.scene.inst) S.scene.inst.report.forEach(function (q) {
     if (q.missing) return;
@@ -7112,6 +7553,12 @@ function render() {
     var col = bi ? bi.color : q.type === "PRINTABLE" ? [0.95, 0.78, 0.35] : [0.45, 0.92, 0.72];
     if (sel) col = [1.0, 0.85, 0.30];
     if (q.type === "PRINTABLE") solid.push({ groups: [q.group], color: col, off: [0,0,0] });
+    else if (q.parts) q.parts.forEach(function (pt) {              /* a multi-group reference: realistic parts opaque, service parts on request */
+      if (!refShown(REF_BY_ID[pt.id] || pt)) return;
+      var pc = sel ? [pt.color[0]*0.5 + 0.5, pt.color[1]*0.5 + 0.42, pt.color[2]*0.5 + 0.15] : pt.color;   /* selection: warm tint, parts stay apart */
+      var item = { groups: [pt.group], color: pc, off: [0,0,0] };
+      if (pt.opaque && !pt.service) solid.push(item); else ghost.push(item);
+    });
     else ghost.push({ groups: [q.group], color: col, off: [0,0,0] });
   });
   viewer.draw({ solid: solid, ghost: ghost, wire: S.wire,
@@ -7134,6 +7581,10 @@ function drawOverlay() {
            LIB.list().length + ', bound slots ' + Object.keys(LIB.bindings).length);
   L.push(MS.MATERIAL.name + ' ' + esc(P.design_profile) + ' / ' + esc(CAP.name) + '   yaw axis X0 Y0');
   L.push('triangles ' + m.tris + '  (reference ' + m.refTris + ')   rebuild ' + fmt(S.buildMs, 1) + ' ms');
+  var nb = S.scene.R && S.scene.R.ifaces["NECK_BASE_SHOULDER@1"], mr = nb && nb.service && nb.service.macReference;
+  if (mr) L.push('Mac reference active source  <span class="hi">' + esc(mr.activeSource) + '</span>' +
+                 (mr.ignored ? '  <span class="er">(Library ' + esc(mr.ignored.name) + ' ignored: ' + esc(mr.ignored.why) + ')</span>' : '') +
+                 (S.service ? '  [service overlay]' : ''));
   var cadLine = CAD.overlayLine();
   if (cadLine) L.push(cadLine);
   if (v.errors.length) L.push('<span class="er">' + v.errors.length + ' ERROR(S) — see the right panel</span>');
@@ -7144,11 +7595,12 @@ function drawOverlay() {
 function buildViewBar() {
   var b = [["fit","Fit"],["iso","Iso"],["front","Front"],["side","Side"],["top","Top"]];
   var t = [["wire","Wireframe",function(){return S.wire;}],
+           ["service","Service",function(){return S.service;}],
            ["ghosts","Ghosts",function(){return S.ghosts;}],
            ["explode","Exploded",function(){return S.exploded;}],
            ["section","Section",function(){return S.section;}],
            ["isolate","Isolate",function(){return S.iso;}]];
-  if (S.mode === "build") t = t.slice(0, 1);
+  if (S.mode === "build") t = t.slice(0, 2);
   el("viewbar").innerHTML =
     b.map(function (x) { return '<button class="btn" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join("") +
     t.map(function (x) { return '<button class="btn' + (x[2]() ? " on" : "") + '" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join("");
@@ -7161,6 +7613,7 @@ function buildViewBar() {
       if (k === "side")  { c.az = 0.0; c.el = 0.0; fitView(); }
       if (k === "top")   { c.az = -Math.PI/2; c.el = 1.5533; fitView(); }
       if (k === "wire")     S.wire = !S.wire;
+      if (k === "service")  S.service = !S.service;
       if (k === "ghosts")   S.ghosts = !S.ghosts;
       if (k === "explode")  { S.exploded = !S.exploded; fitView(); }
       if (k === "section")  S.section = !S.section;
@@ -7805,9 +8258,7 @@ buildViewBar();
 rebuild(true);
 CAD.init();                                   /* one status read; file:// asks nothing */
 (function loop() { requestAnimationFrame(loop); })();
-
 </script>
-
 <script>
 (function(){
   var canvas=document.getElementById("gl");
@@ -7851,5 +8302,5 @@ CAD.init();                                   /* one status read; file:// asks n
   if(/iPhone|iPad|iPod/i.test(navigator.userAgent)){document.body.classList.add("mobile-view-only");b.textContent="SHOW PANELS";}
 })();
 </script>
-\n</body>
+</body>
 </html>
