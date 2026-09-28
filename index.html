@@ -253,12 +253,12 @@ body{
   letter-spacing:.24em;
 }
 .cube-nav{
-  top:clamp(48px,6vw,78px);
+  top:clamp(72px,8vw,105px);
   right:clamp(26px,4vw,64px);
   display:flex;
   flex-direction:column;
   align-items:flex-end;
-  gap:14px;
+  gap:20px;
   white-space:nowrap;
   text-align:right;
 }
@@ -268,6 +268,23 @@ body{
   letter-spacing:.16em;
   text-decoration:none;
   transition:color .25s ease,opacity .25s ease;
+}
+.cube-nav a,.cube-nav span{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:9px;
+}
+.cube-nav a::before,.cube-nav span::before{
+  content:"";
+  width:9px;
+  height:9px;
+  flex:0 0 9px;
+  border-radius:50%;
+  border:1px solid rgba(178,204,221,.45);
+  background:
+    radial-gradient(circle at 34% 30%,rgba(225,241,250,.58) 0 10%,rgba(103,139,162,.35) 20%,rgba(20,31,39,.65) 55%,rgba(2,4,6,.95) 76%);
+  box-shadow:0 0 7px rgba(130,183,215,.18);
 }
 .cube-nav a:hover{color:#c1cbd1;opacity:1}
 .cube-nav .nav-local{color:#555d64;cursor:default}
@@ -474,12 +491,12 @@ body{
   }
 
   .cube-nav{
-    top:52px;
+    top:76px;
     right:28px;
     left:auto;
     max-width:none;
     align-items:flex-end;
-    gap:13px;
+    gap:18px;
     font-size:7px;
     line-height:1.2;
     text-align:right;
