@@ -1,0 +1,30 @@
+{
+  "state": "CONCEPT_FROZEN",
+  "errors": [],
+  "warnings": [],
+  "open": [
+    "Q2",
+    "Q3"
+  ],
+  "rules": {
+    "R1": "PASS",
+    "R2": "PASS",
+    "R3": "PASS",
+    "R4": "PASS",
+    "R5": "PASS",
+    "R6": "PASS"
+  },
+  "gates": {
+    "CONCEPT_FROZEN": {
+      "ok": true,
+      "reasons": []
+    },
+    "SKELETON_READY": {
+      "ok": false,
+      "blocked_by": [
+        "Q2",
+        "Q3"
+      ]
+    }
+  }
+}

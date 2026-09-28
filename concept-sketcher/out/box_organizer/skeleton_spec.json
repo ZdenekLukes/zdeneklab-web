@@ -1,0 +1,1840 @@
+{
+  "format": "AI_CONCEPT_SKELETON_SPEC",
+  "concept": "box-organizer",
+  "revision": 2,
+  "hash": "sha256:5a307a53092d8411c9a5766bce081b499e19d7534e4abf5f38e9afe3c96cf608",
+  "maturity": "CONCEPT_FROZEN",
+  "maturity_line": "CONCEPT FROZEN — NOT SKELETON READY (blocked by Q2, Q3)",
+  "skeleton_ready": {
+    "ok": false,
+    "blocked_by": [
+      "Q2",
+      "Q3"
+    ]
+  },
+  "params": {
+    "box_L": {
+      "value": 300,
+      "status": "fixed",
+      "note": "measured box interior length"
+    },
+    "box_W": {
+      "value": 200,
+      "status": "fixed",
+      "note": "measured box interior width"
+    },
+    "box_H": {
+      "value": 80,
+      "status": "rough"
+    },
+    "preload": {
+      "value": 2,
+      "status": "rough",
+      "note": "free frame is wider than the box; springs compress it on installation"
+    },
+    "frame_L": {
+      "expr": "box_L - 2",
+      "note": "clearance to end walls"
+    },
+    "frame_W_free": {
+      "expr": "box_W + preload",
+      "note": "distance between long sides, springs relaxed"
+    },
+    "frame_W": {
+      "expr": "box_W",
+      "note": "installed: long sides bear on the box long walls"
+    },
+    "rail_w": {
+      "value": 8,
+      "status": "rough"
+    },
+    "rail_h": {
+      "value": 6,
+      "status": "rough"
+    },
+    "eye_pitch": {
+      "value": 10,
+      "status": "target"
+    },
+    "eye_margin": {
+      "value": 20,
+      "status": "rough",
+      "note": "from each inner corner of the long side, measured on the inner face"
+    },
+    "eye_d": {
+      "value": 4,
+      "status": "rough",
+      "note": "eye depth, protrudes inward from the rail"
+    },
+    "eye_bore": {
+      "value": 5,
+      "status": "rough",
+      "note": "must admit the tab cross-section tab_w x div_t"
+    },
+    "div_H": {
+      "value": 60,
+      "status": "rough"
+    },
+    "div_bar": {
+      "value": 5,
+      "status": "rough"
+    },
+    "div_t": {
+      "value": 3,
+      "status": "rough"
+    },
+    "tab_len": {
+      "value": 4,
+      "status": "rough"
+    },
+    "tab_w": {
+      "value": 3,
+      "status": "rough"
+    },
+    "clear": {
+      "value": 0.5,
+      "status": "rough"
+    },
+    "div_W": {
+      "expr": "frame_W - 2*rail_w - 2*eye_d - 2*clear",
+      "note": "derived from the installed width"
+    }
+  },
+  "parts": [
+    {
+      "id": "BOX",
+      "kind": "BLOCK",
+      "role": "REFERENCE",
+      "size": [
+        "=box_L",
+        "=box_W",
+        "=box_H"
+      ],
+      "orient": {
+        "z": "+Z",
+        "y": "+Y"
+      },
+      "place": {
+        "at": [
+          0,
+          0,
+          0
+        ],
+        "anchor": "BOTTOM_CENTRE"
+      },
+      "intent": "Storage box interior. Not produced."
+    },
+    {
+      "id": "BASE",
+      "kind": "FRAME",
+      "role": "PRODUCED",
+      "size": [
+        "=frame_L",
+        "=frame_W",
+        "=rail_h"
+      ],
+      "bar": "=rail_w",
+      "orient": {
+        "z": "+Z",
+        "y": "+Y"
+      },
+      "place": {
+        "at": [
+          0,
+          0,
+          0
+        ],
+        "anchor": "BOTTOM_CENTRE"
+      },
+      "edge_names": {
+        "+Y": "LONG_A",
+        "-Y": "LONG_B",
+        "+X": "SHORT_A",
+        "-X": "SHORT_B"
+      },
+      "intent": "Lies on the box floor. The spring sections in the short sides push the two long sides apart against the box long walls; that is the only retention."
+    },
+    {
+      "id": "DIVIDER",
+      "kind": "FRAME",
+      "role": "PRODUCED",
+      "size": [
+        "=div_W",
+        "=div_H",
+        "=div_t"
+      ],
+      "bar": "=div_bar",
+      "orient": {
+        "z": "+X",
+        "y": "+Z"
+      },
+      "edge_names": {
+        "-Y": "BOTTOM",
+        "+Y": "TOP",
+        "-X": "LEFT",
+        "+X": "RIGHT"
+      },
+      "intent": "Open rectangular frame (not a plate). Stands upright across the box width."
+    }
+  ],
+  "features": [
+    {
+      "id": "SPRING_A",
+      "host": "BASE",
+      "type": "SPRING",
+      "edge": "+X",
+      "form": "INTEGRATED_FLEXURE",
+      "span": {
+        "at": "MID",
+        "length": "40%"
+      },
+      "compliance": "ALONG_EDGE",
+      "effect": {
+        "changes_distance_between": [
+          "BASE.+Y",
+          "BASE.-Y"
+        ]
+      },
+      "reacts_against": [
+        "BOX:+Y",
+        "BOX:-Y"
+      ],
+      "question": "Q1"
+    },
+    {
+      "host": "BASE",
+      "type": "SPRING",
+      "edge": "-X",
+      "form": "INTEGRATED_FLEXURE",
+      "span": {
+        "at": "MID",
+        "length": "40%"
+      },
+      "compliance": "ALONG_EDGE",
+      "effect": {
+        "changes_distance_between": [
+          "BASE.+Y",
+          "BASE.-Y"
+        ]
+      },
+      "reacts_against": [
+        "BOX:+Y",
+        "BOX:-Y"
+      ],
+      "question": "Q1",
+      "id": "SPRING_B",
+      "mirror": {
+        "of": "SPRING_A",
+        "plane": "YZ"
+      }
+    },
+    {
+      "id": "EYE_A",
+      "host": "BASE",
+      "type": "EYE",
+      "edge": "+Y",
+      "face": "INNER",
+      "bore_axis": "EDGE_NORMAL",
+      "size": {
+        "bore": "=eye_bore",
+        "depth": "=eye_d"
+      },
+      "z": "MID",
+      "array": {
+        "along": "EDGE",
+        "span": "HOST_FACE",
+        "pitch": "=eye_pitch",
+        "margin": "=eye_margin",
+        "count": "DERIVED",
+        "placement": "CENTRED"
+      }
+    },
+    {
+      "host": "BASE",
+      "type": "EYE",
+      "edge": "-Y",
+      "face": "INNER",
+      "bore_axis": "EDGE_NORMAL",
+      "size": {
+        "bore": "=eye_bore",
+        "depth": "=eye_d"
+      },
+      "z": "MID",
+      "array": {
+        "along": "EDGE",
+        "span": "HOST_FACE",
+        "pitch": "=eye_pitch",
+        "margin": "=eye_margin",
+        "count": "DERIVED",
+        "placement": "CENTRED"
+      },
+      "id": "EYE_B",
+      "mirror": {
+        "of": "EYE_A",
+        "plane": "XZ",
+        "pair_by_index": true
+      }
+    },
+    {
+      "id": "TAB_R",
+      "host": "DIVIDER",
+      "type": "TAB",
+      "edge": "+X",
+      "at": {
+        "from": "-Y",
+        "offset": 0
+      },
+      "dir": "EDGE_NORMAL",
+      "size": {
+        "len": "=tab_len",
+        "w": "=tab_w",
+        "t": "=div_t"
+      }
+    },
+    {
+      "host": "DIVIDER",
+      "type": "TAB",
+      "edge": "-X",
+      "at": {
+        "from": "-Y",
+        "offset": 0
+      },
+      "dir": "EDGE_NORMAL",
+      "size": {
+        "len": "=tab_len",
+        "w": "=tab_w",
+        "t": "=div_t"
+      },
+      "id": "TAB_L",
+      "mirror": {
+        "of": "TAB_R",
+        "plane": "YZ"
+      }
+    }
+  ],
+  "joints": [
+    {
+      "id": "SEAT",
+      "type": "INSERTS_INTO",
+      "part": "DIVIDER",
+      "links": [
+        {
+          "male": "DIVIDER.TAB_R",
+          "female": "BASE.EYE_A[i]"
+        },
+        {
+          "male": "DIVIDER.TAB_L",
+          "female": "BASE.EYE_B[i]"
+        }
+      ],
+      "index": {
+        "var": "i",
+        "domain": "ANY",
+        "preview": [
+          4,
+          12,
+          20
+        ]
+      },
+      "engage": "=tab_len - clear",
+      "dof": "OPEN:Q3",
+      "fit": "SNUG",
+      "assembly_motion": "OPEN:Q2",
+      "anti_rotation": "OPEN:Q3",
+      "intent": "A divider can be seated in any opposing eye pair; the user rearranges dividers."
+    }
+  ],
+  "rules": [
+    {
+      "id": "R1",
+      "kind": "MUST",
+      "text": "All dividers are parallel to each other.",
+      "check": {
+        "type": "PARALLEL",
+        "parts": [
+          "DIVIDER"
+        ]
+      }
+    },
+    {
+      "id": "R2",
+      "kind": "MUST",
+      "text": "Divider tabs are horizontal and point outward, away from the divider, towards the long sides.",
+      "check": {
+        "type": "DIRECTION",
+        "features": {
+          "DIVIDER.TAB_L": "-Y",
+          "DIVIDER.TAB_R": "+Y"
+        }
+      }
+    },
+    {
+      "id": "R3",
+      "kind": "MUST_NOT",
+      "text": "No downward legs, feet or vertical insertion pins on the divider.",
+      "check": {
+        "type": "FORBID_DIRECTION",
+        "part": "DIVIDER",
+        "world": "-Z"
+      }
+    },
+    {
+      "id": "R4",
+      "kind": "MUST_NOT",
+      "text": "No crossing dividers, no perpendicular secondary dividers, no divider grid.",
+      "check": {
+        "type": "CLOSED_WORLD"
+      }
+    },
+    {
+      "id": "R5",
+      "kind": "MUST",
+      "text": "Dividers are open rectangular frames, not solid plates.",
+      "check": {
+        "type": "KIND",
+        "part": "DIVIDER",
+        "kind": "FRAME"
+      }
+    },
+    {
+      "id": "R6",
+      "kind": "MUST",
+      "text": "The short-side springs change the distance between the two long sides (across the frame width).",
+      "check": {
+        "type": "DIRECTION",
+        "features": {
+          "BASE.SPRING_A": "±Y",
+          "BASE.SPRING_B": "±Y"
+        }
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "status": "ANSWERED",
+      "blocks": "SKELETON_READY",
+      "about": [
+        "BASE.SPRING_A",
+        "BASE.SPRING_B"
+      ],
+      "text": "Along which axis do the short-side springs give?",
+      "answer": "Across the frame width (world Y): the springs change the distance between LONG_A and LONG_B.",
+      "answered_by": "user, architecture review 2026-09-28"
+    },
+    {
+      "id": "Q2",
+      "status": "OPEN",
+      "blocks": "SKELETON_READY",
+      "about": [
+        "SEAT",
+        "BASE.EYE_A",
+        "BASE.EYE_B",
+        "DIVIDER.TAB_L",
+        "DIVIDER.TAB_R"
+      ],
+      "text": "A rigid divider with two outward tabs cannot simply enter two closed, opposing eyes. What mechanism allows insertion?",
+      "options": [
+        "compliant eye",
+        "compliant divider",
+        "open / slotted eye",
+        "temporary frame displacement",
+        "other, user-defined"
+      ],
+      "options_note": "Examples only. None is a default or a recommendation."
+    },
+    {
+      "id": "Q3",
+      "status": "OPEN",
+      "blocks": "SKELETON_READY",
+      "about": [
+        "SEAT",
+        "DIVIDER",
+        "DIVIDER.TAB_L",
+        "DIVIDER.TAB_R"
+      ],
+      "text": "The two tabs are coaxial (world Y), which leaves a rotational DOF about that axis. What prevents rotation, or is rotation explicitly acceptable?",
+      "options": [
+        "explicit anti-rotation mechanism, user-defined",
+        "rotation is acceptable (explicit statement)"
+      ],
+      "options_note": "Examples only. None is a default or a recommendation."
+    }
+  ],
+  "derivation": {
+    "array_rule": "usable = face_len - 2*margin; count = floor(usable/pitch + 1e-9) + 1; x_k = (k - (count-1)/2)*pitch",
+    "placement": "translate only: male tip centre = female mouth + engage * female bore axis (link 1); other links checked",
+    "state": "INSTALLED"
+  },
+  "resolved_default": {
+    "state": "INSTALLED",
+    "params": {
+      "box_L": 300,
+      "box_W": 200,
+      "box_H": 80,
+      "preload": 2,
+      "frame_L": 298,
+      "frame_W_free": 202,
+      "frame_W": 200,
+      "rail_w": 8,
+      "rail_h": 6,
+      "eye_pitch": 10,
+      "eye_margin": 20,
+      "eye_d": 4,
+      "eye_bore": 5,
+      "div_H": 60,
+      "div_bar": 5,
+      "div_t": 3,
+      "tab_len": 4,
+      "tab_w": 3,
+      "clear": 0.5,
+      "div_W": 175
+    },
+    "patterns": {
+      "BASE.EYE_A": {
+        "face_len": 282,
+        "margin": 20,
+        "pitch": 10,
+        "usable": 242,
+        "count": 25,
+        "xs": [
+          -120,
+          -110,
+          -100,
+          -90,
+          -80,
+          -70,
+          -60,
+          -50,
+          -40,
+          -30,
+          -20,
+          -10,
+          0,
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          70,
+          80,
+          90,
+          100,
+          110,
+          120
+        ]
+      },
+      "BASE.EYE_B": {
+        "face_len": 282,
+        "margin": 20,
+        "pitch": 10,
+        "usable": 242,
+        "count": 25,
+        "xs": [
+          -120,
+          -110,
+          -100,
+          -90,
+          -80,
+          -70,
+          -60,
+          -50,
+          -40,
+          -30,
+          -20,
+          -10,
+          0,
+          10,
+          20,
+          30,
+          40,
+          50,
+          60,
+          70,
+          80,
+          90,
+          100,
+          110,
+          120
+        ]
+      }
+    },
+    "joints": {
+      "SEAT": {
+        "indices": [
+          4,
+          12,
+          20
+        ],
+        "engage": 3.5,
+        "coaxial": true
+      }
+    },
+    "instances": [
+      {
+        "id": "BOX",
+        "part": "BOX",
+        "kind": "BLOCK",
+        "role": "REFERENCE",
+        "origin": [
+          0,
+          0,
+          40
+        ],
+        "axes": {
+          "x": "+X",
+          "y": "+Y",
+          "z": "+Z"
+        },
+        "size": [
+          300,
+          200,
+          80
+        ],
+        "features": []
+      },
+      {
+        "id": "BASE",
+        "part": "BASE",
+        "kind": "FRAME",
+        "role": "PRODUCED",
+        "origin": [
+          0,
+          0,
+          3
+        ],
+        "axes": {
+          "x": "+X",
+          "y": "+Y",
+          "z": "+Z"
+        },
+        "size": [
+          298,
+          200,
+          6
+        ],
+        "bar": 8,
+        "features": [
+          {
+            "id": "BASE.SPRING_A",
+            "model_id": "BASE.SPRING_A",
+            "type": "SPRING",
+            "position": [
+              145,
+              0,
+              3
+            ],
+            "compliance_axis": "Y",
+            "size": {
+              "length": 80
+            }
+          },
+          {
+            "id": "BASE.SPRING_B",
+            "model_id": "BASE.SPRING_B",
+            "type": "SPRING",
+            "position": [
+              -145,
+              0,
+              3
+            ],
+            "compliance_axis": "Y",
+            "size": {
+              "length": 80
+            }
+          },
+          {
+            "id": "BASE.EYE_A[0]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              -120,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[0]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_A[1]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              -110,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[1]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_A[2]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              -100,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[2]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_A[3]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              -90,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[3]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_A[4]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              -80,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[4]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_A[5]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              -70,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[5]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_A[6]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              -60,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[6]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_A[7]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              -50,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[7]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_A[8]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              -40,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[8]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_A[9]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              -30,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[9]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_A[10]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              -20,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[10]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_A[11]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              -10,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[11]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_A[12]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              0,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[12]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_A[13]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              10,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[13]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_A[14]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              20,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[14]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_A[15]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              30,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[15]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_A[16]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              40,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[16]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_A[17]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              50,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[17]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_A[18]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              60,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[18]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_A[19]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              70,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[19]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_A[20]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              80,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[20]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_A[21]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              90,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[21]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_A[22]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              100,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[22]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_A[23]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              110,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[23]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_A[24]",
+            "model_id": "BASE.EYE_A",
+            "type": "EYE",
+            "position": [
+              120,
+              88,
+              3
+            ],
+            "bore_axis": "+Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_B[24]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[0]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              -120,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[0]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[1]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              -110,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[1]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[2]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              -100,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[2]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[3]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              -90,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[3]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[4]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              -80,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[4]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[5]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              -70,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[5]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[6]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              -60,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[6]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[7]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              -50,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[7]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[8]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              -40,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[8]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[9]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              -30,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[9]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[10]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              -20,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[10]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[11]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              -10,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[11]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[12]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              0,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[12]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[13]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              10,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[13]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[14]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              20,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[14]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[15]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              30,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[15]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[16]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              40,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[16]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[17]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              50,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[17]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[18]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              60,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[18]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[19]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              70,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[19]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[20]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              80,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[20]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[21]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              90,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[21]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[22]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              100,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[22]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[23]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              110,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[23]",
+            "unresolved": [
+              "Q2"
+            ]
+          },
+          {
+            "id": "BASE.EYE_B[24]",
+            "model_id": "BASE.EYE_B",
+            "type": "EYE",
+            "position": [
+              120,
+              -88,
+              3
+            ],
+            "bore_axis": "-Y",
+            "size": {
+              "bore": 5,
+              "depth": 4
+            },
+            "pair": "BASE.EYE_A[24]",
+            "unresolved": [
+              "Q2"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "DIVIDER@4",
+        "part": "DIVIDER",
+        "kind": "FRAME",
+        "role": "PRODUCED",
+        "origin": [
+          -80,
+          0,
+          31.5
+        ],
+        "axes": {
+          "x": "+Y",
+          "y": "+Z",
+          "z": "+X"
+        },
+        "size": [
+          175,
+          60,
+          3
+        ],
+        "bar": 5,
+        "index": 4,
+        "features": [
+          {
+            "id": "DIVIDER@4.TAB_R",
+            "model_id": "DIVIDER.TAB_R",
+            "type": "TAB",
+            "position": [
+              -80,
+              91.5,
+              3
+            ],
+            "direction": "+Y",
+            "size": {
+              "len": 4,
+              "w": 3,
+              "t": 3
+            },
+            "unresolved": [
+              "Q2",
+              "Q3"
+            ]
+          },
+          {
+            "id": "DIVIDER@4.TAB_L",
+            "model_id": "DIVIDER.TAB_L",
+            "type": "TAB",
+            "position": [
+              -80,
+              -91.5,
+              3
+            ],
+            "direction": "-Y",
+            "size": {
+              "len": 4,
+              "w": 3,
+              "t": 3
+            },
+            "unresolved": [
+              "Q2",
+              "Q3"
+            ]
+          }
+        ],
+        "unresolved": [
+          "Q3"
+        ]
+      },
+      {
+        "id": "DIVIDER@12",
+        "part": "DIVIDER",
+        "kind": "FRAME",
+        "role": "PRODUCED",
+        "origin": [
+          0,
+          0,
+          31.5
+        ],
+        "axes": {
+          "x": "+Y",
+          "y": "+Z",
+          "z": "+X"
+        },
+        "size": [
+          175,
+          60,
+          3
+        ],
+        "bar": 5,
+        "index": 12,
+        "features": [
+          {
+            "id": "DIVIDER@12.TAB_R",
+            "model_id": "DIVIDER.TAB_R",
+            "type": "TAB",
+            "position": [
+              0,
+              91.5,
+              3
+            ],
+            "direction": "+Y",
+            "size": {
+              "len": 4,
+              "w": 3,
+              "t": 3
+            },
+            "unresolved": [
+              "Q2",
+              "Q3"
+            ]
+          },
+          {
+            "id": "DIVIDER@12.TAB_L",
+            "model_id": "DIVIDER.TAB_L",
+            "type": "TAB",
+            "position": [
+              0,
+              -91.5,
+              3
+            ],
+            "direction": "-Y",
+            "size": {
+              "len": 4,
+              "w": 3,
+              "t": 3
+            },
+            "unresolved": [
+              "Q2",
+              "Q3"
+            ]
+          }
+        ],
+        "unresolved": [
+          "Q3"
+        ]
+      },
+      {
+        "id": "DIVIDER@20",
+        "part": "DIVIDER",
+        "kind": "FRAME",
+        "role": "PRODUCED",
+        "origin": [
+          80,
+          0,
+          31.5
+        ],
+        "axes": {
+          "x": "+Y",
+          "y": "+Z",
+          "z": "+X"
+        },
+        "size": [
+          175,
+          60,
+          3
+        ],
+        "bar": 5,
+        "index": 20,
+        "features": [
+          {
+            "id": "DIVIDER@20.TAB_R",
+            "model_id": "DIVIDER.TAB_R",
+            "type": "TAB",
+            "position": [
+              80,
+              91.5,
+              3
+            ],
+            "direction": "+Y",
+            "size": {
+              "len": 4,
+              "w": 3,
+              "t": 3
+            },
+            "unresolved": [
+              "Q2",
+              "Q3"
+            ]
+          },
+          {
+            "id": "DIVIDER@20.TAB_L",
+            "model_id": "DIVIDER.TAB_L",
+            "type": "TAB",
+            "position": [
+              80,
+              -91.5,
+              3
+            ],
+            "direction": "-Y",
+            "size": {
+              "len": 4,
+              "w": 3,
+              "t": 3
+            },
+            "unresolved": [
+              "Q2",
+              "Q3"
+            ]
+          }
+        ],
+        "unresolved": [
+          "Q3"
+        ]
+      }
+    ],
+    "checks": {
+      "SEAT.link_residual_mm": 0,
+      "SEAT.fit": "PASS"
+    },
+    "unresolved": {
+      "Q2": [
+        "SEAT",
+        "BASE.EYE_A",
+        "BASE.EYE_B",
+        "DIVIDER.TAB_L",
+        "DIVIDER.TAB_R"
+      ],
+      "Q3": [
+        "SEAT",
+        "DIVIDER",
+        "DIVIDER.TAB_L",
+        "DIVIDER.TAB_R"
+      ]
+    }
+  },
+  "validation": {
+    "errors": [],
+    "warnings": [],
+    "rules": {
+      "R1": "PASS",
+      "R2": "PASS",
+      "R3": "PASS",
+      "R4": "PASS",
+      "R5": "PASS",
+      "R6": "PASS"
+    },
+    "open": [
+      "Q2",
+      "Q3"
+    ]
+  }
+}

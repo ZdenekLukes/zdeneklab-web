@@ -1,0 +1,1705 @@
+{
+  "format": "AI_CONCEPT_SCENE",
+  "concept": "box-organizer",
+  "revision": 2,
+  "hash": "sha256:5a307a53092d8411c9a5766bce081b499e19d7534e4abf5f38e9afe3c96cf608",
+  "maturity": "CONCEPT_FROZEN",
+  "banner": "CONCEPT FROZEN — NOT SKELETON READY (blocked by Q2, Q3) · 2 OPEN (Q2, Q3)",
+  "units": "mm",
+  "up": "+Z",
+  "primitives": [
+    {
+      "id": "BOX#body",
+      "shape": "box",
+      "part": "BOX",
+      "instance": "BOX",
+      "style": "reference",
+      "unresolved": [],
+      "center": [
+        0,
+        0,
+        40
+      ],
+      "size": [
+        300,
+        200,
+        80
+      ]
+    },
+    {
+      "id": "BASE#bar+Y",
+      "shape": "box",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "produced",
+      "unresolved": [],
+      "center": [
+        0,
+        96,
+        3
+      ],
+      "size": [
+        298,
+        8,
+        6
+      ]
+    },
+    {
+      "id": "BASE#bar-Y",
+      "shape": "box",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "produced",
+      "unresolved": [],
+      "center": [
+        0,
+        -96,
+        3
+      ],
+      "size": [
+        298,
+        8,
+        6
+      ]
+    },
+    {
+      "id": "BASE#bar+X",
+      "shape": "box",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "produced",
+      "unresolved": [],
+      "center": [
+        145,
+        0,
+        3
+      ],
+      "size": [
+        8,
+        184,
+        6
+      ]
+    },
+    {
+      "id": "BASE#bar-X",
+      "shape": "box",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "produced",
+      "unresolved": [],
+      "center": [
+        -145,
+        0,
+        3
+      ],
+      "size": [
+        8,
+        184,
+        6
+      ]
+    },
+    {
+      "id": "BASE.SPRING_A",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "produced",
+      "unresolved": [],
+      "shape": "zigzag",
+      "points": [
+        [
+          145,
+          -40,
+          6.5
+        ],
+        [
+          148.2,
+          -32,
+          6.5
+        ],
+        [
+          141.8,
+          -24,
+          6.5
+        ],
+        [
+          148.2,
+          -16,
+          6.5
+        ],
+        [
+          141.8,
+          -8,
+          6.5
+        ],
+        [
+          148.2,
+          0,
+          6.5
+        ],
+        [
+          141.8,
+          8,
+          6.5
+        ],
+        [
+          148.2,
+          16,
+          6.5
+        ],
+        [
+          141.8,
+          24,
+          6.5
+        ],
+        [
+          148.2,
+          32,
+          6.5
+        ],
+        [
+          145,
+          40,
+          6.5
+        ]
+      ]
+    },
+    {
+      "id": "BASE.SPRING_B",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "produced",
+      "unresolved": [],
+      "shape": "zigzag",
+      "points": [
+        [
+          -145,
+          -40,
+          6.5
+        ],
+        [
+          -141.8,
+          -32,
+          6.5
+        ],
+        [
+          -148.2,
+          -24,
+          6.5
+        ],
+        [
+          -141.8,
+          -16,
+          6.5
+        ],
+        [
+          -148.2,
+          -8,
+          6.5
+        ],
+        [
+          -141.8,
+          0,
+          6.5
+        ],
+        [
+          -148.2,
+          8,
+          6.5
+        ],
+        [
+          -141.8,
+          16,
+          6.5
+        ],
+        [
+          -148.2,
+          24,
+          6.5
+        ],
+        [
+          -141.8,
+          32,
+          6.5
+        ],
+        [
+          -145,
+          40,
+          6.5
+        ]
+      ]
+    },
+    {
+      "id": "BASE.EYE_A[0]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        -120,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_A[1]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        -110,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_A[2]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        -100,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_A[3]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        -90,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_A[4]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        -80,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_A[5]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        -70,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_A[6]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        -60,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_A[7]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        -50,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_A[8]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        -40,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_A[9]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        -30,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_A[10]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        -20,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_A[11]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        -10,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_A[12]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        0,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_A[13]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        10,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_A[14]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        20,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_A[15]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        30,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_A[16]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        40,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_A[17]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        50,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_A[18]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        60,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_A[19]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        70,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_A[20]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        80,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_A[21]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        90,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_A[22]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        100,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_A[23]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        110,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_A[24]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        120,
+        90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[0]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        -120,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[1]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        -110,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[2]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        -100,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[3]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        -90,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[4]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        -80,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[5]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        -70,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[6]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        -60,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[7]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        -50,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[8]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        -40,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[9]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        -30,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[10]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        -20,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[11]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        -10,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[12]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        0,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[13]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        10,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[14]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        20,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[15]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        30,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[16]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        40,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[17]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        50,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[18]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        60,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[19]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        70,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[20]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        80,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[21]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        90,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[22]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        100,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[23]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        110,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "BASE.EYE_B[24]",
+      "part": "BASE",
+      "instance": "BASE",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2"
+      ],
+      "shape": "ring",
+      "center": [
+        120,
+        -90,
+        3
+      ],
+      "axis": "Y",
+      "inner_d": 5,
+      "outer_d": 7,
+      "length": 4
+    },
+    {
+      "id": "DIVIDER@4#bar+Y",
+      "shape": "box",
+      "part": "DIVIDER",
+      "instance": "DIVIDER@4",
+      "style": "unresolved",
+      "unresolved": [
+        "Q3"
+      ],
+      "center": [
+        -80,
+        0,
+        59
+      ],
+      "size": [
+        3,
+        175,
+        5
+      ]
+    },
+    {
+      "id": "DIVIDER@4#bar-Y",
+      "shape": "box",
+      "part": "DIVIDER",
+      "instance": "DIVIDER@4",
+      "style": "unresolved",
+      "unresolved": [
+        "Q3"
+      ],
+      "center": [
+        -80,
+        0,
+        4
+      ],
+      "size": [
+        3,
+        175,
+        5
+      ]
+    },
+    {
+      "id": "DIVIDER@4#bar+X",
+      "shape": "box",
+      "part": "DIVIDER",
+      "instance": "DIVIDER@4",
+      "style": "unresolved",
+      "unresolved": [
+        "Q3"
+      ],
+      "center": [
+        -80,
+        85,
+        31.5
+      ],
+      "size": [
+        3,
+        5,
+        50
+      ]
+    },
+    {
+      "id": "DIVIDER@4#bar-X",
+      "shape": "box",
+      "part": "DIVIDER",
+      "instance": "DIVIDER@4",
+      "style": "unresolved",
+      "unresolved": [
+        "Q3"
+      ],
+      "center": [
+        -80,
+        -85,
+        31.5
+      ],
+      "size": [
+        3,
+        5,
+        50
+      ]
+    },
+    {
+      "id": "DIVIDER@4.TAB_R",
+      "part": "DIVIDER",
+      "instance": "DIVIDER@4",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2",
+        "Q3"
+      ],
+      "shape": "box",
+      "center": [
+        -80,
+        89.5,
+        3
+      ],
+      "size": [
+        3,
+        4,
+        3
+      ]
+    },
+    {
+      "id": "DIVIDER@4.TAB_L",
+      "part": "DIVIDER",
+      "instance": "DIVIDER@4",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2",
+        "Q3"
+      ],
+      "shape": "box",
+      "center": [
+        -80,
+        -89.5,
+        3
+      ],
+      "size": [
+        3,
+        4,
+        3
+      ]
+    },
+    {
+      "id": "DIVIDER@12#bar+Y",
+      "shape": "box",
+      "part": "DIVIDER",
+      "instance": "DIVIDER@12",
+      "style": "unresolved",
+      "unresolved": [
+        "Q3"
+      ],
+      "center": [
+        0,
+        0,
+        59
+      ],
+      "size": [
+        3,
+        175,
+        5
+      ]
+    },
+    {
+      "id": "DIVIDER@12#bar-Y",
+      "shape": "box",
+      "part": "DIVIDER",
+      "instance": "DIVIDER@12",
+      "style": "unresolved",
+      "unresolved": [
+        "Q3"
+      ],
+      "center": [
+        0,
+        0,
+        4
+      ],
+      "size": [
+        3,
+        175,
+        5
+      ]
+    },
+    {
+      "id": "DIVIDER@12#bar+X",
+      "shape": "box",
+      "part": "DIVIDER",
+      "instance": "DIVIDER@12",
+      "style": "unresolved",
+      "unresolved": [
+        "Q3"
+      ],
+      "center": [
+        0,
+        85,
+        31.5
+      ],
+      "size": [
+        3,
+        5,
+        50
+      ]
+    },
+    {
+      "id": "DIVIDER@12#bar-X",
+      "shape": "box",
+      "part": "DIVIDER",
+      "instance": "DIVIDER@12",
+      "style": "unresolved",
+      "unresolved": [
+        "Q3"
+      ],
+      "center": [
+        0,
+        -85,
+        31.5
+      ],
+      "size": [
+        3,
+        5,
+        50
+      ]
+    },
+    {
+      "id": "DIVIDER@12.TAB_R",
+      "part": "DIVIDER",
+      "instance": "DIVIDER@12",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2",
+        "Q3"
+      ],
+      "shape": "box",
+      "center": [
+        0,
+        89.5,
+        3
+      ],
+      "size": [
+        3,
+        4,
+        3
+      ]
+    },
+    {
+      "id": "DIVIDER@12.TAB_L",
+      "part": "DIVIDER",
+      "instance": "DIVIDER@12",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2",
+        "Q3"
+      ],
+      "shape": "box",
+      "center": [
+        0,
+        -89.5,
+        3
+      ],
+      "size": [
+        3,
+        4,
+        3
+      ]
+    },
+    {
+      "id": "DIVIDER@20#bar+Y",
+      "shape": "box",
+      "part": "DIVIDER",
+      "instance": "DIVIDER@20",
+      "style": "unresolved",
+      "unresolved": [
+        "Q3"
+      ],
+      "center": [
+        80,
+        0,
+        59
+      ],
+      "size": [
+        3,
+        175,
+        5
+      ]
+    },
+    {
+      "id": "DIVIDER@20#bar-Y",
+      "shape": "box",
+      "part": "DIVIDER",
+      "instance": "DIVIDER@20",
+      "style": "unresolved",
+      "unresolved": [
+        "Q3"
+      ],
+      "center": [
+        80,
+        0,
+        4
+      ],
+      "size": [
+        3,
+        175,
+        5
+      ]
+    },
+    {
+      "id": "DIVIDER@20#bar+X",
+      "shape": "box",
+      "part": "DIVIDER",
+      "instance": "DIVIDER@20",
+      "style": "unresolved",
+      "unresolved": [
+        "Q3"
+      ],
+      "center": [
+        80,
+        85,
+        31.5
+      ],
+      "size": [
+        3,
+        5,
+        50
+      ]
+    },
+    {
+      "id": "DIVIDER@20#bar-X",
+      "shape": "box",
+      "part": "DIVIDER",
+      "instance": "DIVIDER@20",
+      "style": "unresolved",
+      "unresolved": [
+        "Q3"
+      ],
+      "center": [
+        80,
+        -85,
+        31.5
+      ],
+      "size": [
+        3,
+        5,
+        50
+      ]
+    },
+    {
+      "id": "DIVIDER@20.TAB_R",
+      "part": "DIVIDER",
+      "instance": "DIVIDER@20",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2",
+        "Q3"
+      ],
+      "shape": "box",
+      "center": [
+        80,
+        89.5,
+        3
+      ],
+      "size": [
+        3,
+        4,
+        3
+      ]
+    },
+    {
+      "id": "DIVIDER@20.TAB_L",
+      "part": "DIVIDER",
+      "instance": "DIVIDER@20",
+      "style": "unresolved",
+      "unresolved": [
+        "Q2",
+        "Q3"
+      ],
+      "shape": "box",
+      "center": [
+        80,
+        -89.5,
+        3
+      ],
+      "size": [
+        3,
+        4,
+        3
+      ]
+    }
+  ],
+  "arrows": [
+    {
+      "id": "BASE.SPRING_A#+Y",
+      "from": [
+        145,
+        0,
+        10.5
+      ],
+      "dir": "+Y",
+      "length": 14,
+      "style": "produced",
+      "label": "compliance ±Y"
+    },
+    {
+      "id": "BASE.SPRING_A#-Y",
+      "from": [
+        145,
+        0,
+        10.5
+      ],
+      "dir": "-Y",
+      "length": 14,
+      "style": "produced",
+      "label": "compliance ±Y"
+    },
+    {
+      "id": "BASE.SPRING_B#+Y",
+      "from": [
+        -145,
+        0,
+        10.5
+      ],
+      "dir": "+Y",
+      "length": 14,
+      "style": "produced",
+      "label": "compliance ±Y"
+    },
+    {
+      "id": "BASE.SPRING_B#-Y",
+      "from": [
+        -145,
+        0,
+        10.5
+      ],
+      "dir": "-Y",
+      "length": 14,
+      "style": "produced",
+      "label": "compliance ±Y"
+    },
+    {
+      "id": "DIVIDER@4.TAB_R#dir",
+      "from": [
+        -80,
+        91.5,
+        3
+      ],
+      "dir": "+Y",
+      "length": 12,
+      "style": "unresolved",
+      "label": "+Y"
+    },
+    {
+      "id": "DIVIDER@4.TAB_L#dir",
+      "from": [
+        -80,
+        -91.5,
+        3
+      ],
+      "dir": "-Y",
+      "length": 12,
+      "style": "unresolved",
+      "label": "-Y"
+    },
+    {
+      "id": "DIVIDER@12.TAB_R#dir",
+      "from": [
+        0,
+        91.5,
+        3
+      ],
+      "dir": "+Y",
+      "length": 12,
+      "style": "unresolved",
+      "label": "+Y"
+    },
+    {
+      "id": "DIVIDER@12.TAB_L#dir",
+      "from": [
+        0,
+        -91.5,
+        3
+      ],
+      "dir": "-Y",
+      "length": 12,
+      "style": "unresolved",
+      "label": "-Y"
+    },
+    {
+      "id": "DIVIDER@20.TAB_R#dir",
+      "from": [
+        80,
+        91.5,
+        3
+      ],
+      "dir": "+Y",
+      "length": 12,
+      "style": "unresolved",
+      "label": "+Y"
+    },
+    {
+      "id": "DIVIDER@20.TAB_L#dir",
+      "from": [
+        80,
+        -91.5,
+        3
+      ],
+      "dir": "-Y",
+      "length": 12,
+      "style": "unresolved",
+      "label": "-Y"
+    }
+  ],
+  "markers": [
+    {
+      "question": "Q2",
+      "text": "A rigid divider with two outward tabs cannot simply enter two closed, opposing eyes. What mechanism allows insertion?",
+      "about": [
+        "SEAT",
+        "BASE.EYE_A",
+        "BASE.EYE_B",
+        "DIVIDER.TAB_L",
+        "DIVIDER.TAB_R"
+      ],
+      "at": [
+        -120,
+        90,
+        15
+      ],
+      "elements": 56
+    },
+    {
+      "question": "Q3",
+      "text": "The two tabs are coaxial (world Y), which leaves a rotational DOF about that axis. What prevents rotation, or is rotation explicitly acceptable?",
+      "about": [
+        "SEAT",
+        "DIVIDER",
+        "DIVIDER.TAB_L",
+        "DIVIDER.TAB_R"
+      ],
+      "at": [
+        -80,
+        89.5,
+        23
+      ],
+      "elements": 18
+    }
+  ]
+}

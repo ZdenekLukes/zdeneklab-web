@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Concept Preview</title>
+<style>
+  :root { --bg: #f4f5f7; --fg: #1d2330; --muted: #5d6677; --panel: rgba(255,255,255,.92); --open: #e8730c; --line: #d5d9e0; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #14171d; --fg: #e6e9ef; --muted: #9aa3b2; --panel: rgba(28,32,40,.92); --line: #333a46; } }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); font: 14px/1.4 -apple-system, system-ui, sans-serif; overflow: hidden; }
+  #view { position: fixed; inset: 0; touch-action: none; }
+  #banner { position: fixed; top: env(safe-area-inset-top, 0); left: 0; right: 0; padding: 8px 16px; background: var(--open); color: #fff; font-weight: 600; text-align: center; z-index: 2; }
+  #panel { position: fixed; left: 16px; right: 16px; bottom: 16px; max-width: 520px; max-height: 40vh; overflow: auto; background: var(--panel);
+           border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; z-index: 2; }
+  #panel h2 { font-size: 13px; margin: 6px 0; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .q { border-left: 3px solid var(--open); padding-left: 8px; margin: 6px 0; }
+  .q b { color: var(--open); }
+  .small { color: var(--muted); font-size: 12px; }
+  .legend span { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 4px 0 10px; vertical-align: -1px; }
+  #err { position: fixed; top: 50%; left: 16px; right: 16px; text-align: center; color: var(--open); }
+</style>
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.min.js" } }</script>
+</head>
+<body>
+<div id="banner">loading…</div>
+<div id="view"></div>
+<div id="panel"></div>
+<div id="err"></div>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from '../vendor/three/OrbitControls.js';
+
+const params = new URLSearchParams(location.search);
+const url = params.get('scene') || '../out/box_organizer/scene.json';
+const COLORS = { produced: 0x6f8fb8, reference: 0x9aa3b2, unresolved: 0xe8730c };
+const AX = { X: [1, 0, 0], Y: [0, 1, 0], Z: [0, 0, 1] };
+const DIR = { '+X': [1, 0, 0], '-X': [-1, 0, 0], '+Y': [0, 1, 0], '-Y': [0, -1, 0], '+Z': [0, 0, 1], '-Z': [0, 0, -1] };
+
+function material(style) {
+  return new THREE.MeshLambertMaterial({ color: COLORS[style], transparent: style !== 'produced', opacity: style === 'reference' ? 0.08 : style === 'unresolved' ? 0.55 : 1, depthWrite: style === 'produced' });
+}
+function edges(mesh, style) {
+  const e = new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry),
+    style === 'unresolved' ? new THREE.LineDashedMaterial({ color: COLORS.unresolved, dashSize: 2, gapSize: 1.5 })
+      : new THREE.LineBasicMaterial({ color: style === 'reference' ? 0x9aa3b2 : 0x2b3a52 }));
+  e.computeLineDistances();
+  mesh.add(e);
+}
+function label(text, color) {
+  const c = document.createElement('canvas'); const g = c.getContext('2d');
+  c.width = 256; c.height = 64; g.fillStyle = color; g.beginPath(); g.roundRect(4, 4, 248, 56, 12); g.fill();
+  g.fillStyle = '#fff'; g.font = 'bold 34px system-ui'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(text, 128, 34);
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false }));
+  s.scale.set(40, 10, 1); s.renderOrder = 10; return s;
+}
+function esc(s) { return String(s).replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch])); }
+
+async function main() {
+  const scene3 = await (await fetch(url)).json();
+  document.getElementById('banner').textContent = scene3.banner;
+  const q = scene3.markers.map((m) => `<div class="q"><b>${esc(m.question)} UNRESOLVED</b> — ${esc(m.text)}<div class="small">concerns ${esc(m.about.join(', '))}</div></div>`).join('');
+  document.getElementById('panel').innerHTML = `<h2>${esc(scene3.concept)} · rev ${esc(scene3.revision)}</h2>${q}
+    <div class="small legend"><span style="background:#6f8fb8"></span>defined<span style="background:#e8730c"></span>unresolved (provisional)<span style="background:#9aa3b2"></span>reference</div>`;
+
+  const root = document.getElementById('view');
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  root.appendChild(renderer.domElement);
+  const scene = new THREE.Scene();
+  scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+  const sun = new THREE.DirectionalLight(0xffffff, 0.9); sun.position.set(200, -300, 400); scene.add(sun);
+  const camera = new THREE.PerspectiveCamera(40, 1, 1, 5000);
+  camera.up.set(0, 0, 1);
+  camera.position.set(260, -360, 260);
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.target.set(0, 0, 20);
+
+  for (const p of scene3.primitives) {
+    let mesh;
+    if (p.shape === 'box') {
+      mesh = new THREE.Mesh(new THREE.BoxGeometry(...p.size), material(p.style));
+      mesh.position.set(...p.center);
+      edges(mesh, p.style);
+    } else if (p.shape === 'ring') {
+      const ri = p.inner_d / 2, ro = p.outer_d / 2, h = p.length;
+      const prof = [new THREE.Vector2(ri, -h / 2), new THREE.Vector2(ro, -h / 2), new THREE.Vector2(ro, h / 2), new THREE.Vector2(ri, h / 2), new THREE.Vector2(ri, -h / 2)];
+      mesh = new THREE.Mesh(new THREE.LatheGeometry(prof, 20), material(p.style));
+      mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(...AX[p.axis]));
+      mesh.position.set(...p.center);
+    } else if (p.shape === 'zigzag') {
+      mesh = new THREE.Line(new THREE.BufferGeometry().setFromPoints(p.points.map((v) => new THREE.Vector3(...v))),
+        new THREE.LineBasicMaterial({ color: p.style === 'unresolved' ? COLORS.unresolved : 0x1d6b3a, linewidth: 2 }));
+    }
+    if (mesh) scene.add(mesh);
+  }
+  for (const a of scene3.arrows) {
+    scene.add(new THREE.ArrowHelper(new THREE.Vector3(...DIR[a.dir]), new THREE.Vector3(...a.from), a.length,
+      a.style === 'unresolved' ? COLORS.unresolved : 0x1d6b3a, 4, 2.5));
+  }
+  for (const m of scene3.markers) { const s = label(`${m.question} ?`, '#e8730c'); s.position.set(...m.at); scene.add(s); }
+
+  function resize() {
+    const w = root.clientWidth, h = root.clientHeight;
+    renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix();
+    const k = camera.aspect < 1 ? 0.9 / camera.aspect : 1; // narrow screens: step back so the whole box fits
+    camera.position.set(260 * k, -360 * k, 260 * k);
+  }
+  addEventListener('resize', resize); resize();
+  renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
+}
+main().catch((e) => { document.getElementById('err').textContent = `Cannot load ${url}: ${e.message}`; });
+</script>
+</body>
+</html>

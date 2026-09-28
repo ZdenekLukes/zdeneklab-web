@@ -1,0 +1,20 @@
+{
+  "generated_from": "https://github.com/ZdenekLukes/concept-sketcher",
+  "branch": "main",
+  "commit": "443b1faee7b4fe634f7594b976f4da6e07e3968c",
+  "model": "examples/box_organizer.aiconcept",
+  "hash": "sha256:5a307a53092d8411c9a5766bce081b499e19d7534e4abf5f38e9afe3c96cf608",
+  "files": [
+    "index.html",
+    "view/preview.html",
+    "vendor/three/three.module.min.js",
+    "vendor/three/OrbitControls.js",
+    "vendor/three/LICENSE",
+    "out/box_organizer/coder_prompt.md",
+    "out/box_organizer/concept_contract.md",
+    "out/box_organizer/resolved.json",
+    "out/box_organizer/scene.json",
+    "out/box_organizer/skeleton_spec.json",
+    "out/box_organizer/validation.json"
+  ]
+}
