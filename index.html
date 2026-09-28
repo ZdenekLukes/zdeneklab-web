@@ -261,10 +261,68 @@ body{
   text-decoration:none;
   transition:color .25s ease,opacity .25s ease;
 }
-.cube-nav:hover{
-  color:#c1cbd1;
-  opacity:1;
+.cube-nav:hover{color:#c1cbd1;opacity:1}
+
+/* project gateway */
+.gateway{
+  position:absolute;
+  z-index:12;
+  left:50%;
+  top:50%;
+  width:min(920px,88vw);
+  transform:translate(-50%,-44%);
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
 }
+.gateway-card{
+  position:relative;
+  min-height:112px;
+  padding:17px 16px 15px;
+  border:1px solid rgba(148,156,164,.22);
+  background:linear-gradient(180deg,rgba(12,18,23,.58),rgba(3,6,8,.42));
+  backdrop-filter:blur(7px);
+  -webkit-backdrop-filter:blur(7px);
+  color:#a8b0b7;
+  text-decoration:none;
+  transition:border-color .22s ease,background .22s ease,transform .22s ease;
+}
+.gateway-card:hover{
+  border-color:rgba(190,214,232,.48);
+  background:linear-gradient(180deg,rgba(18,27,34,.72),rgba(5,9,12,.55));
+  transform:translateY(-2px);
+}
+.gateway-kicker{
+  display:block;
+  margin-bottom:12px;
+  color:#626b73;
+  font:600 7px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.20em;
+  text-transform:uppercase;
+}
+.gateway-title{
+  display:block;
+  color:#c3cbd1;
+  font:600 12px/1.25 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  letter-spacing:.05em;
+}
+.gateway-desc{
+  display:block;
+  margin-top:9px;
+  color:#707980;
+  font:400 10px/1.4 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+.gateway-arrow{
+  position:absolute;
+  right:13px;
+  bottom:10px;
+  color:#68737b;
+  font:500 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.gateway-card.disabled{cursor:default;opacity:.58}
+.gateway-card.disabled:hover{transform:none;border-color:rgba(148,156,164,.22)}
+.gateway-card.disabled .gateway-arrow{font-size:7px;letter-spacing:.12em;text-transform:uppercase}
+
 .status{
   top:clamp(24px,4vw,50px);
   right:clamp(26px,4vw,64px);
@@ -465,6 +523,20 @@ body{
     left:28px;
     font-size:10px;
   }
+  .gateway{
+    top:49%;
+    width:86vw;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+  .gateway-card{
+    min-height:100px;
+    padding:14px 13px 12px;
+  }
+  .gateway-title{font-size:11px}
+  .gateway-desc{font-size:9px;margin-top:7px}
+  .gateway-kicker{margin-bottom:9px}
+
   .cube-nav{
     top:28px;
     right:28px;
@@ -565,8 +637,34 @@ body{
   </div>
 
   <div class="edge brand">ZDENEK LAB</div>
-  <a class="edge cube-nav" href="ai-cube.html">AI CUBE</a>
   <div class="edge top-center">Independent experiments · Prague</div>
+
+  <nav class="gateway" aria-label="ZDENEK LAB projects">
+    <a class="gateway-card" href="ai-cube.html">
+      <span class="gateway-kicker">01 · STORY</span>
+      <span class="gateway-title">AI CUBE STORY</span>
+      <span class="gateway-desc">From silicon to embodied AI.</span>
+      <span class="gateway-arrow">→</span>
+    </a>
+    <div class="gateway-card disabled" aria-label="AI CUBE Studio — local studio">
+      <span class="gateway-kicker">02 · CONTROL</span>
+      <span class="gateway-title">AI CUBE STUDIO</span>
+      <span class="gateway-desc">Agent, behavior and motion control.</span>
+      <span class="gateway-arrow">LOCAL</span>
+    </div>
+    <a class="gateway-card" href="mechanical-studio.html">
+      <span class="gateway-kicker">03 · MECHANICAL</span>
+      <span class="gateway-title">AI CUBE MECHANICAL STUDIO</span>
+      <span class="gateway-desc">Mechanical design and assembly.</span>
+      <span class="gateway-arrow">→</span>
+    </a>
+    <a class="gateway-card" href="concept-sketcher/">
+      <span class="gateway-kicker">04 · CONCEPT</span>
+      <span class="gateway-title">CONCEPT SKETCHER</span>
+      <span class="gateway-desc">Intent to deterministic 3D concept.</span>
+      <span class="gateway-arrow">→</span>
+    </a>
+  </nav>
 
   <div class="edge side-note">
     Somewhere between <b>AI, hardware and curiosity</b>, something is beginning to move.
