@@ -93,7 +93,10 @@ export async function requestHttpIntent(endpoint, { utterance, model, recent = [
     body: JSON.stringify({ utterance, model, recent }),
   });
   const body = await responseJson(res);
-  if (!res.ok) throw new Error(body?.error || `Live AI backend returned HTTP ${res.status}`);
+  if (!res.ok) {
+    const detail = Array.isArray(body?.details) && body.details.length ? `: ${body.details.join(' · ')}` : '';
+    throw new Error((body?.error || `Live AI backend returned HTTP ${res.status}`) + detail);
+  }
   if (!body || typeof body.intent !== 'object') throw new Error('Live AI backend returned no intent object.');
   return JSON.stringify(body.intent);
 }
@@ -180,7 +183,10 @@ export async function requestGitHubIntent(config, input, options = {}) {
     try { result = JSON.parse(base64ToUtf8(body.content)); }
     catch { throw new Error('GitHub POC returned an unreadable result.'); }
 
-    if (!result.ok) throw new Error(result.error || 'GitHub POC AI job failed.');
+    if (!result.ok) {
+      const detail = Array.isArray(result.details) && result.details.length ? `: ${result.details.join(' · ')}` : '';
+      throw new Error((result.error || 'GitHub POC AI job failed.') + detail);
+    }
     if (!result.response || typeof result.response.intent !== 'object') throw new Error('GitHub POC returned no intent object.');
     options.onProgress?.(`GitHub POC: response received in ${((Date.now() - started) / 1000).toFixed(1)} s`);
     return JSON.stringify(result.response.intent);
