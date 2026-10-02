@@ -172,25 +172,63 @@ export function createViewer(root) {
   let pickHandler = null;
 
   const HOME_DIR = new THREE.Vector3(260, -360, 260).normalize();
+  const CAMERA_PRESETS = {
+    ISO:    { dir: HOME_DIR.clone(), up: [0, 0, 1] },
+    FRONT:  { dir: new THREE.Vector3(0, -1, 0), up: [0, 0, 1] },
+    BACK:   { dir: new THREE.Vector3(0, 1, 0), up: [0, 0, 1] },
+    RIGHT:  { dir: new THREE.Vector3(1, 0, 0), up: [0, 0, 1] },
+    LEFT:   { dir: new THREE.Vector3(-1, 0, 0), up: [0, 0, 1] },
+    TOP:    { dir: new THREE.Vector3(0, 0, 1), up: [0, 1, 0] },
+    BOTTOM: { dir: new THREE.Vector3(0, 0, -1), up: [0, -1, 0] },
+  };
+  let cameraPreset = 'ISO';
+
+  function visibleSphere() {
+    const box = new THREE.Box3();
+    for (const g of [accepted, overlay]) {
+      if (!g) continue;
+      g.traverseVisible((o) => { if ((o.isMesh || o.isLine || o.isLineSegments) && !o.isSprite) box.expandByObject(o); });
+    }
+    if (box.isEmpty() && accepted) box.setFromObject(accepted);
+    const sphere = box.getBoundingSphere(new THREE.Sphere());
+    return Number.isFinite(sphere.radius) && sphere.radius > 0 ? sphere : null;
+  }
+
   function wholeView() {
-    controls.target.set(0, 0, 20);
-    camera.position.copy(HOME_DIR).multiplyScalar(500);
-    if (accepted) {                              // frame the accepted geometry from the home direction
-      const box = new THREE.Box3();
-      accepted.traverseVisible((o) => { if (o.isMesh || o.isLine) box.expandByObject(o); });
-      if (box.isEmpty()) box.setFromObject(accepted);
-      const sphere = box.getBoundingSphere(new THREE.Sphere());
-      if (Number.isFinite(sphere.radius) && sphere.radius > 0) frameBounds({ center: sphere.center.toArray(), radius: sphere.radius * 0.9 });
+    const sphere = visibleSphere();
+    if (sphere) frameBounds({ center: sphere.center.toArray(), radius: sphere.radius * 0.9 });
+    else {
+      const p = CAMERA_PRESETS[cameraPreset] ?? CAMERA_PRESETS.ISO;
+      camera.up.set(...p.up);
+      controls.target.set(0, 0, 20);
+      camera.position.copy(controls.target).add(p.dir.clone().multiplyScalar(500));
+      camera.lookAt(controls.target);
+      controls.update();
     }
   }
-  // Inspection only: move the camera so the given bounds fill the view.
+
+  // Inspection only: move the camera so the given bounds fill the view while
+  // preserving the selected orthographic-style viewing direction.
   function frameBounds(b) {
-    const dir = HOME_DIR.clone();
+    const p = CAMERA_PRESETS[cameraPreset] ?? CAMERA_PRESETS.ISO;
+    const dir = p.dir.clone().normalize();
+    camera.up.set(...p.up);
     const vfov = (camera.fov * Math.PI) / 180;
     const hfov = 2 * Math.atan(Math.tan(vfov / 2) * camera.aspect);
     const dist = (b.radius * 1.15) / Math.sin(Math.min(vfov, hfov) / 2);
     controls.target.set(...b.center);
     camera.position.copy(controls.target.clone().add(dir.multiplyScalar(dist)));
+    camera.lookAt(controls.target);
+    controls.update();
+  }
+
+  function setCameraPreset(name) {
+    const key = String(name || '').toUpperCase();
+    if (!CAMERA_PRESETS[key]) return false;
+    cameraPreset = key;
+    framed = null;
+    wholeView();
+    return true;
   }
   function resize() {
     const w = root.clientWidth, h = root.clientHeight;
@@ -268,5 +306,7 @@ export function createViewer(root) {
     resize,
     frame(bounds) { framed = bounds; wholeView(); if (bounds) frameBounds(bounds); },
     whole() { framed = null; wholeView(); },
+    view(name) { return setCameraPreset(name); },
+    viewName() { return cameraPreset; },
   };
 }
