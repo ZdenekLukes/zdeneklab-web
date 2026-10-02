@@ -135,18 +135,7 @@ function buildGroup(data, S = null) {
     t.position.set(at[0], at[1], at[2] + (p.style === 'proposed' ? 8 : -8));   // proposed above, removed below
     group.add(tag(t, p.id, S, isRef(p)));
   }
-  // Legacy standalone preview keeps the OPEN badge. The app/studio UI already
-  // exposes OPEN state in its status bar and Inspect, so do not cover the model
-  // with a redundant yellow sprite there.
-  if (!S) {
-    for (const style of ['accepted', 'proposed']) {
-      const ms = (data.markers || []).filter((m) => (m.style === 'proposed') === (style === 'proposed'));
-      if (!ms.length) continue;
-      const s = label(`? ${ms.map((m) => (m.status === 'STATED' ? `${m.question}(stated)` : m.question)).join(' ')}${style === 'proposed' ? ' new' : ' OPEN'}`, '#e8730c');
-      s.position.set(ms[0].at[0], ms[0].at[1], ms[0].at[2] + (style === 'proposed' ? 22 : 0));
-      group.add(s);
-    }
-  }
+  // OPEN state is presented in the app/status/Inspect UI, never as a 3D sprite.
   for (const c of group.children) c.userData.base = c.position.clone();
   return group;
 }
