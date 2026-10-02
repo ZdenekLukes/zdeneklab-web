@@ -12,7 +12,7 @@ import { reviewProposal } from '../src/proposal.js';
 import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js';
 import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js';
 import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=ghpoc4';
-import { createViewer, PART_PALETTE } from '../view/render3d.js?v=inspect7';
+import { createViewer, PART_PALETTE } from '../view/render3d.js?v=inspect8';
 
 const LIVE = liveConfig();
 const STORE = LIVE.live ? `concept-sketcher.live.${LIVE.seed || 'blank'}.session` : 'concept-sketcher.s1.session';
@@ -128,6 +128,7 @@ function renderViewTools() {
       <button type="button" data-t="section" class="${sec.on ? 'on' : ''}" aria-pressed="${sec.on}">Section${sec.on ? ` ${sec.axis}` : ''}</button>
       <button type="button" data-t="explode" class="${view.explode ? 'on' : ''}" aria-pressed="${Boolean(view.explode)}">Explode${view.explode ? ` ${view.explode}%` : ''}</button>
       <button type="button" data-t="views" class="${tool === 'views' ? 'on' : ''}" aria-pressed="${tool === 'views'}">Views · ${cameraView}</button>
+      ${view.isolatePart ? `<button type="button" data-showall class="on" title="Return to full assembly">Isolated · ${esc(view.isolatePart)} ×</button>` : ''}
     </div>
     ${tool === 'section' ? `
     <div class="row"><span class="lab">SECTION</span><div class="seg" role="group" aria-label="Section axis">
@@ -167,6 +168,11 @@ function renderViewTools() {
   box.querySelector('[data-t="views"]').onclick = () => {
     tool = tool === 'views' ? null : 'views';
     renderViewTools();
+  };
+  const showAll = box.querySelector('[data-showall]');
+  if (showAll) showAll.onclick = () => {
+    setView({ isolatePart: null });
+    viewer.whole();
   };
   box.querySelectorAll('[data-view]').forEach((b) => {
     b.onclick = () => {
@@ -244,7 +250,10 @@ function renderInspect() {
   if ($('isoPart')) $('isoPart').onclick = () => {
     const part = selectedPart;
     const role = [...model.parts, ...(candidate?.parts || [])].find((p) => p.id === part)?.role;
-    setView({ isolatePart: part, ...(role === 'REFERENCE' ? { showReference: true } : {}) });
+    // Once isolated, clear the inspection selection so the large mobile Inspect
+    // card no longer sits over the part and steals drag gestures from the canvas.
+    // "Show all" remains available as a compact viewer-tool button.
+    setView({ isolatePart: part, selected: null, ...(role === 'REFERENCE' ? { showReference: true } : {}) });
     viewer.whole();
   };
   if ($('showAllParts')) $('showAllParts').onclick = () => { setView({ isolatePart: null }); viewer.whole(); };
