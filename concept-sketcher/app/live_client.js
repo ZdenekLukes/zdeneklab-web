@@ -79,7 +79,6 @@ function ghHeaders(token) {
   return {
     Accept: 'application/vnd.github+json',
     Authorization: `Bearer ${token}`,
-    'X-GitHub-Api-Version': '2022-11-28',
   };
 }
 
@@ -129,7 +128,7 @@ export async function requestGitHubIntent(config, input, options = {}) {
   while (Date.now() - started < timeoutMs) {
     options.onProgress?.(`GitHub POC: AI job running… ${Math.round((Date.now() - started) / 1000)} s`);
     const url = `${api}/contents/${resultPath}?ref=${encodeURIComponent(gh.resultBranch || 'live-results')}&_=${Date.now()}`;
-    const res = await fetchImpl(url, { headers: { ...ghHeaders(token), 'Cache-Control': 'no-cache' } });
+    const res = await fetchImpl(url, { headers: ghHeaders(token) });
 
     if (res.status === 404) { await sleep(pollMs); continue; }
     const body = await responseJson(res);
