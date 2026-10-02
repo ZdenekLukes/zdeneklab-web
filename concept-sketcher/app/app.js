@@ -89,6 +89,12 @@ function applyView() {
     if (r) view = updateView(view, { section: { pos: Math.min(r.hi, Math.max(r.lo, view.section.pos)) } });
   }
   viewer.setView({ showReference: view.showReference, plane: sectionPlane(view.section), offsets: offsetsNow(), selected: view.selected });
+  const refToggle = $('legendRef');
+  if (refToggle) {
+    refToggle.classList.toggle('off', !view.showReference);
+    refToggle.setAttribute('aria-pressed', String(view.showReference));
+    refToggle.title = view.showReference ? 'Hide REFERENCE geometry' : 'Show REFERENCE geometry';
+  }
   renderInspect();
   renderViewTools();
 }
@@ -101,9 +107,8 @@ function renderViewTools() {
   const r = sec.on ? sectionRange(visibleBounds(), sec.axis) : null;
   box.innerHTML = `
     <div class="row">
-      <button type="button" data-t="refs" class="${view.showReference ? 'on' : ''}" aria-pressed="${view.showReference}" title="Show or hide REFERENCE geometry (not printed)">References ${view.showReference ? 'shown' : 'hidden'}</button>
-      <button type="button" data-t="section" class="${sec.on ? 'on' : ''}" aria-pressed="${tool === 'section'}">Section${sec.on ? ` ${sec.axis}` : ''}</button>
-      <button type="button" data-t="explode" class="${view.explode ? 'on' : ''}" aria-pressed="${tool === 'explode'}">Explode${view.explode ? ` ${view.explode}%` : ''}</button>
+      <button type="button" data-t="section" class="${sec.on ? 'on' : ''}" aria-pressed="${sec.on}">Section${sec.on ? ` ${sec.axis}` : ''}</button>
+      <button type="button" data-t="explode" class="${view.explode ? 'on' : ''}" aria-pressed="${Boolean(view.explode)}">Explode${view.explode ? ` ${view.explode}%` : ''}</button>
     </div>
     ${tool === 'section' ? `
     <div class="row"><span class="lab">SECTION</span><div class="seg" role="group" aria-label="Section axis">
@@ -114,9 +119,28 @@ function renderViewTools() {
     ${r ? `<div class="row"><input type="range" id="secPos" aria-label="Section position (mm)" min="${r.lo}" max="${r.hi}" step="0.1" value="${sec.pos}"><span id="secVal" class="mono">${sec.axis} ${sec.pos.toFixed(1)} mm</span></div>` : ''}` : ''}
     ${tool === 'explode' ? `
     <div class="row"><span class="lab">EXPLODE</span><input type="range" id="expPos" aria-label="Exploded view (%)" min="0" max="100" step="1" value="${view.explode}"><span id="expVal" class="mono">${view.explode} %</span><button type="button" data-expreset>Reset</button></div>` : ''}`;
-  box.querySelector('[data-t="refs"]').onclick = () => setView({ showReference: !view.showReference });
-  box.querySelector('[data-t="section"]').onclick = () => { tool = tool === 'section' ? null : 'section'; renderViewTools(); };
-  box.querySelector('[data-t="explode"]').onclick = () => { tool = tool === 'explode' ? null : 'explode'; renderViewTools(); };
+  box.querySelector('[data-t="section"]').onclick = () => {
+    if (view.section.on) {
+      tool = null;
+      setView({ section: { on: false } });
+      return;
+    }
+    const axis = view.section.axis || 'Z';
+    const rr = sectionRange(visibleBounds(), axis);
+    tool = 'section';
+    setView({ section: { on: true, axis, pos: rr ? rr.mid : 0 } });
+  };
+  box.querySelector('[data-t="explode"]').onclick = () => {
+    if (view.explode) {
+      tool = null;
+      setView({ explode: 0 });
+      viewer.whole();
+      return;
+    }
+    tool = 'explode';
+    setView({ explode: 35 });
+    viewer.whole();
+  };
   box.querySelectorAll('[data-sec]').forEach((b) => {
     b.onclick = () => {
       const a = b.dataset.sec;
@@ -451,6 +475,7 @@ async function startSession(fresh = false) {
 async function main() {
   viewer = createViewer($('view'));
   viewer.onPick((key) => select(key));
+  $('legendRef').onclick = () => setView({ showReference: !view.showReference });
   session = await startSession();
   if ($('modeLabel')) $('modeLabel').textContent = LIVE.live ? `LIVE · ${LIVE.transport === 'github' ? 'GitHub POC' : 'HTTP'}${LIVE.seed ? ` · ${LIVE.seed}` : ''}` : 'S1 · demo interpreter (no AI connected)';
   $('chips').innerHTML = LIVE.live ? '' : DEMO_SENTENCES.map((s) => `<button type="button">${esc(s)}</button>`).join('');
