@@ -9,7 +9,7 @@ import { buildScene, buildProposalOverlay, zoomTargets } from '../src/scene.js';
 import { reviewProposal } from '../src/proposal.js';
 import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js';
 import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js';
-import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=ghpoc3';
+import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=ghpoc4';
 import { createViewer } from '../view/render3d.js';
 
 const LIVE = liveConfig();
