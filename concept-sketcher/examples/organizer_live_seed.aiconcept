@@ -1,0 +1,500 @@
+{
+  "format": "AI_CONCEPT",
+  "schema": 2,
+  "meta": {
+    "id": "organizer-live",
+    "title": "Modular box organizer — Live seed",
+    "revision": 1,
+    "intent": "Modular FDM organizer for a 300 × 200 × 80 mm plastic box: spring-spread base frame, paired through-hole eyes, and a repeatable gridded divider.",
+    "closed_world": true
+  },
+  "units": "mm",
+  "world": {
+    "up": "+Z",
+    "origin": "BOX floor centre",
+    "x": "box length",
+    "y": "box width"
+  },
+  "params": {
+    "box_L": {
+      "value": 300,
+      "status": "fixed",
+      "note": "user-stated box dimension"
+    },
+    "box_W": {
+      "value": 200,
+      "status": "fixed",
+      "note": "user-stated box dimension"
+    },
+    "box_H": {
+      "value": 80,
+      "status": "fixed",
+      "note": "user-stated box dimension"
+    },
+    "frame_L": {
+      "value": 295,
+      "status": "placeholder",
+      "note": "PREVIEW ONLY: exact clearance to the box end walls not stated"
+    },
+    "frame_W": {
+      "value": 195,
+      "status": "placeholder",
+      "note": "PREVIEW ONLY: installed base width / wall clearance not stated"
+    },
+    "frame_h": {
+      "value": 5,
+      "status": "fixed",
+      "note": "5 × 5 mm base-frame cross-section"
+    },
+    "rail_w": {
+      "value": 5,
+      "status": "fixed",
+      "note": "5 × 5 mm base-frame cross-section"
+    },
+    "frame_spread": {
+      "value": 10,
+      "status": "rough",
+      "note": "user said approximately 10 mm long-side spreading for assembly"
+    },
+    "eye_pitch": {
+      "value": 50,
+      "status": "fixed",
+      "note": "paired eye spacing along the long sides"
+    },
+    "eye_margin": {
+      "value": 25,
+      "status": "placeholder",
+      "note": "PREVIEW ONLY: start/end margin of the 50 mm eye pattern not stated"
+    },
+    "eye_depth": {
+      "value": 5,
+      "status": "placeholder",
+      "note": "PREVIEW ONLY: eye thickness/depth not stated"
+    },
+    "eye_bore": {
+      "value": 4,
+      "status": "fixed",
+      "note": "through-hole diameter stated by user"
+    },
+    "div_H": {
+      "value": 75,
+      "status": "rough",
+      "note": "user said almost to the top, about 75 mm"
+    },
+    "div_W": {
+      "value": 175,
+      "status": "placeholder",
+      "note": "PREVIEW ONLY: chosen to keep the placeholder pin/eye geometry internally aligned; real divider width remains OPEN"
+    },
+    "div_t": {
+      "value": 5,
+      "status": "placeholder",
+      "note": "PREVIEW ONLY: divider frame thickness not stated"
+    },
+    "div_bar": {
+      "value": 5,
+      "status": "placeholder",
+      "note": "PREVIEW ONLY: divider outer-frame bar width not stated"
+    },
+    "pin_len": {
+      "value": 4,
+      "status": "placeholder",
+      "note": "PREVIEW ONLY: pin engagement length not stated"
+    },
+    "pin_d": {
+      "value": 3.5,
+      "status": "placeholder",
+      "note": "PREVIEW ONLY: pin diameter/fit for Ø4 mm eye holes not stated"
+    },
+    "lattice_limit": {
+      "value": 10,
+      "status": "fixed",
+      "note": "strict upper bound: free lattice opening must be < 10 mm"
+    },
+    "lattice_rib": {
+      "value": 2,
+      "status": "placeholder",
+      "note": "PREVIEW ONLY: lattice rib thickness not stated"
+    }
+  },
+  "parts": [
+    {
+      "id": "BOX",
+      "kind": "BLOCK",
+      "role": "REFERENCE",
+      "size": [
+        "=box_L",
+        "=box_W",
+        "=box_H"
+      ],
+      "orient": {
+        "z": "+Z",
+        "y": "+Y"
+      },
+      "place": {
+        "at": [
+          0,
+          0,
+          0
+        ],
+        "anchor": "BOTTOM_CENTRE"
+      },
+      "intent": "Plastic storage-box interior/reference volume; not printed."
+    },
+    {
+      "id": "BASE",
+      "kind": "FRAME",
+      "role": "PRODUCED",
+      "size": [
+        "=frame_L",
+        "=frame_W",
+        "=frame_h"
+      ],
+      "bar": "=rail_w",
+      "orient": {
+        "z": "+Z",
+        "y": "+Y"
+      },
+      "place": {
+        "at": [
+          0,
+          0,
+          0
+        ],
+        "anchor": "BOTTOM_CENTRE"
+      },
+      "edge_names": {
+        "+Y": "LONG_A",
+        "-Y": "LONG_B",
+        "+X": "SHORT_A",
+        "-X": "SHORT_B"
+      },
+      "manufacturing": {
+        "process": "FDM",
+        "supports": "FORBID",
+        "bridges": "AVOID",
+        "self_supporting": "REQUIRED"
+      },
+      "production": {
+        "repeatable": false,
+        "default_quantity": 1
+      },
+      "intent": "Printed floor frame. One short side includes an integrated flexure so the long sides can temporarily spread for divider installation."
+    },
+    {
+      "id": "DIVIDER",
+      "kind": "FRAME",
+      "role": "PRODUCED",
+      "size": [
+        "=div_W",
+        "=div_H",
+        "=div_t"
+      ],
+      "bar": "=div_bar",
+      "orient": {
+        "z": "+X",
+        "y": "+Z"
+      },
+      "edge_names": {
+        "-Y": "BOTTOM",
+        "+Y": "TOP",
+        "-X": "LEFT",
+        "+X": "RIGHT"
+      },
+      "manufacturing": {
+        "process": "FDM",
+        "supports": "FORBID",
+        "bridges": "AVOID",
+        "self_supporting": "REQUIRED"
+      },
+      "production": {
+        "repeatable": true,
+        "default_quantity": 1
+      },
+      "intent": "Standalone printable divider definition. One instance is shown in the base assembly; the same part definition may be printed repeatedly."
+    }
+  ],
+  "features": [
+    {
+      "id": "SPRING_A",
+      "host": "BASE",
+      "type": "SPRING",
+      "edge": "+X",
+      "form": "INTEGRATED_FLEXURE",
+      "span": {
+        "at": "MID",
+        "length": "40%"
+      },
+      "compliance": "ALONG_EDGE",
+      "travel": "=frame_spread",
+      "effect": {
+        "changes_distance_between": [
+          "BASE.+Y",
+          "BASE.-Y"
+        ]
+      },
+      "reacts_against": [
+        "BOX.+Y",
+        "BOX.-Y"
+      ]
+    },
+    {
+      "id": "EYE_A",
+      "host": "BASE",
+      "type": "EYE",
+      "edge": "+Y",
+      "face": "INNER",
+      "bore_axis": "EDGE_NORMAL",
+      "size": {
+        "bore": "=eye_bore",
+        "depth": "=eye_depth"
+      },
+      "z": "MID",
+      "array": {
+        "along": "EDGE",
+        "span": "HOST_FACE",
+        "pitch": "=eye_pitch",
+        "margin": "=eye_margin",
+        "count": "DERIVED",
+        "placement": "CENTRED"
+      }
+    },
+    {
+      "id": "EYE_B",
+      "mirror": {
+        "of": "EYE_A",
+        "plane": "XZ",
+        "pair_by_index": true
+      }
+    },
+    {
+      "id": "PIN_R",
+      "host": "DIVIDER",
+      "type": "PIN",
+      "edge": "+X",
+      "at": {
+        "from": "-Y",
+        "offset": 0
+      },
+      "dir": "EDGE_NORMAL",
+      "size": {
+        "len": "=pin_len",
+        "d": "=pin_d"
+      },
+      "intent": "Round bottom pin for one Ø4 mm eye; exact diameter/fit remains OPEN."
+    },
+    {
+      "id": "PIN_L",
+      "mirror": {
+        "of": "PIN_R",
+        "plane": "YZ"
+      }
+    },
+    {
+      "id": "LATTICE",
+      "host": "DIVIDER",
+      "type": "LATTICE",
+      "pattern": "OPEN:Q1",
+      "max_opening": {
+        "op": "LT",
+        "value": "=lattice_limit"
+      },
+      "rib": "=lattice_rib",
+      "intent": "Filament-saving self-supporting grid. Pattern is intentionally OPEN: DIAMOND or HONEYCOMB."
+    }
+  ],
+  "joints": [
+    {
+      "id": "SEAT",
+      "type": "INSERTS_INTO",
+      "part": "DIVIDER",
+      "links": [
+        {
+          "male": "DIVIDER.PIN_R",
+          "female": "BASE.EYE_A[i]"
+        },
+        {
+          "male": "DIVIDER.PIN_L",
+          "female": "BASE.EYE_B[i]"
+        }
+      ],
+      "index": {
+        "var": "i",
+        "domain": "ANY",
+        "preview": [
+          2
+        ]
+      },
+      "engage": "=pin_len",
+      "dof": "OPEN:Q3",
+      "fit": "OPEN:Q2",
+      "assembly_motion": "OPEN:Q7",
+      "anti_rotation": "OPEN:Q3",
+      "intent": "Install by temporarily spreading the BASE long sides using the integrated flexure, placing the two opposed pins in one eye pair, then releasing the frame."
+    }
+  ],
+  "rules": [
+    {
+      "id": "R1",
+      "kind": "MUST",
+      "text": "All divider instances are parallel.",
+      "check": {
+        "type": "PARALLEL",
+        "parts": [
+          "DIVIDER"
+        ]
+      }
+    },
+    {
+      "id": "R2",
+      "kind": "MUST",
+      "text": "The two divider pins point outward toward the two long sides.",
+      "check": {
+        "type": "DIRECTION",
+        "features": {
+          "DIVIDER.PIN_L": "-Y",
+          "DIVIDER.PIN_R": "+Y"
+        }
+      }
+    },
+    {
+      "id": "R3",
+      "kind": "MUST",
+      "text": "The divider is a lightweight outer frame rather than a solid plate.",
+      "check": {
+        "type": "KIND",
+        "part": "DIVIDER",
+        "kind": "FRAME"
+      }
+    },
+    {
+      "id": "R4",
+      "kind": "MUST",
+      "text": "The short-side flexure changes the distance between the two long sides.",
+      "check": {
+        "type": "DIRECTION",
+        "features": {
+          "BASE.SPRING_A": "±Y"
+        }
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "status": "OPEN",
+      "blocks": "SKELETON_READY",
+      "about": [
+        "DIVIDER.LATTICE"
+      ],
+      "text": "Choose the self-supporting divider grid pattern.",
+      "options": [
+        "DIAMOND",
+        "HONEYCOMB"
+      ],
+      "options_note": "Both remain allowed; no default is selected."
+    },
+    {
+      "id": "Q2",
+      "status": "OPEN",
+      "blocks": "SKELETON_READY",
+      "about": [
+        "SEAT",
+        "DIVIDER.PIN_L",
+        "DIVIDER.PIN_R",
+        "BASE.EYE_A",
+        "BASE.EYE_B"
+      ],
+      "text": "What pin diameter / fit should be used in the Ø4 mm through-holes?",
+      "options": [
+        "LOOSE",
+        "CLEARANCE",
+        "SLIDING",
+        "SNUG",
+        "PRESS"
+      ],
+      "options_note": "pin_d is a preview placeholder until this is answered."
+    },
+    {
+      "id": "Q3",
+      "status": "OPEN",
+      "blocks": "SKELETON_READY",
+      "about": [
+        "SEAT",
+        "DIVIDER",
+        "DIVIDER.PIN_L",
+        "DIVIDER.PIN_R"
+      ],
+      "text": "What prevents divider rotation about the two coaxial pins, or is that rotation acceptable?",
+      "options": [
+        "explicit anti-rotation geometry",
+        "rotation is acceptable"
+      ],
+      "options_note": "No anti-rotation mechanism is assumed."
+    },
+    {
+      "id": "Q4",
+      "status": "OPEN",
+      "blocks": "SKELETON_READY",
+      "about": [
+        "BASE",
+        "BOX"
+      ],
+      "text": "What installed clearance should the base frame have to the 300 × 200 mm box walls?",
+      "options": [],
+      "options_note": "frame_L and frame_W are preview placeholders only."
+    },
+    {
+      "id": "Q5",
+      "status": "OPEN",
+      "blocks": "SKELETON_READY",
+      "about": [
+        "BASE.EYE_A",
+        "BASE.EYE_B"
+      ],
+      "text": "What eye depth and start/end margin should the 50 mm paired-eye pattern use?",
+      "options": [],
+      "options_note": "eye_depth and eye_margin are preview placeholders only."
+    },
+    {
+      "id": "Q6",
+      "status": "OPEN",
+      "blocks": "SKELETON_READY",
+      "about": [
+        "DIVIDER",
+        "DIVIDER.LATTICE"
+      ],
+      "text": "What divider thickness, outer-frame bar width and lattice rib thickness should be used?",
+      "options": [],
+      "options_note": "These values are preview placeholders only."
+    },
+    {
+      "id": "Q7",
+      "status": "STATED",
+      "blocks": "SKELETON_READY",
+      "about": [
+        "SEAT",
+        "BASE.SPRING_A"
+      ],
+      "text": "How is the rigid divider inserted into two closed opposing eyes?",
+      "options": [],
+      "options_note": "The user has stated the mechanism, but schema 2 has no typed assembly_motion value for it yet, so it remains STATED rather than silently mapped.",
+      "answer": "Temporary parent-frame deflection: spread the BASE long sides using the integrated short-side flexure by approximately 10 mm, insert the two pins, then release the frame.",
+      "answered_by": "user conversation"
+    },
+    {
+      "id": "Q8",
+      "status": "OPEN",
+      "blocks": "SKELETON_READY",
+      "about": [
+        "BASE.SPRING_A"
+      ],
+      "text": "What exact printable flexure geometry/span should provide approximately 10 mm of temporary spreading?",
+      "options": [],
+      "options_note": "The current 40% spring span is conceptual preview geometry only."
+    }
+  ],
+  "freeze": {
+    "state": "DRAFT"
+  }
+}
