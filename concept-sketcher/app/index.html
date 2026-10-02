@@ -60,7 +60,9 @@
     position: relative; min-height: 0; min-width: 0; overflow: hidden; background: var(--s-bg); color: var(--s-fg); }
   #view { position: absolute; inset: 0; touch-action: none; }
   #legend { position: absolute; left: 8px; top: 8px; right: 8px; display: flex; flex-wrap: wrap; gap: 4px 8px; font-size: 11.5px; pointer-events: none; }
-  #legend span { background: var(--s-panel); border: 1px solid var(--s-line); border-radius: 4px; padding: 1px 6px; color: var(--s-fg); }
+  #legend span, #legend button { background: var(--s-panel); border: 1px solid var(--s-line); border-radius: 4px; padding: 1px 6px; color: var(--s-fg); min-height: 0; font: inherit; line-height: inherit; }
+  #legend button { cursor: pointer; pointer-events: auto; }
+  #legend button.off { opacity: .45; text-decoration: line-through; }
   #legend i { display: inline-block; width: 12px; height: 10px; margin-right: 4px; vertical-align: -1px; border-radius: 2px; }
   #dock { position: absolute; left: 8px; right: 8px; bottom: 8px; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; pointer-events: none; max-height: calc(100% - 60px); }
   #dock > * { pointer-events: auto; max-width: 100%; }
@@ -142,7 +144,7 @@
     <div id="view"></div>
     <div id="legend">
       <span><i style="background:linear-gradient(90deg,#8fb5d9 50%,#b5a1e0 50%)"></i>PRODUCED (part colour)</span>
-      <span><i style="background:rgba(139,147,161,.15);border:1px dashed #aab3c2"></i>REFERENCE (ghost, not printed)</span>
+      <button type="button" id="legendRef" aria-pressed="true" title="Hide REFERENCE geometry"><i style="background:rgba(127,159,189,.22);border:1px dashed #c6d9ea"></i>REFERENCE (ghost, not printed)</button>
       <span><i style="background:#1f9d55"></i>+ PROPOSED</span>
       <span><i style="background:none;border:2px dashed #d93025"></i>− REMOVED</span>
       <span><i style="background:none;border:2px dashed #e8730c"></i>OPEN (dashed + Q?)</span>
@@ -158,6 +160,6 @@
 <footer id="status" aria-label="Accepted concept state"></footer>
 <aside id="history" class="sheet" aria-label="Accepted revisions"><header><h2>Accepted revisions</h2><button id="closeHist" type="button">Close</button></header><div class="body" id="revs"></div></aside>
 <aside id="exports" class="sheet" aria-label="Export"><header><h2>Export accepted concept</h2><button id="closeExp" type="button">Close</button></header><div class="body" id="expList"></div></aside>
-<script type="module" src="app.js?v=inspect3"></script>
+<script type="module" src="app.js?v=inspect4"></script>
 </body>
 </html>
