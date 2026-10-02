@@ -12,7 +12,7 @@ import { reviewProposal } from '../src/proposal.js';
 import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js';
 import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js';
 import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=ghpoc4';
-import { createViewer, PART_PALETTE } from '../view/render3d.js?v=inspect6';
+import { createViewer, PART_PALETTE } from '../view/render3d.js?v=inspect7';
 
 const LIVE = liveConfig();
 const STORE = LIVE.live ? `concept-sketcher.live.${LIVE.seed || 'blank'}.session` : 'concept-sketcher.s1.session';
@@ -74,6 +74,7 @@ function render3d() {
   };
   stage = { model, v, candidate, vC, scenes: [acceptedScene, overlay].filter(Boolean), changed: candidate ? changedEntities(model, v, candidate, vC) : [] };
   if (view.selected && !inspect(model, v, view.selected) && !(candidate && inspect(candidate, vC, view.selected))) view = updateView(view, { selected: null });
+  if (view.isolatePart && ![...model.parts, ...(candidate?.parts || [])].some((p) => p.id === view.isolatePart)) view = updateView(view, { isolatePart: null });
   viewer.show(acceptedScene, overlay, studio);
   applyView();
 }
@@ -88,7 +89,11 @@ function visibleBounds() {
   if (!stage) return null;
   const refs = new Set(referenceParts(stage.model));
   const off = offsetsNow();
-  const items = stage.scenes.flatMap((sc) => [...sc.primitives, ...sc.arrows]).filter((p) => view.showReference || !refs.has(instanceOfItem(p.id).replace(/@\d+$/, '')));
+  const items = stage.scenes.flatMap((sc) => [...sc.primitives, ...sc.arrows]).filter((p) => {
+    const part = instanceOfItem(p.id).replace(/@\d+$/, '');
+    if (view.isolatePart && part !== view.isolatePart) return false;
+    return view.showReference || !refs.has(part) || part === view.isolatePart;
+  });
   const byInst = new Map();
   for (const p of items) { const k = instanceOfItem(p.id); if (!byInst.has(k)) byInst.set(k, []); byInst.get(k).push(p); }
   const boxes = [...byInst].map(([k, list]) => { const b = boundsOf(list); const o = off[k] || [0, 0, 0]; return b && { min: b.min.map((x, i) => x + o[i]), max: b.max.map((x, i) => x + o[i]) }; }).filter(Boolean);
@@ -101,7 +106,7 @@ function applyView() {
     const r = sectionRange(visibleBounds(), view.section.axis);
     if (r) view = updateView(view, { section: { pos: Math.min(r.hi, Math.max(r.lo, view.section.pos)) } });
   }
-  viewer.setView({ showReference: view.showReference, plane: sectionPlane(view.section), offsets: offsetsNow(), selected: view.selected });
+  viewer.setView({ showReference: view.showReference, plane: sectionPlane(view.section), offsets: offsetsNow(), selected: view.selected, isolatePart: view.isolatePart });
   const refToggle = $('legendRef');
   if (refToggle) {
     refToggle.classList.toggle('off', !view.showReference);
@@ -205,6 +210,16 @@ function renderInspect() {
     ${changed.length ? `<optgroup label="Changed by the proposal">${options(changed)}</optgroup>` : ''}
     <optgroup label="All">${options([...all.keys()])}</optgroup></select>`;
   const chips = changed.length ? `<div class="chips"><span class="lab">CHANGED</span>${changed.map((k) => `<button type="button" data-ins="${esc(k)}" class="${k === view.selected ? 'on' : ''}">${esc(all.get(k)?.label ?? k)}</button>`).join('')}</div>` : '';
+  const partIds = new Set([...model.parts, ...(candidate?.parts || [])].map((p) => p.id));
+  function partFor(key) {
+    if (!key) return null;
+    if (partIds.has(key)) return key;
+    const head = String(key).split('.')[0];
+    if (partIds.has(head)) return head;
+    const joint = [...(model.joints || []), ...(candidate?.joints || [])].find((j) => j.id === key);
+    return joint?.part && partIds.has(joint.part) ? joint.part : null;
+  }
+  const selectedPart = partFor(view.selected);
   let body = '';
   if (view.selected) {
     const r = candidate ? inspectChange(model, v, candidate, vC, view.selected) : inspect(model, v, view.selected);
@@ -214,14 +229,25 @@ function renderInspect() {
           ? `${x.now ? `${esc(x.now.text)}${statusTag(x.now)}` : '—'} → <span class="ch">${x.proposed ? esc(x.proposed.text) : '—'}</span>${statusTag(x.proposed)}`
           : `${esc(x.now.text)}${statusTag(x.now)}`}</span>`).join('')
         : r.rows.map((x) => `<span class="k">${esc(x.label)}</span><span>${esc(x.text)}${statusTag(x)}</span>`).join('');
+      const isolateActions = `<div class="ihead">
+        ${selectedPart && view.isolatePart !== selectedPart ? `<button type="button" id="isoPart">Isolate ${esc(selectedPart)}</button>` : ''}
+        ${view.isolatePart ? `<button type="button" id="showAllParts">Show all</button><span class="mono">isolated: ${esc(view.isolatePart)}</span>` : ''}
+      </div>`;
       body = `<div class="ihead"><button type="button" id="insClose" title="Clear selection" aria-label="Clear selection">✕</button><span class="ititle">${esc(r.title)}</span>${r.role ? `<span class="badge ${esc(r.role)}">${esc(r.role)}</span>` : ''}${r.state && r.state !== 'SAME' ? `<span class="badge ${esc(r.state)}">${esc(r.state)}</span>` : ''}</div>
-        <div class="dims">${rows}</div>`;
+        ${isolateActions}<div class="dims">${rows}</div>`;
     }
   }
   box.className = `spanel ${body ? '' : 'empty'}`;
   box.innerHTML = `${body}<div class="ihead">${picker}</div>${chips}`;
   $('insSel').onchange = (e) => select(e.target.value || null);
   box.querySelectorAll('[data-ins]').forEach((b) => { b.onclick = () => select(b.dataset.ins); });
+  if ($('isoPart')) $('isoPart').onclick = () => {
+    const part = selectedPart;
+    const role = [...model.parts, ...(candidate?.parts || [])].find((p) => p.id === part)?.role;
+    setView({ isolatePart: part, ...(role === 'REFERENCE' ? { showReference: true } : {}) });
+    viewer.whole();
+  };
+  if ($('showAllParts')) $('showAllParts').onclick = () => { setView({ isolatePart: null }); viewer.whole(); };
   if ($('insClose')) $('insClose').onclick = () => select(null);
 }
 
