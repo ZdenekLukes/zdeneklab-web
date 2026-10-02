@@ -1,0 +1,307 @@
+{
+  "format": "AI_CONCEPT",
+  "schema": 1,
+  "meta": {
+    "id": "box-organizer",
+    "title": "Modular box organizer — S1 start",
+    "revision": 1,
+    "intent": "Removable parallel divider frames in a spring-fitted base frame on the floor of a storage box (S1 start revision: no eyes yet, divider tabs wrongly pointing down).",
+    "closed_world": true
+  },
+  "units": "mm",
+  "world": {
+    "up": "+Z",
+    "origin": "BOX floor centre",
+    "x": "box length",
+    "y": "box width"
+  },
+  "params": {
+    "box_L": {
+      "value": 300,
+      "status": "fixed",
+      "note": "measured box interior length"
+    },
+    "box_W": {
+      "value": 200,
+      "status": "fixed",
+      "note": "measured box interior width"
+    },
+    "box_H": {
+      "value": 80,
+      "status": "rough"
+    },
+    "preload": {
+      "value": 2,
+      "status": "rough",
+      "note": "free frame is wider than the box; springs compress it on installation"
+    },
+    "frame_L": {
+      "expr": "box_L - 2",
+      "note": "clearance to end walls"
+    },
+    "frame_W_free": {
+      "expr": "box_W + preload",
+      "note": "distance between long sides, springs relaxed"
+    },
+    "frame_W": {
+      "expr": "box_W",
+      "note": "installed: long sides bear on the box long walls"
+    },
+    "rail_w": {
+      "value": 8,
+      "status": "rough"
+    },
+    "rail_h": {
+      "value": 6,
+      "status": "rough"
+    },
+    "eye_pitch": {
+      "value": 10,
+      "status": "target"
+    },
+    "eye_margin": {
+      "value": 20,
+      "status": "rough",
+      "note": "from each inner corner of the long side, measured on the inner face"
+    },
+    "eye_d": {
+      "value": 4,
+      "status": "rough",
+      "note": "eye depth, protrudes inward from the rail"
+    },
+    "eye_bore": {
+      "value": 5,
+      "status": "rough",
+      "note": "must admit the tab cross-section tab_w x div_t"
+    },
+    "div_H": {
+      "value": 60,
+      "status": "rough"
+    },
+    "div_bar": {
+      "value": 5,
+      "status": "rough"
+    },
+    "div_t": {
+      "value": 3,
+      "status": "rough"
+    },
+    "tab_len": {
+      "value": 4,
+      "status": "rough"
+    },
+    "tab_w": {
+      "value": 3,
+      "status": "rough"
+    },
+    "clear": {
+      "value": 0.5,
+      "status": "rough"
+    },
+    "div_W": {
+      "expr": "frame_W - 2*rail_w - 2*eye_d - 2*clear",
+      "note": "derived from the installed width"
+    }
+  },
+  "parts": [
+    {
+      "id": "BOX",
+      "kind": "BLOCK",
+      "role": "REFERENCE",
+      "size": [
+        "=box_L",
+        "=box_W",
+        "=box_H"
+      ],
+      "orient": {
+        "z": "+Z",
+        "y": "+Y"
+      },
+      "place": {
+        "at": [
+          0,
+          0,
+          0
+        ],
+        "anchor": "BOTTOM_CENTRE"
+      },
+      "intent": "Storage box interior. Not produced."
+    },
+    {
+      "id": "BASE",
+      "kind": "FRAME",
+      "role": "PRODUCED",
+      "size": [
+        "=frame_L",
+        "=frame_W",
+        "=rail_h"
+      ],
+      "bar": "=rail_w",
+      "orient": {
+        "z": "+Z",
+        "y": "+Y"
+      },
+      "place": {
+        "at": [
+          0,
+          0,
+          0
+        ],
+        "anchor": "BOTTOM_CENTRE"
+      },
+      "edge_names": {
+        "+Y": "LONG_A",
+        "-Y": "LONG_B",
+        "+X": "SHORT_A",
+        "-X": "SHORT_B"
+      },
+      "intent": "Lies on the box floor. The spring sections in the short sides push the two long sides apart against the box long walls; that is the only retention."
+    },
+    {
+      "id": "DIVIDER",
+      "kind": "FRAME",
+      "role": "PRODUCED",
+      "size": [
+        "=div_W",
+        "=div_H",
+        "=div_t"
+      ],
+      "bar": "=div_bar",
+      "orient": {
+        "z": "+X",
+        "y": "+Z"
+      },
+      "edge_names": {
+        "-Y": "BOTTOM",
+        "+Y": "TOP",
+        "-X": "LEFT",
+        "+X": "RIGHT"
+      },
+      "intent": "Open rectangular frame (not a plate). Stands upright across the box width. Placed freely until it is connected.",
+      "place": {
+        "at": [
+          0,
+          0,
+          10
+        ],
+        "anchor": "BOTTOM_CENTRE"
+      }
+    }
+  ],
+  "features": [
+    {
+      "id": "SPRING_A",
+      "host": "BASE",
+      "type": "SPRING",
+      "edge": "+X",
+      "form": "INTEGRATED_FLEXURE",
+      "span": {
+        "at": "MID",
+        "length": "40%"
+      },
+      "compliance": "ALONG_EDGE",
+      "effect": {
+        "changes_distance_between": [
+          "BASE.+Y",
+          "BASE.-Y"
+        ]
+      },
+      "reacts_against": [
+        "BOX:+Y",
+        "BOX:-Y"
+      ],
+      "question": "Q1"
+    },
+    {
+      "id": "SPRING_B",
+      "mirror": {
+        "of": "SPRING_A",
+        "plane": "YZ"
+      }
+    },
+    {
+      "id": "TAB_R",
+      "host": "DIVIDER",
+      "type": "TAB",
+      "edge": "-Y",
+      "at": {
+        "from": "+X",
+        "offset": 0
+      },
+      "dir": "EDGE_NORMAL",
+      "size": {
+        "len": "=tab_len",
+        "w": "=tab_w",
+        "t": "=div_t"
+      }
+    },
+    {
+      "id": "TAB_L",
+      "mirror": {
+        "of": "TAB_R",
+        "plane": "YZ"
+      }
+    }
+  ],
+  "joints": [],
+  "rules": [
+    {
+      "id": "R1",
+      "kind": "MUST",
+      "text": "All dividers are parallel to each other.",
+      "check": {
+        "type": "PARALLEL",
+        "parts": [
+          "DIVIDER"
+        ]
+      }
+    },
+    {
+      "id": "R4",
+      "kind": "MUST_NOT",
+      "text": "No crossing dividers, no perpendicular secondary dividers, no divider grid.",
+      "check": {
+        "type": "CLOSED_WORLD"
+      }
+    },
+    {
+      "id": "R5",
+      "kind": "MUST",
+      "text": "Dividers are open rectangular frames, not solid plates.",
+      "check": {
+        "type": "KIND",
+        "part": "DIVIDER",
+        "kind": "FRAME"
+      }
+    },
+    {
+      "id": "R6",
+      "kind": "MUST",
+      "text": "The short-side springs change the distance between the two long sides (across the frame width).",
+      "check": {
+        "type": "DIRECTION",
+        "features": {
+          "BASE.SPRING_A": "±Y",
+          "BASE.SPRING_B": "±Y"
+        }
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q1",
+      "status": "ANSWERED",
+      "blocks": "SKELETON_READY",
+      "about": [
+        "BASE.SPRING_A",
+        "BASE.SPRING_B"
+      ],
+      "text": "Along which axis do the short-side springs give?",
+      "answer": "Across the frame width (world Y): the springs change the distance between LONG_A and LONG_B.",
+      "answered_by": "user, architecture review 2026-09-28"
+    }
+  ],
+  "freeze": {
+    "state": "DRAFT"
+  }
+}
