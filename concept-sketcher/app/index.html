@@ -54,12 +54,42 @@
   #chips button { white-space: nowrap; font-size: 13px; min-height: 32px; padding: 4px 10px; border-radius: 999px; }
   #composer form { display: flex; gap: 8px; }
   #composer input { flex: 1; font: inherit; font-size: 16px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); min-width: 0; }
-  #stage { position: relative; min-height: 0; min-width: 0; overflow: hidden; }
+  /* 3D stage: Mechanical Studio visual language (tools/mechanical_studio/frontend/app.css):
+     dark canvas, compact translucent panels, accent-blue toggles, mono values. Always dark. */
+  #stage { --s-bg: #0c0f14; --s-panel: #141a23e6; --s-panel2: #1c2431; --s-line: #3a4453; --s-fg: #e9eef5; --s-dim: #96a3b5; --s-accent: #4ea3ff; --s-accent2: #ffb84e;
+    position: relative; min-height: 0; min-width: 0; overflow: hidden; background: var(--s-bg); color: var(--s-fg); }
   #view { position: absolute; inset: 0; touch-action: none; }
-  #legend { position: absolute; left: 8px; top: 8px; right: 8px; display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 12px; pointer-events: none; }
-  #legend span { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; }
+  #legend { position: absolute; left: 8px; top: 8px; right: 8px; display: flex; flex-wrap: wrap; gap: 4px 8px; font-size: 11.5px; pointer-events: none; }
+  #legend span { background: var(--s-panel); border: 1px solid var(--s-line); border-radius: 4px; padding: 1px 6px; color: var(--s-fg); }
   #legend i { display: inline-block; width: 12px; height: 10px; margin-right: 4px; vertical-align: -1px; border-radius: 2px; }
-  #pstate { position: absolute; left: 8px; bottom: 8px; font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 8px; color: #fff; display: none; }
+  #dock { position: absolute; left: 8px; right: 8px; bottom: 8px; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; pointer-events: none; max-height: calc(100% - 60px); }
+  #dock > * { pointer-events: auto; max-width: 100%; }
+  #pstate { font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 6px; color: #fff; display: none; }
+  .spanel { background: var(--s-panel); border: 1px solid var(--s-line); border-radius: 6px; padding: 6px 8px; color: var(--s-fg); }
+  .spanel .lab { font-size: 10.5px; letter-spacing: 1.2px; font-weight: 700; color: var(--s-dim); }
+  .spanel button { min-height: 32px; padding: 3px 9px; font-size: 12.5px; border-radius: 4px; background: var(--s-panel2); border-color: var(--s-line); color: var(--s-fg); }
+  .spanel button.on { background: var(--s-accent); border-color: var(--s-accent); color: #08121f; font-weight: 600; }
+  .spanel .mono { font-family: "JetBrains Mono", "SF Mono", Consolas, monospace; font-size: 12px; color: #cfe0f2; }
+  #viewtools { display: flex; flex-direction: column; gap: 6px; }
+  #viewtools .row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  #viewtools .seg { display: flex; gap: 2px; }
+  #viewtools input[type=range] { flex: 1; min-width: 140px; accent-color: var(--s-accent); margin: 0; }
+  #inspect { position: absolute; top: 40px; right: 8px; width: min(380px, calc(100% - 16px)); overflow-y: auto; max-height: calc(100% - 190px); }
+  #inspect.empty { width: auto; }
+  #inspect .ihead { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  #inspect .ititle { font-weight: 700; font-size: 14px; flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+  #inspect select { font: inherit; font-size: 13px; max-width: 100%; background: var(--s-panel2); color: var(--s-fg); border: 1px solid var(--s-line); border-radius: 4px; min-height: 32px; }
+  #inspect .badge { font-size: 10px; font-weight: 700; letter-spacing: .6px; padding: 1px 5px; border-radius: 3px; border: 1px solid var(--s-line); color: var(--s-dim); }
+  #inspect .badge.PRODUCED { color: #8fb5d9; border-color: #2f5d8c; } #inspect .badge.REFERENCE { color: #aab3c2; border-style: dashed; }
+  #inspect .badge.CHANGED, #inspect .badge.ADDED { color: #8ee0aa; border-color: #1f9d55; } #inspect .badge.REMOVED { color: #ff8a8a; border-color: #d93025; }
+  #inspect .dims { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 3px 10px; margin-top: 6px; font-size: 13px; }
+  #inspect .dims .k { color: var(--s-dim); }
+  #inspect .dims .ch { color: var(--s-accent2); font-weight: 600; }
+  #inspect .st { font-size: 10px; color: var(--s-dim); border: 1px solid var(--s-line); border-radius: 3px; padding: 0 3px; margin-left: 4px; }
+  #inspect .st.placeholder { color: #ffc244; border-color: #6b5520; }
+  #inspect .chips { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+  #inspect .chips button { min-height: 28px; font-size: 12px; }
+  #inspect .hint { font-size: 12px; color: var(--s-dim); margin-top: 4px; }
   #decision { display: none; background: var(--panel); border-top: 2px solid var(--ok); padding: 6px 12px; gap: 8px; align-items: center; flex-wrap: wrap; }
   #decision.show { display: flex; } #decision.bad { border-top-color: var(--bad); }
   #decision .dtext { flex: 1 1 200px; min-width: 0; font-weight: 600; }
@@ -81,6 +111,10 @@
   @media (max-width: 760px) {
     main { grid-template-columns: minmax(0, 1fr); }
     #stage { display: none; } body.show3d #stage { display: block; } body.show3d #chat { display: none; }
+    #inspect { top: 34px; left: 8px; right: 8px; width: auto; max-height: 36%; padding: 4px 8px; }
+    #inspect .dims { font-size: 12.5px; gap: 1px 8px; }
+    #legend { flex-wrap: nowrap; overflow-x: auto; font-size: 10.5px; pointer-events: auto; scrollbar-width: none; }
+    #legend span { white-space: nowrap; }
     #toggle3d { display: inline-block; }
     #status { font-size: 12px; } #status .sp { display: none; }
     #decision { padding: 4px 8px; gap: 4px; }
@@ -107,18 +141,23 @@
   <section id="stage" aria-label="3D preview">
     <div id="view"></div>
     <div id="legend">
-      <span><i style="background:#6f8fb8;border:1px solid #2b3a52"></i>ACCEPTED (solid)</span>
-      <span><i style="background:#1f9d55"></i>+ PROPOSED (tag)</span>
-      <span><i style="background:none;border:2px dashed #d93025"></i>− REMOVED (dashed)</span>
+      <span><i style="background:linear-gradient(90deg,#8fb5d9 50%,#b5a1e0 50%)"></i>PRODUCED (part colour)</span>
+      <span><i style="background:rgba(139,147,161,.15);border:1px dashed #aab3c2"></i>REFERENCE (ghost, not printed)</span>
+      <span><i style="background:#1f9d55"></i>+ PROPOSED</span>
+      <span><i style="background:none;border:2px dashed #d93025"></i>− REMOVED</span>
       <span><i style="background:none;border:2px dashed #e8730c"></i>OPEN (dashed + Q?)</span>
     </div>
-    <div id="pstate"></div>
+    <div id="inspect" class="spanel" aria-label="Inspect dimensions"></div>
+    <div id="dock">
+      <div id="pstate"></div>
+      <div id="viewtools" class="spanel" aria-label="View tools (view only, never saved into the concept)"></div>
+    </div>
   </section>
 </main>
 <div id="decision" role="region" aria-label="Pending proposal"></div>
 <footer id="status" aria-label="Accepted concept state"></footer>
 <aside id="history" class="sheet" aria-label="Accepted revisions"><header><h2>Accepted revisions</h2><button id="closeHist" type="button">Close</button></header><div class="body" id="revs"></div></aside>
 <aside id="exports" class="sheet" aria-label="Export"><header><h2>Export accepted concept</h2><button id="closeExp" type="button">Close</button></header><div class="body" id="expList"></div></aside>
-<script type="module" src="app.js?v=ghpoc4"></script>
+<script type="module" src="app.js?v=inspect1"></script>
 </body>
 </html>
