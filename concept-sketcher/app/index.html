@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Concept Sketcher</title>
+<style>
+  :root {
+    --bg: #f4f5f7; --panel: #ffffff; --fg: #1d2330; --muted: #5d6677; --line: #d5d9e0;
+    --accent: #2f5fb3; --ok: #1f9d55; --bad: #d93025; --open: #e8730c; --grey: #8a93a3;
+    --user: #e7eefb; --bar: #1d2330; --bar-fg: #f4f5f7; --new: #e6f4ea; --old: #fdecea;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #14171d; --panel: #1c2028; --fg: #e6e9ef; --muted: #9aa3b2; --line: #333a46; --user: #22324f; --bar: #0d0f13; --new: #16301f; --old: #3a1c1a; }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); font: 15px/1.45 -apple-system, system-ui, sans-serif; }
+  body { display: grid; grid-template-rows: minmax(0, 1fr) auto auto; height: 100dvh; overflow: hidden; }
+  main { display: grid; grid-template-columns: minmax(0, 42%) minmax(0, 1fr); min-height: 0; min-width: 0; }
+  #chat { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; grid-template-columns: minmax(0, 1fr); min-height: 0; min-width: 0; overflow: hidden; border-right: 1px solid var(--line); background: var(--panel); }
+  #chat header { padding: 10px 16px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 8px; }
+  #chat header h1 { font-size: 16px; margin: 0; flex: 1; }
+  #log { overflow-y: auto; padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+  .msg { max-width: 92%; padding: 8px 12px; border-radius: 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .msg.user { align-self: flex-end; background: var(--user); }
+  .msg.sys { align-self: flex-start; background: var(--bg); border: 1px solid var(--line); }
+  .card { align-self: stretch; min-width: 0; overflow-wrap: anywhere; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: var(--bg); }
+  .card .top { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 6px; }
+  .pill { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; color: #fff; letter-spacing: .03em; white-space: nowrap; }
+  .pill.VALID { background: var(--ok); } .pill.INVALID, .pill.STALE { background: var(--bad); } .pill.CLARIFY { background: var(--grey); }
+  .pill.ACCEPTED { background: var(--accent); } .pill.REJECTED, .pill.SUPERSEDED { background: var(--grey); } .pill.OPEN { background: var(--open); }
+  ol.changes { margin: 8px 0; padding-left: 20px; }
+  ol.changes > li { margin: 0 0 8px; }
+  .tgt { font-weight: 600; } .kind { font-size: 11px; font-weight: 700; border: 1px solid currentColor; border-radius: 4px; padding: 0 4px; margin-right: 4px; }
+  .rows { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 2px 10px; margin-top: 4px; font-size: 14px; }
+  .rows .f { color: var(--muted); }
+  .now { background: var(--old); padding: 0 4px; border-radius: 4px; }
+  .new { background: var(--new); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .why { grid-column: 2; font-size: 13px; color: var(--muted); }
+  .why.open { color: var(--open); font-weight: 600; }
+  .fact { font-size: 10px; font-weight: 700; color: var(--accent); border: 1px solid var(--accent); border-radius: 3px; padding: 0 3px; margin-left: 4px; vertical-align: 1px; }
+  .box { border-top: 1px dashed var(--line); margin-top: 6px; padding-top: 6px; font-size: 14px; }
+  .err { color: var(--bad); } .muted { color: var(--muted); font-size: 13px; }
+  details { margin-top: 6px; font-size: 13px; } pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; max-height: 240px; overflow: auto; background: var(--panel); padding: 6px; border-radius: 6px; }
+  button { font: inherit; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); padding: 6px 12px; cursor: pointer; min-height: 40px; }
+  button.primary { background: var(--ok); border-color: var(--ok); color: #fff; font-weight: 600; }
+  button.danger { color: var(--bad); font-weight: 600; }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  #composer { border-top: 1px solid var(--line); padding: 8px 12px; }
+  #chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; }
+  #examplesBtn { display: none; }
+  #decision .short { display: none; }
+  @media (max-width: 760px) { #examplesBtn { display: inline-block; } body.showchips #chips { display: flex; } }
+  #chips button { white-space: nowrap; font-size: 13px; min-height: 32px; padding: 4px 10px; border-radius: 999px; }
+  #composer form { display: flex; gap: 8px; }
+  #composer input { flex: 1; font: inherit; font-size: 16px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); min-width: 0; }
+  #stage { position: relative; min-height: 0; min-width: 0; overflow: hidden; }
+  #view { position: absolute; inset: 0; touch-action: none; }
+  #legend { position: absolute; left: 8px; top: 8px; right: 8px; display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 12px; pointer-events: none; }
+  #legend span { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; }
+  #legend i { display: inline-block; width: 12px; height: 10px; margin-right: 4px; vertical-align: -1px; border-radius: 2px; }
+  #pstate { position: absolute; left: 8px; bottom: 8px; font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 8px; color: #fff; display: none; }
+  #decision { display: none; background: var(--panel); border-top: 2px solid var(--ok); padding: 6px 12px; gap: 8px; align-items: center; flex-wrap: wrap; }
+  #decision.show { display: flex; } #decision.bad { border-top-color: var(--bad); }
+  #decision .dtext { flex: 1 1 200px; min-width: 0; font-weight: 600; }
+  #decision .dbtns { display: flex; gap: 6px; flex-wrap: wrap; }
+  #status { background: var(--bar); color: var(--bar-fg); display: flex; gap: 6px 12px; align-items: center; padding: 6px 12px calc(6px + env(safe-area-inset-bottom)); font-size: 13px; flex-wrap: wrap; }
+  #status b { font-weight: 700; } #status .sp { flex: 1; }
+  #status button { background: transparent; color: var(--bar-fg); border-color: #555d6b; min-height: 36px; padding: 3px 10px; }
+  .tag { padding: 1px 6px; border-radius: 6px; white-space: nowrap; }
+  .tag.err { background: var(--bad); } .tag.open { background: var(--open); } .tag.ok { background: #2f6b46; } .tag.prop { background: #3b4352; }
+  .sheet { position: fixed; inset: auto 0 0 0; max-height: 85dvh; background: var(--panel); border-top: 1px solid var(--line); border-radius: 14px 14px 0 0; transform: translateY(105%); transition: transform .2s; z-index: 5; display: flex; flex-direction: column; box-shadow: 0 -8px 30px rgba(0,0,0,.2); }
+  .sheet.open { transform: none; }
+  .sheet header { display: flex; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--line); } .sheet h2 { font-size: 16px; margin: 0; flex: 1; }
+  .sheet .body { overflow-y: auto; padding: 8px 16px calc(12px + env(safe-area-inset-bottom)); }
+  @media (min-width: 761px) { .sheet { inset: 0 0 0 auto; width: 440px; max-height: none; border-radius: 0; transform: translateX(105%); } }
+  .rev { border-bottom: 1px solid var(--line); padding: 8px 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px; align-items: start; }
+  .rev.cur { font-weight: 600; } .rev.off { opacity: .7; }
+  .exp { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; border-bottom: 1px solid var(--line); padding: 8px 0; }
+  #toggle3d { display: none; }
+  @media (max-width: 760px) {
+    main { grid-template-columns: minmax(0, 1fr); }
+    #stage { display: none; } body.show3d #stage { display: block; } body.show3d #chat { display: none; }
+    #toggle3d { display: inline-block; }
+    #status { font-size: 12px; } #status .sp { display: none; }
+    #decision { padding: 4px 8px; gap: 4px; }
+    #decision .dtext { flex-basis: 100%; font-size: 13px; }
+    #decision .dbtns { flex-wrap: nowrap; width: 100%; }
+    #decision button { flex: 1 1 0; min-width: 0; padding: 4px 6px; white-space: nowrap; }
+    #decision .long { display: none; } #decision .short { display: inline; }
+    #chips { display: none; } body.nochips #chips { display: none; } #composer { padding: 6px 8px; }
+    .rows { grid-template-columns: minmax(0, 1fr); } .why { grid-column: 1; }
+  }
+</style>
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.min.js" } }</script>
+</head>
+<body>
+<main>
+  <section id="chat" aria-label="Conversation">
+    <header><h1>Concept Sketcher</h1><span class="muted" id="modeLabel">S1 · demo interpreter (no AI connected)</span></header>
+    <div id="log" aria-live="polite"></div>
+    <div id="composer">
+      <div id="chips"></div>
+      <form id="form"><button type="button" id="examplesBtn" title="Example sentences">＋</button><input id="input" autocomplete="off" placeholder="Describe the change in your own words…" aria-label="Message"><button class="primary" type="submit">Send</button></form>
+    </div>
+  </section>
+  <section id="stage" aria-label="3D preview">
+    <div id="view"></div>
+    <div id="legend">
+      <span><i style="background:#6f8fb8;border:1px solid #2b3a52"></i>ACCEPTED (solid)</span>
+      <span><i style="background:#1f9d55"></i>+ PROPOSED (tag)</span>
+      <span><i style="background:none;border:2px dashed #d93025"></i>− REMOVED (dashed)</span>
+      <span><i style="background:none;border:2px dashed #e8730c"></i>OPEN (dashed + Q?)</span>
+    </div>
+    <div id="pstate"></div>
+  </section>
+</main>
+<div id="decision" role="region" aria-label="Pending proposal"></div>
+<footer id="status" aria-label="Accepted concept state"></footer>
+<aside id="history" class="sheet" aria-label="Accepted revisions"><header><h2>Accepted revisions</h2><button id="closeHist" type="button">Close</button></header><div class="body" id="revs"></div></aside>
+<aside id="exports" class="sheet" aria-label="Export"><header><h2>Export accepted concept</h2><button id="closeExp" type="button">Close</button></header><div class="body" id="expList"></div></aside>
+<script type="module" src="app.js"></script>
+</body>
+</html>
