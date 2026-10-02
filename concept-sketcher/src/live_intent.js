@@ -167,7 +167,21 @@ export function compileLiveIntent(model, text) {
     const q = (model.questions || []).find((x) => x.id === a.id);
     if (!q) return { errors: [`answer refers to unknown question ${a.id}`] };
     if (!['OPEN','STATED'].includes(q.status)) return { errors: [`question ${a.id} is not answerable`] };
-    ops.push({ op: 'ANSWER_QUESTION', id: a.id, answer: a.answer, facts: [...a.facts] });
+
+    // Frozen Core V2 deliberately does not treat params/<name>/value as a
+    // question fact. Live Intent may still use such paths to express the
+    // user's numeric answer, but they must be backed by an edit. We keep the
+    // user's full intent for inspection and store only Core-V2-compatible
+    // facts on the accepted question. If no compatible fact remains, the
+    // answer becomes STATED and therefore keeps blocking SKELETON_READY.
+    const paramFacts = a.facts.filter((p) => p.startsWith('params/'));
+    for (const p of paramFacts) {
+      if (!x.edits.some((e) => e.path === p || e.path.startsWith(`${p}/`) || p.startsWith(`${e.path}/`))) {
+        return { errors: [`answer ${a.id}: parameter fact "${p}" is not established by an edit`] };
+      }
+    }
+    const coreFacts = a.facts.filter((p) => !p.startsWith('params/'));
+    ops.push({ op: 'ANSWER_QUESTION', id: a.id, answer: a.answer, facts: coreFacts });
     allow.push(`questions/${a.id}`);
   }
 
