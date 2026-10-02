@@ -20,7 +20,7 @@ const DIR = { '+X': [1, 0, 0], '-X': [-1, 0, 0], '+Y': [0, 1, 0], '-Y': [0, -1, 
 // REFERENCE parts as a faint desaturated ghost drawn last, OPEN as a dashed orange edge.
 export const PART_PALETTE = [0x8fb5d9, 0xb5a1e0, 0x80d9e6, 0xf2c759, 0xe0a1d9, 0x6badcc, 0xd9b38c];
 const STUDIO_ROLE = { axis: 0xb38cff, limits: 0xb38cff, interface: 0x3bc9db, fastener: 0xc9a46a };
-const GHOST = { color: 0x9aa4b2, opacity: 0.10, edge: 0xb8c2d0, edgeOpacity: 0.55 };
+const GHOST = { color: 0x7f9fbd, opacity: 0.18, edge: 0xc6d9ea, edgeOpacity: 0.80 };
 const SELECT = { emissive: 0x6b4d00, line: 0xffd166 };
 const lighten = (hex, f) => new THREE.Color(hex).lerp(new THREE.Color(0xffffff), f).getHex();
 
