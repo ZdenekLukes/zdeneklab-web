@@ -11,7 +11,7 @@ import { referenceParts } from './inspect.js';
 export const SECTION_AXES = ['X', 'Y', 'Z'];
 
 export function defaultViewState() {
-  return { showReference: true, section: { on: false, axis: 'Z', pos: 0, flip: false }, explode: 0, selected: null };
+  return { showReference: true, section: { on: false, axis: 'Z', pos: 0, flip: false }, explode: 0, selected: null, isolatePart: null };
 }
 
 // The section plane as THREE.Plane parameters { normal, constant }: three.js keeps
