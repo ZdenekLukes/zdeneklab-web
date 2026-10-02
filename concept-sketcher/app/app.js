@@ -12,7 +12,7 @@ import { reviewProposal } from '../src/proposal.js';
 import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js';
 import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js';
 import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=ghpoc4';
-import { createViewer, PART_PALETTE } from '../view/render3d.js?v=inspect3';
+import { createViewer, PART_PALETTE } from '../view/render3d.js?v=inspect4';
 
 const LIVE = liveConfig();
 const STORE = LIVE.live ? `concept-sketcher.live.${LIVE.seed || 'blank'}.session` : 'concept-sketcher.s1.session';
@@ -25,7 +25,8 @@ let pending = null;          // { text, evaluation, card, targets, zoomIndex }
 let viewer;
 // Viewer state: UI only. Never saved into the session, never part of a model or its hash.
 let view = defaultViewState();
-let tool = null;             // which view-tool row is open: 'section' | 'explode' | null
+let tool = null;             // which view-tool row is open: 'section' | 'explode' | 'views' | null
+let cameraView = 'ISO';
 let stage = null;            // what is drawn now: { model, v, candidate, vC, scenes, changed }
 
 function save() { try { localStorage.setItem(STORE, exportSession(session)); } catch { /* storage unavailable: session stays in memory */ } }
@@ -121,6 +122,7 @@ function renderViewTools() {
     <div class="row">
       <button type="button" data-t="section" class="${sec.on ? 'on' : ''}" aria-pressed="${sec.on}">Section${sec.on ? ` ${sec.axis}` : ''}</button>
       <button type="button" data-t="explode" class="${view.explode ? 'on' : ''}" aria-pressed="${Boolean(view.explode)}">Explode${view.explode ? ` ${view.explode}%` : ''}</button>
+      <button type="button" data-t="views" class="${tool === 'views' ? 'on' : ''}" aria-pressed="${tool === 'views'}">Views · ${cameraView}</button>
     </div>
     ${tool === 'section' ? `
     <div class="row"><span class="lab">SECTION</span><div class="seg" role="group" aria-label="Section axis">
@@ -130,7 +132,11 @@ function renderViewTools() {
       <button type="button" data-secreset>Reset</button></div>
     ${r ? `<div class="row"><input type="range" id="secPos" aria-label="Section position (mm)" min="${r.lo}" max="${r.hi}" step="0.1" value="${sec.pos}"><span id="secVal" class="mono">${sec.axis} ${sec.pos.toFixed(1)} mm</span></div>` : ''}` : ''}
     ${tool === 'explode' ? `
-    <div class="row"><span class="lab">EXPLODE</span><input type="range" id="expPos" aria-label="Exploded view (%)" min="0" max="100" step="1" value="${view.explode}"><span id="expVal" class="mono">${view.explode} %</span><button type="button" data-expreset>Reset</button></div>` : ''}`;
+    <div class="row"><span class="lab">EXPLODE</span><input type="range" id="expPos" aria-label="Exploded view (%)" min="0" max="100" step="1" value="${view.explode}"><span id="expVal" class="mono">${view.explode} %</span><button type="button" data-expreset>Reset</button></div>` : ''}
+    ${tool === 'views' ? `
+    <div class="row"><span class="lab">VIEW</span>
+      ${['ISO','FRONT','RIGHT','TOP','LEFT','BACK','BOTTOM'].map((v) => `<button type="button" data-view="${v}" class="${cameraView === v ? 'on' : ''}">${v[0] + v.slice(1).toLowerCase()}</button>`).join('')}
+    </div>` : ''}`;
   box.querySelector('[data-t="section"]').onclick = () => {
     if (view.section.on) {
       tool = null;
@@ -153,6 +159,17 @@ function renderViewTools() {
     setView({ explode: 35 });
     viewer.whole();
   };
+  box.querySelector('[data-t="views"]').onclick = () => {
+    tool = tool === 'views' ? null : 'views';
+    renderViewTools();
+  };
+  box.querySelectorAll('[data-view]').forEach((b) => {
+    b.onclick = () => {
+      cameraView = b.dataset.view;
+      viewer.view(cameraView);
+      renderViewTools();
+    };
+  });
   box.querySelectorAll('[data-sec]').forEach((b) => {
     b.onclick = () => {
       const a = b.dataset.sec;
