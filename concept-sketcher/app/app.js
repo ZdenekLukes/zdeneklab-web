@@ -12,7 +12,7 @@ import { reviewProposal } from '../src/proposal.js';
 import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js';
 import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js';
 import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=ghpoc4';
-import { createViewer, PART_PALETTE } from '../view/render3d.js?v=inspect1';
+import { createViewer, PART_PALETTE } from '../view/render3d.js?v=inspect2';
 
 const LIVE = liveConfig();
 const STORE = LIVE.live ? `concept-sketcher.live.${LIVE.seed || 'blank'}.session` : 'concept-sketcher.s1.session';
