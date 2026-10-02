@@ -60,7 +60,7 @@
     position: relative; min-height: 0; min-width: 0; overflow: hidden; background: var(--s-bg); color: var(--s-fg); }
   #view { position: absolute; inset: 0; touch-action: none; }
   #legend { position: absolute; left: 8px; top: 8px; right: 8px; display: flex; flex-wrap: wrap; gap: 4px 8px; font-size: 11.5px; pointer-events: none; }
-  #legend span, #legend button { background: var(--s-panel); border: 1px solid var(--s-line); border-radius: 4px; padding: 1px 6px; color: var(--s-fg); min-height: 0; font: inherit; line-height: inherit; }
+  #legend span, #legend button { background: var(--s-panel); border: 1px solid var(--s-line); border-radius: 4px; padding: 3px 7px; color: var(--s-fg); min-height: 0; font: inherit; line-height: 1.15; white-space: nowrap; flex: 0 0 auto; }
   #legend button { cursor: pointer; pointer-events: auto; }
   #legend button.off { opacity: .45; text-decoration: line-through; }
   #legend i { display: inline-block; width: 12px; height: 10px; margin-right: 4px; vertical-align: -1px; border-radius: 2px; }
@@ -113,10 +113,11 @@
   @media (max-width: 760px) {
     main { grid-template-columns: minmax(0, 1fr); }
     #stage { display: none; } body.show3d #stage { display: block; } body.show3d #chat { display: none; }
-    #inspect { top: 34px; left: 8px; right: 8px; width: auto; max-height: 36%; padding: 4px 8px; }
+    #inspect { top: 44px; left: 8px; right: 8px; width: auto; max-height: 36%; padding: 4px 8px; }
     #inspect .dims { font-size: 12.5px; gap: 1px 8px; }
-    #legend { flex-wrap: nowrap; overflow-x: auto; font-size: 10.5px; pointer-events: auto; scrollbar-width: none; }
-    #legend span { white-space: nowrap; }
+    #legend { flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; font-size: 10.5px; pointer-events: auto; scrollbar-width: none; gap: 4px; }
+    #legend::-webkit-scrollbar { display: none; }
+    #legend > * { flex: 0 0 auto; white-space: nowrap; }
     #toggle3d { display: inline-block; }
     #status { font-size: 12px; } #status .sp { display: none; }
     #decision { padding: 4px 8px; gap: 4px; }
@@ -143,11 +144,10 @@
   <section id="stage" aria-label="3D preview">
     <div id="view"></div>
     <div id="legend">
-      <span><i style="background:linear-gradient(90deg,#8fb5d9 50%,#b5a1e0 50%)"></i>PRODUCED (part colour)</span>
-      <button type="button" id="legendRef" aria-pressed="true" title="Hide REFERENCE geometry"><i style="background:rgba(127,159,189,.22);border:1px dashed #c6d9ea"></i>REFERENCE (ghost, not printed)</button>
-      <span><i style="background:#1f9d55"></i>+ PROPOSED</span>
-      <span><i style="background:none;border:2px dashed #d93025"></i>− REMOVED</span>
-      <span><i style="background:none;border:2px dashed #e8730c"></i>OPEN (dashed + Q?)</span>
+      <button type="button" id="legendRef" aria-pressed="true" title="Hide or show REFERENCE geometry"><i style="background:rgba(127,159,189,.22);border:1px dashed #c6d9ea"></i>REFERENCE</button>
+      <span title="Proposed change"><i style="background:#1f9d55"></i>+ PROPOSED</span>
+      <span title="Removed by proposal"><i style="background:none;border:2px dashed #d93025"></i>− REMOVED</span>
+      <span title="Open / unresolved"><i style="background:none;border:2px dashed #e8730c"></i>? OPEN</span>
     </div>
     <div id="inspect" class="spanel" aria-label="Inspect dimensions"></div>
     <div id="dock">
@@ -160,6 +160,6 @@
 <footer id="status" aria-label="Accepted concept state"></footer>
 <aside id="history" class="sheet" aria-label="Accepted revisions"><header><h2>Accepted revisions</h2><button id="closeHist" type="button">Close</button></header><div class="body" id="revs"></div></aside>
 <aside id="exports" class="sheet" aria-label="Export"><header><h2>Export accepted concept</h2><button id="closeExp" type="button">Close</button></header><div class="body" id="expList"></div></aside>
-<script type="module" src="app.js?v=inspect4"></script>
+<script type="module" src="app.js?v=inspect5"></script>
 </body>
 </html>
