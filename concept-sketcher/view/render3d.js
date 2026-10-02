@@ -161,7 +161,7 @@ export function createViewer(root) {
   controls.target.set(0, 0, 20);
   let accepted = null, overlay = null, framed = null;
   // view state (UI only, never part of the model): set by setView()
-  let view = { showReference: true, plane: null, offsets: {}, selected: null };
+  let view = { showReference: true, plane: null, offsets: {}, selected: null, isolatePart: null };
   let pickHandler = null;
 
   const HOME_DIR = new THREE.Vector3(260, -360, 260).normalize();
@@ -240,7 +240,10 @@ export function createViewer(root) {
       if (!g) continue;
       for (const c of g.children) {
         const u = c.userData;
-        if (u.ref) c.visible = view.showReference;
+        const part = String(u.inst || '').replace(/@\d+$/, '');
+        const isolated = !view.isolatePart || part === view.isolatePart;
+        const referenceVisible = !u.ref || view.showReference || part === view.isolatePart;
+        c.visible = isolated && referenceVisible;
         const off = view.offsets[u.inst];
         if (u.base) c.position.copy(u.base).add(off ? new THREE.Vector3(...off) : new THREE.Vector3());
         const hit = Boolean(view.selected && u.entity === view.selected);
@@ -293,7 +296,7 @@ export function createViewer(root) {
       applyView();
       if (!framed) wholeView();
     },
-    // view: { showReference, plane: {normal, constant} | null, offsets: {instance: [dx,dy,dz]}, selected }
+    // view: { showReference, plane, offsets, selected, isolatePart }
     setView(next) { view = { ...view, ...next }; applyView(); },
     onPick(fn) { pickHandler = fn; },
     resize,
