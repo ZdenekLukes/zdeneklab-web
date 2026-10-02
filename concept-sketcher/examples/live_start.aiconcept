@@ -1,0 +1,28 @@
+{
+  "format": "AI_CONCEPT",
+  "schema": 2,
+  "meta": {
+    "id": "live-concept",
+    "title": "New live concept",
+    "revision": 1,
+    "intent": "Concept being described interactively",
+    "closed_world": true
+  },
+  "units": "mm",
+  "world": {
+    "up": "+Z",
+    "origin": "concept origin"
+  },
+  "params": {},
+  "parts": [],
+  "interfaces": [],
+  "features": [],
+  "joints": [],
+  "fasteners": [],
+  "volumes": [],
+  "rules": [],
+  "questions": [],
+  "freeze": {
+    "state": "DRAFT"
+  }
+}
