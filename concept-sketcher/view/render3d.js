@@ -151,6 +151,12 @@ function tag(obj, id, S, ref) {
 export function createViewer(root) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  // iOS/PWA robustness: OrbitControls owns touch gestures on the canvas.
+  // Setting this on the actual event target avoids Safari treating a one-finger
+  // drag as page/UI interaction, especially after Isolate reframes the model.
+  renderer.domElement.style.touchAction = 'none';
+  renderer.domElement.style.webkitUserSelect = 'none';
+  renderer.domElement.style.userSelect = 'none';
   root.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
   scene.add(new THREE.AmbientLight(0xffffff, 0.75));
@@ -158,6 +164,9 @@ export function createViewer(root) {
   const camera = new THREE.PerspectiveCamera(40, 1, 1, 5000);
   camera.up.set(0, 0, 1);
   const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableRotate = true;
+  controls.touches.ONE = THREE.TOUCH.ROTATE;
+  controls.touches.TWO = THREE.TOUCH.DOLLY_PAN;
   controls.target.set(0, 0, 20);
   let accepted = null, overlay = null, framed = null;
   // view state (UI only, never part of the model): set by setView()
