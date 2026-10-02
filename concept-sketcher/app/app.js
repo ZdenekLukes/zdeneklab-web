@@ -5,12 +5,14 @@
 
 import { conceptHash } from '../src/model.js';
 import { validate } from '../src/validate.js';
-import { buildScene, buildProposalOverlay, zoomTargets } from '../src/scene.js';
+import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js';
+import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js';
+import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js';
 import { reviewProposal } from '../src/proposal.js';
 import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js';
 import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js';
 import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=ghpoc4';
-import { createViewer } from '../view/render3d.js';
+import { createViewer, PART_PALETTE } from '../view/render3d.js?v=inspect1';
 
 const LIVE = liveConfig();
 const STORE = LIVE.live ? `concept-sketcher.live.${LIVE.seed || 'blank'}.session` : 'concept-sketcher.s1.session';
@@ -21,21 +23,26 @@ const isPhone = () => matchMedia('(max-width: 760px)').matches;
 let session;
 let pending = null;          // { text, evaluation, card, targets, zoomIndex }
 let viewer;
+// Viewer state: UI only. Never saved into the session, never part of a model or its hash.
+let view = defaultViewState();
+let tool = null;             // which view-tool row is open: 'section' | 'explode' | null
+let stage = null;            // what is drawn now: { model, v, candidate, vC, scenes, changed }
 
-const sceneOf = (model) => buildScene(model, validate(model));
 function save() { try { localStorage.setItem(STORE, exportSession(session)); } catch { /* storage unavailable: session stays in memory */ } }
 
 // ---------------------------------------------------------------- 3D
 function render3d() {
   const model = acceptedModel(session);
-  const acceptedScene = sceneOf(model);
-  let overlay = null;
+  const v = validate(model);
+  const acceptedScene = buildScene(model, v);
+  let overlay = null, candidate = null, vC = null;
   const ps = $('pstate');
   ps.style.display = 'none';
   if (pending) {
     const ev = pending.evaluation;
     if (ev.status === 'VALID') {
-      overlay = buildProposalOverlay(acceptedScene, sceneOf(ev.candidate));
+      candidate = ev.candidate; vC = validate(candidate);
+      overlay = buildProposalOverlay(acceptedScene, buildScene(candidate, vC));
       pending.targets = zoomTargets(overlay);
       ps.textContent = '+ PROPOSAL — not accepted'; ps.style.background = '#1f9d55'; ps.style.display = 'block';
     } else {
@@ -43,7 +50,126 @@ function render3d() {
       ps.textContent = `✕ PROPOSAL ${ev.status} — nothing drawn`; ps.style.background = '#d93025'; ps.style.display = 'block';
     }
   }
-  viewer.show(acceptedScene, overlay);
+  // studio style inputs: one palette colour per PRODUCED part (model order), REFERENCE parts, entity lookup
+  const colours = new Map();
+  for (const p of [...model.parts, ...(candidate?.parts || [])]) if (p.role !== 'REFERENCE' && !colours.has(p.id)) colours.set(p.id, PART_PALETTE[colours.size % PART_PALETTE.length]);
+  const studio = {
+    refParts: new Set([...referenceParts(model), ...(candidate ? referenceParts(candidate) : [])]),
+    partColor: (id) => colours.get(id) ?? PART_PALETTE[0],
+    entityOf: (id) => entityOf(id, model) ?? (candidate ? entityOf(id, candidate) : null),
+    instanceOf: instanceOfItem,
+  };
+  stage = { model, v, candidate, vC, scenes: [acceptedScene, overlay].filter(Boolean), changed: candidate ? changedEntities(model, v, candidate, vC) : [] };
+  if (view.selected && !inspect(model, v, view.selected) && !(candidate && inspect(candidate, vC, view.selected))) view = updateView(view, { selected: null });
+  viewer.show(acceptedScene, overlay, studio);
+  applyView();
+}
+
+// ---------------------------------------------------------------- view tools (UI state only)
+function offsetsNow() {
+  if (!stage) return {};
+  return { ...(stage.candidate ? explodeOffsets(stage.candidate, stage.vC, view.explode / 100) : {}), ...explodeOffsets(stage.model, stage.v, view.explode / 100) };
+}
+// bounds of what is visible now (exploded positions; references only when shown)
+function visibleBounds() {
+  if (!stage) return null;
+  const refs = new Set(referenceParts(stage.model));
+  const off = offsetsNow();
+  const items = stage.scenes.flatMap((sc) => [...sc.primitives, ...sc.arrows]).filter((p) => view.showReference || !refs.has(instanceOfItem(p.id).replace(/@\d+$/, '')));
+  const byInst = new Map();
+  for (const p of items) { const k = instanceOfItem(p.id); if (!byInst.has(k)) byInst.set(k, []); byInst.get(k).push(p); }
+  const boxes = [...byInst].map(([k, list]) => { const b = boundsOf(list); const o = off[k] || [0, 0, 0]; return b && { min: b.min.map((x, i) => x + o[i]), max: b.max.map((x, i) => x + o[i]) }; }).filter(Boolean);
+  if (!boxes.length) return null;
+  return { min: [0, 1, 2].map((i) => Math.min(...boxes.map((b) => b.min[i]))), max: [0, 1, 2].map((i) => Math.max(...boxes.map((b) => b.max[i]))) };
+}
+function applyView() {
+  if (!viewer) return;
+  if (view.section.on) {
+    const r = sectionRange(visibleBounds(), view.section.axis);
+    if (r) view = updateView(view, { section: { pos: Math.min(r.hi, Math.max(r.lo, view.section.pos)) } });
+  }
+  viewer.setView({ showReference: view.showReference, plane: sectionPlane(view.section), offsets: offsetsNow(), selected: view.selected });
+  renderInspect();
+  renderViewTools();
+}
+function setView(patch) { view = updateView(view, patch); applyView(); }
+function select(key) { setView({ selected: key ? (entityOf(key, stage?.model ?? {}) ?? (stage?.candidate ? entityOf(key, stage.candidate) : null) ?? key) : null }); }
+
+function renderViewTools() {
+  const box = $('viewtools');
+  const sec = view.section;
+  const r = sec.on ? sectionRange(visibleBounds(), sec.axis) : null;
+  box.innerHTML = `
+    <div class="row">
+      <button type="button" data-t="refs" class="${view.showReference ? 'on' : ''}" aria-pressed="${view.showReference}" title="Show or hide REFERENCE geometry (not printed)">References ${view.showReference ? 'shown' : 'hidden'}</button>
+      <button type="button" data-t="section" class="${sec.on ? 'on' : ''}" aria-pressed="${tool === 'section'}">Section${sec.on ? ` ${sec.axis}` : ''}</button>
+      <button type="button" data-t="explode" class="${view.explode ? 'on' : ''}" aria-pressed="${tool === 'explode'}">Explode${view.explode ? ` ${view.explode}%` : ''}</button>
+    </div>
+    ${tool === 'section' ? `
+    <div class="row"><span class="lab">SECTION</span><div class="seg" role="group" aria-label="Section axis">
+      <button type="button" data-sec="off" class="${sec.on ? '' : 'on'}">Off</button>
+      ${SECTION_AXES.map((a) => `<button type="button" data-sec="${a}" class="${sec.on && sec.axis === a ? 'on' : ''}" title="Plane across ${a}">${a}</button>`).join('')}</div>
+      ${sec.on ? `<button type="button" data-secflip class="${sec.flip ? 'on' : ''}" title="Keep the other side of the plane">Flip</button>` : ''}
+      <button type="button" data-secreset>Reset</button></div>
+    ${r ? `<div class="row"><input type="range" id="secPos" aria-label="Section position (mm)" min="${r.lo}" max="${r.hi}" step="0.1" value="${sec.pos}"><span id="secVal" class="mono">${sec.axis} ${sec.pos.toFixed(1)} mm</span></div>` : ''}` : ''}
+    ${tool === 'explode' ? `
+    <div class="row"><span class="lab">EXPLODE</span><input type="range" id="expPos" aria-label="Exploded view (%)" min="0" max="100" step="1" value="${view.explode}"><span id="expVal" class="mono">${view.explode} %</span><button type="button" data-expreset>Reset</button></div>` : ''}`;
+  box.querySelector('[data-t="refs"]').onclick = () => setView({ showReference: !view.showReference });
+  box.querySelector('[data-t="section"]').onclick = () => { tool = tool === 'section' ? null : 'section'; renderViewTools(); };
+  box.querySelector('[data-t="explode"]').onclick = () => { tool = tool === 'explode' ? null : 'explode'; renderViewTools(); };
+  box.querySelectorAll('[data-sec]').forEach((b) => {
+    b.onclick = () => {
+      const a = b.dataset.sec;
+      if (a === 'off') return setView({ section: { on: false } });
+      const rr = sectionRange(visibleBounds(), a);
+      setView({ section: { on: true, axis: a, pos: rr ? rr.mid : 0 } });
+    };
+  });
+  const flip = box.querySelector('[data-secflip]');
+  if (flip) flip.onclick = () => setView({ section: { flip: !view.section.flip } });
+  const sreset = box.querySelector('[data-secreset]');
+  if (sreset) sreset.onclick = () => setView({ section: defaultViewState().section });
+  const inp = $('secPos');
+  if (inp) inp.oninput = () => { view = updateView(view, { section: { pos: Number(inp.value) } }); $('secVal').textContent = `${view.section.axis} ${view.section.pos.toFixed(1)} mm`; viewer.setView({ plane: sectionPlane(view.section) }); };
+  const ex = $('expPos');
+  if (ex) {
+    ex.oninput = () => { view = updateView(view, { explode: Number(ex.value) }); $('expVal').textContent = `${view.explode} %`; viewer.setView({ offsets: offsetsNow() }); };
+    ex.onchange = () => { applyView(); viewer.whole(); };
+  }
+  const ereset = box.querySelector('[data-expreset]');
+  if (ereset) ereset.onclick = () => { setView({ explode: 0 }); viewer.whole(); };
+}
+
+// ---------------------------------------------------------------- inspect (read-only dimensions)
+const statusTag = (r) => (r?.status && r.status !== 'fixed' && r.status !== 'stated' ? `<span class="st ${esc(r.status)}">${esc(r.status)}</span>` : '');
+function renderInspect() {
+  const box = $('inspect');
+  if (!stage) { box.innerHTML = ''; return; }
+  const { model, v, candidate, vC, changed } = stage;
+  const all = new Map([...entities(model), ...(candidate ? entities(candidate) : [])].map((e) => [e.key, e]));
+  const options = (keys) => keys.map((k) => `<option value="${esc(k)}" ${k === view.selected ? 'selected' : ''}>${esc(all.get(k)?.label ?? k)}</option>`).join('');
+  const picker = `<select id="insSel" aria-label="Inspect entity"><option value="">Inspect…</option>
+    ${changed.length ? `<optgroup label="Changed by the proposal">${options(changed)}</optgroup>` : ''}
+    <optgroup label="All">${options([...all.keys()])}</optgroup></select>`;
+  const chips = changed.length ? `<div class="chips"><span class="lab">CHANGED</span>${changed.map((k) => `<button type="button" data-ins="${esc(k)}" class="${k === view.selected ? 'on' : ''}">${esc(all.get(k)?.label ?? k)}</button>`).join('')}</div>` : '';
+  let body = '';
+  if (view.selected) {
+    const r = candidate ? inspectChange(model, v, candidate, vC, view.selected) : inspect(model, v, view.selected);
+    if (r) {
+      const rows = candidate
+        ? r.rows.map((x) => `<span class="k">${esc(x.label)}</span><span>${x.changed
+          ? `${x.now ? `${esc(x.now.text)}${statusTag(x.now)}` : '—'} → <span class="ch">${x.proposed ? esc(x.proposed.text) : '—'}</span>${statusTag(x.proposed)}`
+          : `${esc(x.now.text)}${statusTag(x.now)}`}</span>`).join('')
+        : r.rows.map((x) => `<span class="k">${esc(x.label)}</span><span>${esc(x.text)}${statusTag(x)}</span>`).join('');
+      body = `<div class="ihead"><button type="button" id="insClose" title="Clear selection" aria-label="Clear selection">✕</button><span class="ititle">${esc(r.title)}</span>${r.role ? `<span class="badge ${esc(r.role)}">${esc(r.role)}</span>` : ''}${r.state && r.state !== 'SAME' ? `<span class="badge ${esc(r.state)}">${esc(r.state)}</span>` : ''}</div>
+        <div class="dims">${rows}</div>`;
+    }
+  }
+  box.className = `spanel ${body ? '' : 'empty'}`;
+  box.innerHTML = `${body}<div class="ihead">${picker}</div>${chips}`;
+  $('insSel').onchange = (e) => select(e.target.value || null);
+  box.querySelectorAll('[data-ins]').forEach((b) => { b.onclick = () => select(b.dataset.ins); });
+  if ($('insClose')) $('insClose').onclick = () => select(null);
 }
 
 function show3d(on) {
@@ -58,6 +184,7 @@ function zoomNext() {
   const t = pending.targets[pending.zoomIndex];
   if (isPhone()) show3d(true);
   viewer.frame(t.bounds);
+  if (t.key !== 'ALL') select(t.key);
   renderDecision();
 }
 function wholeModel() {
@@ -323,6 +450,7 @@ async function startSession(fresh = false) {
 
 async function main() {
   viewer = createViewer($('view'));
+  viewer.onPick((key) => select(key));
   session = await startSession();
   if ($('modeLabel')) $('modeLabel').textContent = LIVE.live ? `LIVE · ${LIVE.transport === 'github' ? 'GitHub POC' : 'HTTP'}${LIVE.seed ? ` · ${LIVE.seed}` : ''}` : 'S1 · demo interpreter (no AI connected)';
   $('chips').innerHTML = LIVE.live ? '' : DEMO_SENTENCES.map((s) => `<button type="button">${esc(s)}</button>`).join('');
@@ -344,6 +472,11 @@ async function main() {
     pending: () => pending?.evaluation.status ?? null,
     artifacts: () => acceptedArtifacts(session),
     zoom: () => (pending?.targets?.[pending.zoomIndex] ?? null),
+    view: () => structuredClone(view),
+    setView: (patch) => setView(patch),
+    select: (key) => { select(key); return view.selected; },
+    inspection: () => (stage && view.selected ? (stage.candidate ? inspectChange(stage.model, stage.v, stage.candidate, stage.vC, view.selected) : inspect(stage.model, stage.v, view.selected)) : null),
+    changed: () => stage?.changed ?? [],
     injectIntent: (intent) => {
       const text = typeof intent === 'string' ? intent : JSON.stringify(intent);
       const ev = evaluateLive(session, text);
