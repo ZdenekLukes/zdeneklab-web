@@ -47,6 +47,44 @@ async function responseJson(res) {
   try { return await res.json(); } catch { return null; }
 }
 
+// iOS Safari sometimes surfaces cross-origin Fetch failures only as
+// "TypeError: Load failed". GitHub REST supports CORS, so for the GitHub POC
+// retry the same request through XMLHttpRequest before giving up. This keeps
+// the transport browser-only and does not expose OPENAI_API_KEY.
+function xhrJson(url, { method = 'GET', headers = {}, body = null } = {}) {
+  return new Promise((resolve, reject) => {
+    if (typeof XMLHttpRequest === 'undefined') return reject(new Error('XMLHttpRequest unavailable'));
+    const xhr = new XMLHttpRequest();
+    xhr.open(method, url, true);
+    xhr.withCredentials = false;
+    for (const [k, v] of Object.entries(headers)) xhr.setRequestHeader(k, v);
+    xhr.onload = () => {
+      let json = null;
+      try { json = xhr.responseText ? JSON.parse(xhr.responseText) : null; } catch {}
+      resolve({ ok: xhr.status >= 200 && xhr.status < 300, status: xhr.status, json: async () => json });
+    };
+    xhr.onerror = () => reject(new Error('GitHub connection failed in this browser'));
+    xhr.onabort = () => reject(new Error('GitHub request was cancelled'));
+    xhr.ontimeout = () => reject(new Error('GitHub request timed out'));
+    xhr.timeout = 30000;
+    xhr.send(body);
+  });
+}
+
+async function githubRequest(url, init, fetchImpl = fetch) {
+  try {
+    return await fetchImpl(url, init);
+  } catch (e) {
+    const networkLike = e instanceof TypeError || /load failed|failed to fetch|network/i.test(String(e?.message || e));
+    if (!networkLike || typeof XMLHttpRequest === 'undefined') throw e;
+    return xhrJson(url, {
+      method: init?.method || 'GET',
+      headers: init?.headers || {},
+      body: init?.body ?? null,
+    });
+  }
+}
+
 export async function requestHttpIntent(endpoint, { utterance, model, recent = [] }, fetchImpl = fetch) {
   if (!endpoint) throw new Error('Live AI backend is not configured yet.');
   const res = await fetchImpl(endpoint, {
@@ -105,14 +143,14 @@ export async function requestGitHubIntent(config, input, options = {}) {
   const api = `https://api.github.com/repos/${encodeURIComponent(gh.owner)}/${encodeURIComponent(gh.repo)}`;
   options.onProgress?.('GitHub POC: queuing AI job…');
 
-  const dispatch = await fetchImpl(`${api}/actions/workflows/${encodeURIComponent(gh.workflow)}/dispatches`, {
+  const dispatch = await githubRequest(`${api}/actions/workflows/${encodeURIComponent(gh.workflow)}/dispatches`, {
     method: 'POST',
     headers: { ...ghHeaders(token), 'Content-Type': 'application/json' },
     body: JSON.stringify({
       ref: gh.ref || 'main',
       inputs: { request_id: requestId, payload_b64: payload },
     }),
-  });
+  }, fetchImpl);
   if (!dispatch.ok) {
     const body = await responseJson(dispatch);
     const e = new Error(body?.message || `GitHub dispatch failed (HTTP ${dispatch.status})`);
@@ -128,7 +166,7 @@ export async function requestGitHubIntent(config, input, options = {}) {
   while (Date.now() - started < timeoutMs) {
     options.onProgress?.(`GitHub POC: AI job running… ${Math.round((Date.now() - started) / 1000)} s`);
     const url = `${api}/contents/${resultPath}?ref=${encodeURIComponent(gh.resultBranch || 'live-results')}&_=${Date.now()}`;
-    const res = await fetchImpl(url, { headers: ghHeaders(token) });
+    const res = await githubRequest(url, { headers: ghHeaders(token) }, fetchImpl);
 
     if (res.status === 404) { await sleep(pollMs); continue; }
     const body = await responseJson(res);
