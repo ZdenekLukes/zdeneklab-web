@@ -30,6 +30,18 @@ let stage = null;            // what is drawn now: { model, v, candidate, vC, sc
 
 function save() { try { localStorage.setItem(STORE, exportSession(session)); } catch { /* storage unavailable: session stays in memory */ } }
 
+// Normalize the top viewer legend in JS as well as HTML. This deliberately
+// repairs an older cached iOS home-screen shell once its app.js refreshes.
+function normalizeViewerLegend() {
+  const legend = $('legend');
+  if (!legend) return;
+  legend.innerHTML = `
+    <button type="button" id="legendRef" aria-pressed="true" title="Hide or show REFERENCE geometry"><i style="background:rgba(127,159,189,.22);border:1px dashed #c6d9ea"></i>REFERENCE</button>
+    <span title="Proposed change"><i style="background:#1f9d55"></i>+ PROPOSED</span>
+    <span title="Removed by proposal"><i style="background:none;border:2px dashed #d93025"></i>− REMOVED</span>
+    <span title="Open / unresolved"><i style="background:none;border:2px dashed #e8730c"></i>? OPEN</span>`;
+}
+
 // ---------------------------------------------------------------- 3D
 function render3d() {
   const model = acceptedModel(session);
@@ -473,6 +485,7 @@ async function startSession(fresh = false) {
 }
 
 async function main() {
+  normalizeViewerLegend();
   viewer = createViewer($('view'));
   viewer.onPick((key) => select(key));
   $('legendRef').onclick = () => setView({ showReference: !view.showReference });
