@@ -105,8 +105,18 @@ function buildGroup(data, S = null) {
       mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(...AX[p.axis]));
       mesh.position.set(...p.center);
     } else if (p.shape === 'zigzag') {
-      const color = { unresolved: STYLE_COLORS.unresolved, proposed: STYLE_COLORS.proposed, removed: STYLE_COLORS.removed }[p.style] ?? (S ? strokeColor(p) : 0x1d6b3a);
-      mesh = new THREE.Line(new THREE.BufferGeometry().setFromPoints(p.points.map((v) => new THREE.Vector3(...v))), new THREE.LineBasicMaterial({ color }));
+      const points = p.points.map((v) => new THREE.Vector3(...v));
+      if (S && !overlayStyle(p)) {
+        const curve = new THREE.CatmullRomCurve3(points, false, 'catmullrom', 0);
+        const color = p.part ? lighten(S.partColor(p.part), 0.28) : 0x8fd3ff;
+        mesh = new THREE.Mesh(
+          new THREE.TubeGeometry(curve, Math.max(24, points.length * 4), 1.15, 8, false),
+          new THREE.MeshLambertMaterial({ color, emissive: 0x07131f })
+        );
+      } else {
+        const color = { unresolved: STYLE_COLORS.unresolved, proposed: STYLE_COLORS.proposed, removed: STYLE_COLORS.removed }[p.style] ?? 0x1d6b3a;
+        mesh = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color }));
+      }
     }
     if (mesh) { if (S) mesh.renderOrder = isRef(p) ? 2 : overlayStyle(p) ? 1 : 0; group.add(tag(mesh, p.id, S, isRef(p))); }
   }
@@ -116,6 +126,7 @@ function buildGroup(data, S = null) {
     group.add(tag(t, l.id, S, false));
   }
   for (const a of data.arrows || []) {
+    if (S && String(a.label || '').startsWith('compliance ±')) continue;
     const color = { unresolved: STYLE_COLORS.unresolved, proposed: STYLE_COLORS.proposed, removed: STYLE_COLORS.removed }[a.style] ?? (S ? 0x9fb3c8 : 0x1d6b3a);
     group.add(tag(new THREE.ArrowHelper(new THREE.Vector3(...DIR[a.dir]), new THREE.Vector3(...a.from), a.length, color, 4, 2.5), a.id, S, isRef(a)));
   }
