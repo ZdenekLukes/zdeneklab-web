@@ -5,7 +5,8 @@
 import { AXES, add, sub, mul, dot, cross, len, roundDeep } from './resolve.js';
 import { nominalDiameter } from './schema.js';
 
-const rotLocal = (axes, v) => ['x', 'y', 'z'].reduce((acc, k, i) => add(acc, mul(AXES[axes[k]], v[i])), [0, 0, 0]);
+const axisVector = (axes, basis, k) => AXES[axes?.[k]] || basis?.[k];
+const rotLocal = (axes, v, basis = null) => ['x', 'y', 'z'].reduce((acc, k, i) => add(acc, mul(axisVector(axes, basis, k), v[i])), [0, 0, 0]);
 const worldSize = (axes, s) => rotLocal(axes, s).map(Math.abs);
 
 export function maturityLine(v) {
@@ -44,9 +45,10 @@ export function buildScene(model, v) {
         if (rigid <= 0) throw new Error(`flexure ${spring.id}: span exceeds its rail`);
         for (const sign of [-1, 1]) {
           const cc = [...c], ss = [...s]; ss[run] = rigid; cc[run] = sign * (gap + rigid) / 2;
-          prims.push({ id: `${inst.id}#${sub_}:${sign}`, shape: 'box', ...base, center: add(inst.origin, rotLocal(inst.axes, cc)), size: worldSize(inst.axes, ss) });
+          prims.push({ id: `${inst.id}#${sub_}:${sign}`, shape: 'box', ...base, center: add(inst.origin, rotLocal(inst.axes, cc, inst.basis)), size: worldSize(inst.axes, ss) });
         }
-      } else prims.push({ id: `${inst.id}#${sub_}`, shape: 'box', ...base, center: add(inst.origin, rotLocal(inst.axes, c)), size: worldSize(inst.axes, s) });
+      } else if (inst.axes.x) prims.push({ id: `${inst.id}#${sub_}`, shape: 'box', ...base, center: add(inst.origin, rotLocal(inst.axes, c)), size: worldSize(inst.axes, s) });
+      else prims.push({ id: `${inst.id}#${sub_}`, shape: 'box', ...base, center: add(inst.origin, rotLocal(inst.axes, c, inst.basis)), size: s, basis: inst.basis });
     }
     for (const f of inst.features) {
       const fst = style(inst.role, f.unresolved);

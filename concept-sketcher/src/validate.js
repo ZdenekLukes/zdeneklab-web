@@ -8,10 +8,9 @@
 import { motionDefinitionErrors } from './motion.js';
 import { conceptHash } from './model.js';
 import { resolve, featureDefs } from './resolve.js';
-import { checkModel, openSlots, isFactField, isOpen, COLLECTIONS, METHODS } from './schema.js';
+import { checkModel, openSlots, isFactField, isOpen, COLLECTIONS, METHODS, PART_ROLES } from './schema.js';
 
 const PART_KINDS = ['BLOCK', 'PLATE', 'FRAME', 'ROD', 'CYLINDER', 'ENVELOPE'];
-const ROLES = ['PRODUCED', 'REFERENCE'];
 const STATES = ['DRAFT', 'CONCEPT_FROZEN', 'SKELETON_READY'];
 // Fit is a mechanical fact (never defaulted): one of these, or OPEN:Qn.
 export const FITS = ['LOOSE', 'CLEARANCE', 'SLIDING', 'SNUG', 'PRESS'];
@@ -37,7 +36,8 @@ export function validate(model, opts = {}) {
 
   for (const p of model.parts || []) {
     if (!v2 && !PART_KINDS.includes(p.kind)) errors.push(`part ${p.id}: unknown kind "${p.kind}"`);
-    if (!ROLES.includes(p.role)) errors.push(`part ${p.id}: role must be PRODUCED or REFERENCE`);
+    const roles = v2 ? PART_ROLES : ['PRODUCED', 'REFERENCE'];
+    if (!roles.includes(p.role)) errors.push(`part ${p.id}: role must be ${roles.join(' or ')}`);
   }
   let defs = {};
   try { defs = featureDefs(model); } catch (e) { errors.push(e.message); }

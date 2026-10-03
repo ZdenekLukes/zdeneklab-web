@@ -33,6 +33,18 @@ export const axisLetter = (v) => { const n = axisName(v); return n ? n[1] : null
 
 // orient {z, y} -> rotation: world directions of local x, y, z (x = y × z).
 export function orientation(o) {
+  if (Array.isArray(o?.euler_deg)) {
+    if (o.z !== undefined || o.y !== undefined) throw new Error('orient must use either {z,y} or {euler_deg}, not both');
+    if (o.euler_deg.length !== 3 || !o.euler_deg.every(Number.isFinite)) throw new Error('orient.euler_deg needs [x,y,z] finite degrees');
+    const [ax, ay, az] = o.euler_deg.map((v) => v * Math.PI / 180);
+    const cx = Math.cos(ax), sx = Math.sin(ax), cy = Math.cos(ay), sy = Math.sin(ay), cz = Math.cos(az), sz = Math.sin(az);
+    // Intrinsic XYZ, equivalently world matrix Rz * Ry * Rx; columns are the
+    // world directions of local x/y/z.
+    const x = [cz * cy, sz * cy, -sy];
+    const y = [cz * sy * sx - sz * cx, sz * sy * sx + cz * cx, cy * sx];
+    const z = [cz * sy * cx + sz * sx, sz * sy * cx - cz * sx, cy * cx];
+    return { x: round(x), y: round(y), z: round(z), names: { x: axisName(x), y: axisName(y), z: axisName(z) }, euler_deg: [...o.euler_deg] };
+  }
   const z = AXES[o?.z], y = AXES[o?.y];
   if (!z || !y) throw new Error(`orient needs z and y from ±X ±Y ±Z, got ${JSON.stringify(o)}`);
   if (Math.abs(dot(z, y)) > EPS) throw new Error(`orient z=${o.z} and y=${o.y} are not perpendicular`);
@@ -195,7 +207,7 @@ function worldFeature(f, inst, v2 = false) {
 
 function makeInstance(part, id, index, origin) {
   const inst = { id, part: part.id, index, kind: part.kind, role: part.role, origin, R: part.R,
-    axes: part.R.names, size: part.size, bar: part.kind === 'FRAME' ? part.bar : null };
+    axes: part.R.names, basis: { x: part.R.x, y: part.R.y, z: part.R.z }, size: part.size, bar: part.kind === 'FRAME' ? part.bar : null };
   // schema 2: round parts carry their axis and diameter, a SHELL its wall and open side
   if (ROUND_KINDS.includes(part.kind) && part.v2) inst.extra = { d: part.size[1], axis: axisName(part.R.x) };
   if (part.kind === 'SHELL') {
@@ -229,6 +241,11 @@ export function resolve(model, opts = {}) {
   const edgeDefs = v2 ? Object.fromEntries(Object.entries(defs).filter(([, d]) => d.type !== 'HOLE')) : defs;
   for (const part of Object.values(parts)) local[part.id] = localFeatures(part, edgeDefs, P, errors);
   if (v2) {
+    for (const part of Object.values(parts)) {
+      if (part.R.euler_deg && ((model.features || []).some((f) => f.host === part.id) || (model.interfaces || []).some((i) => i.part === part.id) || (model.joints || []).some((j) => j.part === part.id || JSON.stringify(j.links || []).includes(`${part.id}.`)))) {
+        errors.push(`part ${part.id}: arbitrary euler orientation currently supports free-standing parts only; attached features/interfaces need an axis-aligned orientation`);
+      }
+    }
     for (const part of Object.values(parts)) {
       ifaces[part.id] = localInterfaces(model, part, local[part.id], P, errors);
       local[part.id].push(...localHoles(model, part, defs, ifaces[part.id], P, errors));
@@ -416,6 +433,7 @@ function resolveMechanicsV2(model, c) {
 
 function cleanInstance(inst) {
   const o = { id: inst.id, part: inst.part, kind: inst.kind, role: inst.role, origin: inst.origin, axes: inst.axes, size: inst.size };
+  if (!inst.axes.x) o.basis = inst.basis;
   if (inst.bar !== null) o.bar = inst.bar;
   if (inst.extra) Object.assign(o, inst.extra);
   if (inst.index !== null) o.index = inst.index;

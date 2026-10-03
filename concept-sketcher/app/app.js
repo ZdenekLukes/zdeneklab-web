@@ -17,7 +17,9 @@ import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, cle
 import { createViewer, PART_PALETTE } from '../view/render3d.js?v=motion1';
 
 const LIVE = liveConfig();
-const STORE = LIVE.live ? `concept-sketcher.live.${LIVE.seed || 'blank'}.session` : 'concept-sketcher.s1.session';
+const LEGACY_STORE = LIVE.live ? `concept-sketcher.live.${LIVE.seed || 'blank'}.session` : 'concept-sketcher.s1.session';
+const PROJECT_INDEX = 'concept-sketcher.projects.v1';
+const ACTIVE_PROJECT = 'concept-sketcher.projects.active';
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const isPhone = () => matchMedia('(max-width: 760px)').matches;
@@ -32,8 +34,37 @@ let cameraView = 'ISO';
 let motion = {}, motionHash = null, motionAnimation = null, motionError = '';
 let studioNow = null;
 let stage = null;            // what is drawn now: { model, v, candidate, vC, scenes, changed }
+let activeStore = null;
+let storageWarning = '';
 
-function save() { try { localStorage.setItem(STORE, exportSession(session)); } catch { /* storage unavailable: session stays in memory */ } }
+const slug = (s) => String(s || 'concept').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'concept';
+const projectKey = (id) => `concept-sketcher.project.${slug(id)}.session`;
+function projectIndex() {
+  try { const x = JSON.parse(localStorage.getItem(PROJECT_INDEX) || '[]'); return Array.isArray(x) ? x : []; }
+  catch { return []; }
+}
+function updateProjectIndex() {
+  const m = acceptedModel(session);
+  const row = { id: m.meta.id, title: m.meta.title, key: activeStore, revision: m.meta.revision, hash: conceptHash(m), updated: new Date().toISOString() };
+  const rows = projectIndex().filter((x) => x.key !== activeStore && x.id !== row.id);
+  rows.unshift(row);
+  localStorage.setItem(PROJECT_INDEX, JSON.stringify(rows.slice(0, 30)));
+  localStorage.setItem(ACTIVE_PROJECT, activeStore);
+}
+
+function save() {
+  if (!session) return;
+  try {
+    activeStore ||= projectKey(acceptedModel(session).meta.id);
+    const previous = localStorage.getItem(activeStore);
+    if (previous) localStorage.setItem(`${activeStore}.backup`, previous);
+    localStorage.setItem(activeStore, exportSession(session));
+    updateProjectIndex();
+    storageWarning = '';
+  } catch (e) {
+    storageWarning = `Autosave unavailable: ${e.message}`;
+  }
+}
 
 // Normalize the top viewer legend in JS as well as HTML. This deliberately
 // repairs an older cached iOS home-screen shell once its app.js refreshes.
@@ -316,6 +347,7 @@ function renderInspect() {
           : `${esc(x.now.text)}${statusTag(x.now)}`}</span>`).join('')
         : r.rows.map((x) => `<span class="k">${esc(x.label)}</span><span>${esc(x.text)}${statusTag(x)}</span>`).join('');
       const isolateActions = `<div class="ihead">
+        ${!candidate ? '<button type="button" id="editExact">Edit exact values</button>' : ''}
         ${selectedPart && view.isolatePart !== selectedPart ? `<button type="button" id="isoPart">Isolate ${esc(selectedPart)}</button>` : ''}
         ${view.isolatePart ? `<button type="button" id="showAllParts">Show all</button><span class="mono">isolated: ${esc(view.isolatePart)}</span>` : ''}
       </div>`;
@@ -337,6 +369,7 @@ function renderInspect() {
     viewer.whole();
   };
   if ($('showAllParts')) $('showAllParts').onclick = () => { setView({ isolatePart: null }); viewer.whole(); };
+  if ($('editExact')) $('editExact').onclick = () => { renderProperties(); $('properties').classList.add('open'); };
   if ($('inspectMotion')) $('inspectMotion').onclick = () => { tool = 'motion'; renderViewTools(); };
   if ($('insClose')) $('insClose').onclick = () => select(null);
 }
@@ -374,11 +407,16 @@ function renderStatus() {
     <span class="tag ${v.errors.length ? 'err' : 'ok'}">${v.errors.length ? '✕' : '✓'} ERR ${v.errors.length}</span>
     <span class="tag ${v.open.length ? 'open' : 'ok'}">${v.open.length ? '?' : '✓'} OPEN ${v.open.length}${v.open.length ? ` (${v.open.join(', ')})` : ''}</span>
     <span class="tag prop">PROPOSAL ${p ? p.status : '—'}</span>
+    ${storageWarning ? `<span class="tag err" title="${esc(storageWarning)}">AUTOSAVE ✕</span>` : ''}
     <span class="sp"></span>
     <button type="button" id="toggle3d">${document.body.classList.contains('show3d') ? '◂ Chat' : '3D ▸'}</button>
+    <button type="button" id="projectBtn">Projects</button>
+    <button type="button" id="propertyBtn" ${view.selected ? '' : 'disabled'}>Properties</button>
     <button type="button" id="histBtn">History</button>
     <button type="button" id="exportBtn">Export</button>`;
   $('toggle3d').onclick = () => show3d(!document.body.classList.contains('show3d'));
+  $('projectBtn').onclick = () => { renderProjects(); $('projects').classList.add('open'); };
+  $('propertyBtn').onclick = () => { renderProperties(); $('properties').classList.add('open'); };
   $('histBtn').onclick = () => { renderHistory(); $('history').classList.add('open'); };
   $('exportBtn').onclick = () => { renderExports(); $('exports').classList.add('open'); };
 }
@@ -446,6 +484,127 @@ function renderExports() {
       document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(a.href);
     };
   });
+}
+
+function closeSheets() { document.querySelectorAll('.sheet.open').forEach((x) => x.classList.remove('open')); }
+function downloadText(name, text, type = 'application/json') {
+  const blob = new Blob([text], { type });
+  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: name });
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(a.href);
+}
+function blankModel(id, title) {
+  return {
+    format: 'AI_CONCEPT', schema: 2,
+    meta: { id, title, revision: 1, intent: 'Concept being described interactively', closed_world: true },
+    units: 'mm', world: { up: '+Z', origin: 'concept origin' }, params: {},
+    parts: [], interfaces: [], features: [], joints: [], fasteners: [], volumes: [], rules: [], questions: [],
+    freeze: { state: 'DRAFT' },
+  };
+}
+function switchSession(next, key, message) {
+  supersede();
+  session = next;
+  activeStore = key;
+  view = defaultViewState();
+  save();
+  closeSheets();
+  sys(message);
+  refresh();
+}
+function renderProjects() {
+  const model = acceptedModel(session);
+  const rows = projectIndex();
+  $('projectList').innerHTML = `
+    <p><b>${esc(model.meta.title)}</b><br><span class="muted">${esc(model.meta.id)} · REV ${model.meta.revision} · autosaved locally</span></p>
+    <div class="sheet-actions"><button type="button" id="projectSave" class="primary">Save .aiconcept</button><button type="button" id="projectOpen">Open file…</button><button type="button" id="projectBackup" ${localStorage.getItem(`${activeStore}.backup`) ? '' : 'disabled'}>Restore autosave backup</button></div>
+    <h3>New blank project</h3>
+    <form id="newProject"><div class="formgrid"><label for="newTitle">Title</label><input id="newTitle" required value="New concept"><label for="newId">Project ID</label><input id="newId" required pattern="[a-z0-9][a-z0-9-]*" value="new-concept"></div><div class="sheet-actions"><button class="primary" type="submit">Create</button></div></form>
+    <h3>Recent local projects</h3>
+    <div>${rows.map((r) => `<div class="project-row"><div><b>${esc(r.title)}</b><div class="muted">${esc(r.id)} · REV ${r.revision} · ${esc(new Date(r.updated).toLocaleString())}</div></div><button type="button" data-project="${esc(r.key)}" ${r.key === activeStore ? 'disabled' : ''}>Open</button></div>`).join('') || '<p class="muted">No other local projects yet.</p>'}</div>`;
+  $('projectSave').onclick = () => {
+    const files = acceptedArtifacts(session);
+    const name = Object.keys(files).find((x) => x.endsWith('.aiconcept'));
+    downloadText(name, files[name]);
+  };
+  $('projectOpen').onclick = () => $('openFile').click();
+  $('projectBackup').onclick = () => {
+    try {
+      const raw = localStorage.getItem(`${activeStore}.backup`);
+      if (!raw) throw new Error('No backup is available.');
+      switchSession(importSession(raw), activeStore, 'Restored the previous autosaved revision history.');
+    } catch (e) { sys(`Backup was not restored: ${e.message}`); }
+  };
+  $('newProject').onsubmit = (e) => {
+    e.preventDefault();
+    const title = $('newTitle').value.trim();
+    const id = slug($('newId').value);
+    try { switchSession(createSession(JSON.stringify(blankModel(id, title)), { summary: 'New blank project', source: 'Projects' }), projectKey(id), `Created blank project “${title}”.`); }
+    catch (err) { sys(`Project was not created: ${err.message}`); }
+  };
+  $('projectList').querySelectorAll('[data-project]').forEach((b) => { b.onclick = () => {
+    try {
+      const raw = localStorage.getItem(b.dataset.project);
+      if (!raw) throw new Error('Local project data is missing.');
+      switchSession(importSession(raw), b.dataset.project, `Opened “${acceptedModel(importSession(raw)).meta.title}”.`);
+    } catch (e) { sys(`Project was not opened: ${e.message}`); }
+  }; });
+}
+
+const axes = ['+X','-X','+Y','-Y','+Z','-Z'];
+function exactFields(model, key) {
+  const fields = [];
+  const add3 = (root, values, labels) => values?.forEach((v, i) => { if (typeof v === 'number') fields.push({ path: `${root}/${i}`, label: labels[i], value: v, type: 'number' }); });
+  const p = model.parts.find((x) => x.id === key);
+  if (p) {
+    add3(`parts/${p.id}/size`, p.size, ['Length X (mm)','Width Y (mm)','Thickness Z (mm)']);
+    add3(`parts/${p.id}/place/at`, p.place?.at, ['Position X (mm)','Position Y (mm)','Position Z (mm)']);
+    fields.push({ path: `parts/${p.id}/role`, label: 'Role', value: p.role, type: 'enum', options: ['PRODUCED','PURCHASED','REFERENCE'] });
+    if (p.orient.euler_deg) add3(`parts/${p.id}/orient/euler_deg`, p.orient.euler_deg, ['Rotate X (deg)','Rotate Y (deg)','Rotate Z (deg)']);
+    else {
+      fields.push({ path: `parts/${p.id}/orient/z`, label: 'Local Z points', value: p.orient.z, type: 'enum', options: axes });
+      fields.push({ path: `parts/${p.id}/orient/y`, label: 'Local Y points', value: p.orient.y, type: 'enum', options: axes });
+    }
+    return { title: p.id, target: `parts/${p.id}`, fields };
+  }
+  const featureId = String(key || '').split('.').at(-1)?.replace(/\[\d+\]$/, '');
+  const f = model.features.find((x) => x.id === featureId);
+  if (f) {
+    if (f.size) for (const [k, v] of Object.entries(f.size)) if (typeof v === 'number') fields.push({ path: `features/${f.id}/size/${k}`, label: `${k} (mm)`, value: v, type: 'number' });
+    if (Array.isArray(f.offset)) add3(`features/${f.id}/offset`, f.offset, ['Offset A (mm)','Offset B (mm)']);
+    if (typeof f.depth === 'number') fields.push({ path: `features/${f.id}/depth`, label: 'Depth (mm)', value: f.depth, type: 'number' });
+    if (f.array?.kind === 'CIRCULAR') for (const [k, label] of [['count','Count'],['radius','Radius (mm)'],['start_deg','Start angle (deg)']]) fields.push({ path: `features/${f.id}/array/${k}`, label, value: f.array[k], type: 'number' });
+    return { title: `${f.host}.${f.id}`, target: `features/${f.id}`, fields };
+  }
+  const j = model.joints.find((x) => x.id === key);
+  if (j) {
+    if (typeof j.offset === 'number') fields.push({ path: `joints/${j.id}/offset`, label: 'Offset (mm)', value: j.offset, type: 'number' });
+    if (j.limits && j.limits !== 'NONE') for (const k of ['min','max']) if (typeof j.limits[k] === 'number') fields.push({ path: `joints/${j.id}/limits/${k}`, label: `Limit ${k}`, value: j.limits[k], type: 'number' });
+    return { title: j.id, target: `joints/${j.id}`, fields };
+  }
+  const ifaceId = String(key || '').split('.').at(-1);
+  const i = model.interfaces.find((x) => `${x.part}.${x.id}` === key || x.id === ifaceId);
+  if (i) { add3(`interfaces/${i.id}/at`, i.at, ['Position X (mm)','Position Y (mm)','Position Z (mm)']); return { title: `${i.part}.${i.id}`, target: `interfaces/${i.id}`, fields }; }
+  return null;
+}
+function renderProperties() {
+  const desc = exactFields(acceptedModel(session), view.selected);
+  if (!desc || !desc.fields.length) {
+    $('propertyList').innerHTML = '<p>Select a part, feature, interface or joint in Inspect. Common exact numeric values will appear here.</p>';
+    return;
+  }
+  $('propertyList').innerHTML = `<p><b>${esc(desc.title)}</b></p><p class="muted">Submitting creates a proposal. The accepted concept changes only after Accept.</p><form id="propertyForm"><div class="formgrid">${desc.fields.map((f, n) => `<label for="prop${n}">${esc(f.label)}</label>${f.type === 'enum' ? `<select id="prop${n}" data-path="${esc(f.path)}" data-old="${esc(f.value)}">${f.options.map((o) => `<option ${o === f.value ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select>` : `<input id="prop${n}" type="number" step="any" required data-path="${esc(f.path)}" data-old="${esc(f.value)}" value="${esc(f.value)}">`}`).join('')}</div><div class="sheet-actions"><button class="primary" type="submit">Review proposal</button></div></form>`;
+  $('propertyForm').onsubmit = (e) => {
+    e.preventDefault();
+    const edits = [...$('propertyForm').querySelectorAll('[data-path]')].map((el) => ({ path: el.dataset.path, value: el.tagName === 'SELECT' ? el.value : Number(el.value), old: el.dataset.old })).filter((x) => String(x.value) !== x.old);
+    if (!edits.length) { sys('No exact value changed.'); return; }
+    supersede();
+    const intent = { format: 'AI_CONCEPT_INTENT', schema: 1, action: 'PATCH', summary: `Exact values for ${desc.title}`, utterance: `Exact property edit for ${desc.title}`, targets: [desc.target], edits: edits.map(({ path, value }) => ({ path, value })), creates: [], deletes: [], answers: [], unknowns: [] };
+    const text = JSON.stringify(intent);
+    const ev = evaluateLive(session, text);
+    const card = liveIntentCard(ev, text);
+    pending = { kind: 'live', text, evaluation: ev, card, targets: [], zoomIndex: -1 };
+    closeSheets(); refresh();
+  };
 }
 
 // ---------------------------------------------------------------- chat
@@ -604,7 +763,17 @@ function refresh() { renderStatus(); render3d(); renderDecision(); }
 
 async function startSession(fresh = false) {
   if (!fresh) {
-    try { const saved = localStorage.getItem(STORE); if (saved) return importSession(saved); } catch { /* fall through to the start fixture */ }
+    try {
+      activeStore = localStorage.getItem(ACTIVE_PROJECT);
+      const saved = activeStore && localStorage.getItem(activeStore);
+      if (saved) return importSession(saved);
+      const legacy = localStorage.getItem(LEGACY_STORE);
+      if (legacy) {
+        const migrated = importSession(legacy);
+        activeStore = projectKey(acceptedModel(migrated).meta.id);
+        return migrated;
+      }
+    } catch (e) { storageWarning = `Local project recovery failed: ${e.message}`; }
   }
   const motionFixtures = { 'organizer-motion': '../examples/organizer_live_seed.aiconcept', 'motion-hinge': '../examples/motion/hinge.aiconcept', 'motion-slider': '../examples/motion/slider.aiconcept', 'motion-parameter': '../examples/motion/parameter.aiconcept' };
   const liveFixture = motionFixtures[LIVE.seed] || (LIVE.seed === 'organizer' ? '../examples/organizer_live_seed.aiconcept' : '../examples/live_start.aiconcept');
@@ -614,13 +783,22 @@ async function startSession(fresh = false) {
     summary: LIVE.live ? (LIVE.seed === 'organizer' ? 'Live organizer seed' : 'Live Concept start') : 'S1 start: box, spring frame, divider with tabs pointing down',
     source: LIVE.live ? liveFixture.replace('../', '') : 'examples/s1_start.aiconcept',
   });
-  try { localStorage.setItem(STORE, exportSession(s)); } catch { /* ignore */ }
+  activeStore = projectKey(acceptedModel(s).meta.id);
+  session = s;
+  save();
   return s;
+}
+
+function unavailableViewer(message) {
+  $('view').innerHTML = `<div style="padding:24px;color:#e9eef5"><h2>3D preview unavailable</h2><p>${esc(message)}</p><p>The concept, validation, properties and exports remain available.</p></div>`;
+  const noop = () => {};
+  return { onPick: noop, show: noop, setView: noop, resize: noop, whole: noop, frame: noop, view: noop };
 }
 
 async function main() {
   normalizeViewerLegend();
-  viewer = createViewer($('view'));
+  try { viewer = createViewer($('view')); }
+  catch (e) { storageWarning = `3D unavailable: ${e.message}`; viewer = unavailableViewer(e.message); }
   viewer.onPick((key) => select(key));
   $('legendRef').onclick = () => setView({ showReference: !view.showReference });
   session = await startSession();
@@ -632,6 +810,21 @@ async function main() {
   $('form').onsubmit = (e) => { e.preventDefault(); const t = $('input').value; $('input').value = ''; void send(t); };
   $('closeHist').onclick = () => $('history').classList.remove('open');
   $('closeExp').onclick = () => $('exports').classList.remove('open');
+  $('closeProjects').onclick = () => $('projects').classList.remove('open');
+  $('closeProperties').onclick = () => $('properties').classList.remove('open');
+  $('openFile').onchange = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    try {
+      const raw = await file.text();
+      let next;
+      try { next = importSession(raw); }
+      catch { next = createSession(raw, { summary: `Opened ${file.name}`, source: file.name }); }
+      const m = acceptedModel(next);
+      switchSession(next, projectKey(m.meta.id), `Opened and validated “${m.meta.title}” from ${file.name}.`);
+    } catch (err) { sys(`File was not opened: ${err.message}`); }
+  };
   sys(LIVE.live
     ? `Live Concept: REV ${acceptedModel(session).meta.revision} · transport ${LIVE.transport}. Describe the concept or a local change. AI only proposes; scoped validation and Accept control every mutation.`
     : `Accepted concept: REV ${acceptedModel(session).meta.revision} — ${acceptedModel(session).meta.title}. Tell me what to change. I only propose; nothing changes until you accept.`);

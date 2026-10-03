@@ -85,7 +85,7 @@
   #inspect .ititle { font-weight: 700; font-size: 14px; flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
   #inspect select { font: inherit; font-size: 13px; max-width: 100%; background: var(--s-panel2); color: var(--s-fg); border: 1px solid var(--s-line); border-radius: 4px; min-height: 32px; }
   #inspect .badge { font-size: 10px; font-weight: 700; letter-spacing: .6px; padding: 1px 5px; border-radius: 3px; border: 1px solid var(--s-line); color: var(--s-dim); }
-  #inspect .badge.PRODUCED { color: #8fb5d9; border-color: #2f5d8c; } #inspect .badge.REFERENCE { color: #aab3c2; border-style: dashed; }
+  #inspect .badge.PRODUCED { color: #8fb5d9; border-color: #2f5d8c; } #inspect .badge.PURCHASED { color: #d6b6ff; border-color: #7654a8; } #inspect .badge.REFERENCE { color: #aab3c2; border-style: dashed; }
   #inspect .badge.CHANGED, #inspect .badge.ADDED { color: #8ee0aa; border-color: #1f9d55; } #inspect .badge.REMOVED { color: #ff8a8a; border-color: #d93025; }
   #inspect .dims { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 3px 10px; margin-top: 6px; font-size: 13px; }
   #inspect .dims .k { color: var(--s-dim); }
@@ -112,6 +112,10 @@
   .rev { border-bottom: 1px solid var(--line); padding: 8px 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px; align-items: start; }
   .rev.cur { font-weight: 600; } .rev.off { opacity: .7; }
   .exp { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; border-bottom: 1px solid var(--line); padding: 8px 0; }
+  .formgrid { display: grid; grid-template-columns: minmax(120px, max-content) minmax(0, 1fr); gap: 8px 12px; align-items: center; }
+  .formgrid input, .formgrid select { width: 100%; min-width: 0; font: inherit; font-size: 16px; padding: 7px 9px; border-radius: 7px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
+  .sheet-actions { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
+  .project-row { border-bottom: 1px solid var(--line); padding: 9px 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; }
   #toggle3d { display: none; }
   @media (max-width: 760px) {
     main { grid-template-columns: minmax(0, 1fr); }
@@ -163,6 +167,9 @@
 <footer id="status" aria-label="Accepted concept state"></footer>
 <aside id="history" class="sheet" aria-label="Accepted revisions"><header><h2>Accepted revisions</h2><button id="closeHist" type="button">Close</button></header><div class="body" id="revs"></div></aside>
 <aside id="exports" class="sheet" aria-label="Export"><header><h2>Export accepted concept</h2><button id="closeExp" type="button">Close</button></header><div class="body" id="expList"></div></aside>
-<script type="module" src="app.js?v=motion1"></script>
+<aside id="projects" class="sheet" aria-label="Projects"><header><h2>Projects</h2><button id="closeProjects" type="button">Close</button></header><div class="body" id="projectList"></div></aside>
+<aside id="properties" class="sheet" aria-label="Exact properties"><header><h2>Exact properties</h2><button id="closeProperties" type="button">Close</button></header><div class="body" id="propertyList"></div></aside>
+<input id="openFile" type="file" accept=".aiconcept,application/json" hidden>
+<script type="module" src="app.js?v=release1"></script>
 </body>
 </html>

@@ -73,22 +73,38 @@ export function localHoles(model, part, defs, ifaces, P, errors) {
       if (on.type === 'AXIS' && d.offset) throw new Error('offset applies to a hole on a FACE only');
       if (d.profile === 'RECT' && on.type !== 'FACE') throw new Error('a RECT opening must sit on a FACE');
       const off = (d.offset || [0, 0]).map((v) => num(v, P));
-      const pos = on.type === 'FACE' ? add(add(on.point, mul(on.a, off[0])), mul(on.b, off[1])) : on.point;
+      if (d.array && on.type !== 'FACE') throw new Error('a CIRCULAR array must sit on a FACE');
+      if (d.array && d.profile !== 'ROUND') throw new Error('a CIRCULAR array currently supports ROUND holes only');
+      const positions = d.array ? (() => {
+        const count = d.array.count;
+        const radius = num(d.array.radius, P);
+        const start = num(d.array.start_deg, P) * Math.PI / 180;
+        if (!Number.isInteger(count) || count < 2 || count > 128) throw new Error('a CIRCULAR array count must be an integer from 2 to 128');
+        if (!(radius > 0)) throw new Error('a CIRCULAR array radius must be > 0');
+        return Array.from({ length: count }, (_, k) => {
+          const a = start + 2 * Math.PI * k / count;
+          return add(add(on.point, mul(on.a, off[0] + radius * Math.cos(a))), mul(on.b, off[1] + radius * Math.sin(a)));
+        });
+      })() : [on.type === 'FACE' ? add(add(on.point, mul(on.a, off[0])), mul(on.b, off[1])) : on.point];
       const dir = on.type === 'FACE' ? mul(on.dir, -1) : on.dir;
       const A = axisIndex(dir), s = dir[A];
       const size = d.profile === 'ROUND' ? { d: num(d.size.d, P) } : { a: num(d.size.a, P), b: num(d.size.b, P) };
-      let from = pos, to;
-      if (d.depth !== 'THROUGH') to = add(pos, mul(dir, num(d.depth, P)));
-      else if (on.type === 'AXIS') {
-        from = [...pos]; to = [...pos];
-        from[A] = -s * part.size[A] / 2; to[A] = s * part.size[A] / 2;
-      } else {
-        const thick = part.kind === 'SHELL' ? part.wall : part.kind === 'FRAME' ? part.bar : part.size[A];
-        to = add(pos, mul(dir, thick));
-      }
-      out.push({ id: modelId, model_id: modelId, type: 'HOLE', kind: d.kind, profile: d.profile, size, pos, dir, from, to,
-        ...(on.type === 'FACE' ? { a: on.a, b: on.b } : {}) });
-      ifaces.set(d.id, { type: 'AXIS', point: pos, dir, kind: 'HOLE', hole: d.kind });
+      positions.forEach((pos, k) => {
+        let from = pos, to;
+        if (d.depth !== 'THROUGH') to = add(pos, mul(dir, num(d.depth, P)));
+        else if (on.type === 'AXIS') {
+          from = [...pos]; to = [...pos];
+          from[A] = -s * part.size[A] / 2; to[A] = s * part.size[A] / 2;
+        } else {
+          const thick = part.kind === 'SHELL' ? part.wall : part.kind === 'FRAME' ? part.bar : part.size[A];
+          to = add(pos, mul(dir, thick));
+        }
+        const suffix = d.array ? `[${k}]` : '';
+        out.push({ id: `${modelId}${suffix}`, model_id: modelId, type: 'HOLE', kind: d.kind, profile: d.profile, size, pos, dir, from, to,
+          index: d.array ? k : null, pattern: d.array ? { ...d.array, radius: num(d.array.radius, P), start_deg: num(d.array.start_deg, P) } : null,
+          ...(on.type === 'FACE' ? { a: on.a, b: on.b } : {}) });
+        ifaces.set(`${d.id}${suffix}`, { type: 'AXIS', point: pos, dir, kind: 'HOLE', hole: d.kind });
+      });
     } catch (e) {
       errors.push(`feature ${modelId}: ${e.message}`);
     }

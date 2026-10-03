@@ -91,6 +91,11 @@ function buildGroup(data, S = null) {
       mesh.position.set(...p.center);
     } else if (p.shape === 'box') {
       mesh = new THREE.Mesh(new THREE.BoxGeometry(...p.size), fill(p, () => material(p.style)));
+      if (p.basis) mesh.setRotationFromMatrix(new THREE.Matrix4().set(
+        p.basis.x[0], p.basis.y[0], p.basis.z[0], 0,
+        p.basis.x[1], p.basis.y[1], p.basis.z[1], 0,
+        p.basis.x[2], p.basis.y[2], p.basis.z[2], 0,
+        0, 0, 0, 1));
       mesh.position.set(...p.center);
       outline(mesh, p, p.style === 'proposed' && (p.unresolved || []).length > 0);
     } else if (p.shape === 'cylinder') {

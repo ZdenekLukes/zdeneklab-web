@@ -19,6 +19,7 @@ export const isOpen = (v) => typeof v === 'string' && OPEN_RE.test(v);
 const AXES = ['+X', '-X', '+Y', '-Y', '+Z', '-Z'];
 const EDGES = ['+X', '-X', '+Y', '-Y'];
 export const PART_KINDS = ['BLOCK', 'PLATE', 'FRAME', 'SHELL', 'ROD', 'CYLINDER', 'ENVELOPE'];
+export const PART_ROLES = ['PRODUCED', 'PURCHASED', 'REFERENCE'];
 export const ROUND_KINDS = ['ROD', 'CYLINDER'];
 export const MOTIONS = ['FIXED', 'REVOLUTE', 'PRISMATIC'];
 export const METHODS = { FIXED: ['FORM_FIT', 'FASTENERS', 'CLAMPED', 'BONDED'], REVOLUTE: ['FORM_FIT'], PRISMATIC: ['FORM_FIT'] };
@@ -72,12 +73,12 @@ const PRODUCTION = obj({
 const PART = obj({
   id: f(id, 'req'),
   kind: f(en(...PART_KINDS), 'req fact set'),
-  role: f(en('PRODUCED', 'REFERENCE'), 'req fact set'),
+  role: f(en(...PART_ROLES), 'req fact set'),
   size: f(size3, 'req set'),
   bar: f(num, 'set'),
   wall: f(num, 'set'),
   open: f(en(...AXES, 'NONE'), 'fact set'),
-  orient: f(obj({ z: f(en(...AXES), 'req'), y: f(en(...AXES), 'req') }), 'req fact set'),
+  orient: f(obj({ z: f(en(...AXES)), y: f(en(...AXES)), euler_deg: f(tuple(number, 3)) }), 'req fact set'),
   place: f(obj({ at: f(size3, 'req'), anchor: f(en('BOTTOM_CENTRE', 'CENTRE'), 'req') }), 'set'),
   edge_names: f(map(EDGES, text), 'set'),
   manufacturing: f(MANUFACTURING, 'fact set'),
@@ -127,6 +128,7 @@ const HOLE = obj({
   profile: f(en('ROUND', 'RECT'), 'req fact set'),
   size: f(obj({ d: f(num), a: f(num), b: f(num) }), 'req set'),
   depth: f(T('depth'), 'req set'),
+  array: f(obj({ kind: f(en('CIRCULAR'), 'req'), count: f(int, 'req'), radius: f(num, 'req'), start_deg: f(num, 'req') }), 'set'),
 });
 FEATURES.HOLE = HOLE;
 const LATTICE = obj({

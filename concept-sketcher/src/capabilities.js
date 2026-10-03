@@ -120,6 +120,19 @@ export function languageSchema({ motion = false } = {}) {
         const { extension: ignored, ...fields } = spec.fields.span.s.fields;
         spec = { ...spec, fields: { ...spec.fields, span: { ...spec.fields.span, s: { ...spec.fields.span.s, fields } } } };
       }
+      // Keep the preregistered S2 research prompt byte-stable. These fields
+      // are product-only Live extensions and are described by live_prompt.
+      if (coll === 'parts') {
+        const role = spec.fields.role;
+        const orient = spec.fields.orient;
+        const { euler_deg: ignored, ...orientFields } = orient.s.fields;
+        const frozenOrient = { ...orient, s: { ...orient.s, fields: Object.fromEntries(Object.entries(orientFields).map(([k, fl]) => [k, { ...fl, req: true }])) } };
+        spec = { ...spec, fields: { ...spec.fields, role: { ...role, s: { ...role.s, v: role.s.v.filter((v) => v !== 'PURCHASED') } }, orient: frozenOrient } };
+      }
+      if (coll === 'features' && name === 'HOLE') {
+        const { array: ignored, ...fields } = spec.fields;
+        spec = { ...spec, fields };
+      }
       const key = name ? `${coll}:${name}` : coll;
       const hidden = S2_HIDDEN_FIELDS[key] || new Set();
       out[key] = Object.fromEntries(Object.entries(spec.fields).filter(([k]) => !hidden.has(k)).map(([k, fl]) => [k,
@@ -137,7 +150,7 @@ export function manifest() {
     language: 'AI_CONCEPT schema 2',
     ops: OPS,
     enums: {
-      part_kind: enumOf('parts.kind'), part_role: enumOf('parts.role'), interface_type: enumOf('interfaces.type'),
+      part_kind: enumOf('parts.kind'), part_role: enumOf('parts.role').filter((v) => v !== 'PURCHASED'), interface_type: enumOf('interfaces.type'),
       motion: enumOf('joints:motion.motion'), method: enumOf('joints:motion.method'), fit: enumOf('joints:motion.fit'),
       hole_kind: enumOf('features:HOLE.kind'), hole_profile: enumOf('features:HOLE.profile'), fastener_kind: enumOf('fasteners.kind'),
       fastener_size: String(FASTENER_SIZE), volume_purpose: enumOf('volumes.purpose'), param_status: enumOf('params.status'),

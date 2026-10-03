@@ -60,7 +60,7 @@ export function referenceParts(model) {
 export function entities(model) {
   const defs = safeDefs(model);
   const out = [];
-  for (const p of model.parts || []) out.push({ key: p.id, kind: 'part', label: `${p.id}${p.role === 'REFERENCE' ? ' (reference)' : ''}` });
+  for (const p of model.parts || []) out.push({ key: p.id, kind: 'part', label: `${p.id}${p.role === 'REFERENCE' ? ' (reference)' : p.role === 'PURCHASED' ? ' (purchased)' : ''}` });
   const roots = [...new Set(Object.keys(defs).map((id) => mirrorRoot(defs, id)))];
   for (const id of roots) {
     const host = defs[id]?.host;
@@ -150,7 +150,7 @@ function matingRows(model, v, defs, host, group) {
 
 function partRows(model, v, p) {
   const inst = instancesOf(v, p.id);
-  const rows = [row('role', 'Role', p.role, { text: p.role === 'REFERENCE' ? 'REFERENCE — context only, not printed' : p.role })];
+  const rows = [row('role', 'Role', p.role, { text: p.role === 'REFERENCE' ? 'REFERENCE — context only, not printed' : p.role === 'PURCHASED' ? 'PURCHASED — assembly item, not generated for printing' : p.role })];
   rows.push(row('kind', 'Kind', p.kind));
   if (inst[0]) {
     const s = inst[0].size;

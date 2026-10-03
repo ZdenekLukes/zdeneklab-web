@@ -57,7 +57,7 @@ export function parseLiveIntent(text) {
 
   const errors = [];
   if (!obj(x)) return { errors: ['intent must be an object'] };
-  knownKeys(x, ['format','schema','action','summary','utterance','targets','edits','creates','deletes','answers','unknowns','question'], 'intent', errors);
+  knownKeys(x, ['format','schema','action','summary','utterance','targets','edits','creates','deletes','mirrors','answers','unknowns','question'], 'intent', errors);
   if (x.format !== LIVE_INTENT_FORMAT) errors.push(`format must be "${LIVE_INTENT_FORMAT}"`);
   if (x.schema !== LIVE_INTENT_SCHEMA) errors.push(`schema must be ${LIVE_INTENT_SCHEMA}`);
   if (!['PATCH','CLARIFY'].includes(x.action)) errors.push('action must be PATCH or CLARIFY');
@@ -69,7 +69,7 @@ export function parseLiveIntent(text) {
     if (!Array.isArray(x[k])) { errors.push(`${k} must be an array`); return []; }
     return x[k];
   };
-  const targets = list('targets'), edits = list('edits'), creates = list('creates'), deletes = list('deletes'), answers = list('answers'), unknowns = list('unknowns');
+  const targets = list('targets'), edits = list('edits'), creates = list('creates'), deletes = list('deletes'), mirrors = list('mirrors'), answers = list('answers'), unknowns = list('unknowns');
 
   targets.forEach((p,i) => { if (!validTarget(p)) errors.push(`targets[${i}] is not a valid model path`); });
 
@@ -105,6 +105,14 @@ export function parseLiveIntent(text) {
     if (!targets.some((t) => coveredBy(root, t) || coveredBy(t, root))) errors.push(`deletes[${i}] "${root}" is outside declared targets`);
   });
 
+  mirrors.forEach((m,i) => {
+    if (!obj(m)) { errors.push(`mirrors[${i}] must be an object`); return; }
+    knownKeys(m, ['source','id','plane'], `mirrors[${i}]`, errors);
+    if (typeof m.source !== 'string' || !m.source) errors.push(`mirrors[${i}].source is required`);
+    if (typeof m.id !== 'string' || !/^[A-Z][A-Z0-9_]*$/.test(m.id)) errors.push(`mirrors[${i}].id must be UPPER_CASE`);
+    if (!['YZ','XZ','XY'].includes(m.plane)) errors.push(`mirrors[${i}].plane must be YZ, XZ or XY`);
+  });
+
   answers.forEach((a,i) => {
     if (!obj(a)) { errors.push(`answers[${i}] must be an object`); return; }
     knownKeys(a, ['id','answer','facts'], `answers[${i}]`, errors);
@@ -129,10 +137,10 @@ export function parseLiveIntent(text) {
 
   if (x.action === 'CLARIFY') {
     if (typeof x.question !== 'string' || !x.question.trim()) errors.push('CLARIFY requires question');
-    if (edits.length || creates.length || deletes.length || answers.length || unknowns.length) errors.push('CLARIFY cannot mutate the model');
+    if (edits.length || creates.length || deletes.length || mirrors.length || answers.length || unknowns.length) errors.push('CLARIFY cannot mutate the model');
   } else {
     if (x.question !== undefined) errors.push('PATCH must not carry question');
-    if (!edits.length && !creates.length && !deletes.length && !answers.length && !unknowns.length) errors.push('PATCH has no changes, answers or unknowns');
+    if (!edits.length && !creates.length && !deletes.length && !mirrors.length && !answers.length && !unknowns.length) errors.push('PATCH has no changes, answers or unknowns');
   }
 
   return errors.length ? { errors } : { intent: x };
@@ -162,6 +170,29 @@ export function compileLiveIntent(model, text) {
   }
 
   for (const d of x.deletes) ops.push({ op: 'DELETE', collection: d.collection, id: d.id });
+
+  const planeAxis = { YZ: 0, XZ: 1, XY: 2 };
+  const flipAxis = (name, axis) => name?.[1] === 'XYZ'[axis] ? `${name[0] === '+' ? '-' : '+'}${name[1]}` : name;
+  for (const m of x.mirrors) {
+    const source = (model.parts || []).find((p) => p.id === m.source);
+    if (!source) return { errors: [`mirror source ${m.source} does not exist`] };
+    if (!source.place) return { errors: [`mirror source ${m.source} must be a free-standing placed part`] };
+    if ((model.features || []).some((f) => f.host === source.id) || (model.interfaces || []).some((i) => i.part === source.id) || (model.joints || []).some((j) => j.part === source.id || JSON.stringify(j.links || []).includes(`${source.id}.`))) {
+      return { errors: [`mirror source ${m.source} must not have features, interfaces or joints; mirror those explicitly`] };
+    }
+    const axis = planeAxis[m.plane];
+    const part = structuredClone(source);
+    part.id = m.id;
+    part.place.at[axis] *= -1;
+    if (part.orient?.z) {
+      part.orient.z = flipAxis(part.orient.z, axis);
+      part.orient.y = flipAxis(part.orient.y, axis);
+    } else if (part.orient?.euler_deg) {
+      return { errors: [`mirror source ${m.source}: mirror of an Euler-oriented part is not representable as a proper rotation`] };
+    }
+    ops.push({ op: 'ADD_PART', part });
+    allow.push(`parts/${part.id}`);
+  }
 
   for (const a of x.answers) {
     const q = (model.questions || []).find((x) => x.id === a.id);
