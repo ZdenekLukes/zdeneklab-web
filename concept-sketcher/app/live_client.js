@@ -10,8 +10,14 @@
 const GH_TOKEN_KEY = 'concept-sketcher.github-poc-token';
 
 export function liveConfig(url = new URL(location.href)) {
-  const live = url.searchParams.get('live') === '1';
-  const transport = url.searchParams.get('transport') || 'http';
+  // The public mobile app is the GitHub-only product surface. Keep local and
+  // test URLs in demo mode, but let an already-installed zdeneklab.cz icon
+  // enter LIVE without query parameters and reuse its stored browser token.
+  const hostedMobile = url.hostname === 'zdeneklab.cz'
+    && /\/concept-sketcher\/app\/?$/.test(url.pathname);
+  const liveParam = url.searchParams.get('live');
+  const live = liveParam === null ? hostedMobile : liveParam === '1';
+  const transport = url.searchParams.get('transport') || (hostedMobile ? 'github' : 'http');
   const metaEndpoint = typeof document !== 'undefined' ? document.querySelector('meta[name="concept-sketcher-api"]')?.content || '' : '';
   const configured = url.searchParams.get('api') || metaEndpoint;
   const endpoint = configured || (live ? '/api/interpret' : '');
