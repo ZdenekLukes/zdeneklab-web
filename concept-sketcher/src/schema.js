@@ -105,7 +105,7 @@ const FEATURES = {
       count: f(en('DERIVED')), placement: f(en('CENTRED'), 'req') }), 'set') }),
   SPRING: obj({ ...FEATURE_BASE,
     form: f(en('INTEGRATED_FLEXURE'), 'set'),
-    span: f(obj({ at: f(en('MID'), 'req'), length: f(re(/^\d+(\.\d+)?%$/, '"<n>%"'), 'req') }), 'req set'),
+    span: f(obj({ at: f(en('MID'), 'req'), length: f(re(/^\d+(\.\d+)?%$/, '"<n>%"'), 'req'), extension: f(num) }), 'req set'),
     compliance: f(en('ALONG_EDGE', 'EDGE_NORMAL'), 'req fact set'),
     travel: f(num, 'set'),
     effect: f(obj({ changes_distance_between: f(tuple(faceRef, 2), 'req') }), 'set'),
@@ -241,7 +241,12 @@ const QUESTION = obj({
 
 // status `placeholder` (S2): a number the AI assumed for display, not stated by the user.
 // It blocks SKELETON_READY and leaves that status only through the user's words.
-const PARAM = obj({ value: f(number, 'set'), expr: f(text, 'set'), status: f(en('fixed', 'target', 'rough', 'placeholder'), 'set'), note: f(text, 'set') });
+const MOTION_CONTROL = obj({
+  label: f(text, 'req'), min: f(num, 'req'), max: f(num, 'req'), step: f(number, 'req'),
+  unit: f(en('mm', 'deg'), 'req'), about: f(list(elementRef, 1), 'req'),
+  joint: f(id), note: f(text),
+});
+const PARAM = obj({ motion: f(MOTION_CONTROL, 'set'), value: f(number, 'set'), expr: f(text, 'set'), status: f(en('fixed', 'target', 'rough', 'placeholder'), 'set'), note: f(text, 'set') });
 
 const MODEL = obj({
   format: f(en('AI_CONCEPT'), 'req'),

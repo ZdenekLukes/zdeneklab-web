@@ -108,11 +108,18 @@ const S2_HIDDEN_FIELDS = {
   'features:SPRING': new Set(['travel']),
 };
 
-export function languageSchema() {
+export function languageSchema({ motion = false } = {}) {
   const out = {};
   for (const [coll, variants] of Object.entries(VARIANTS)) {
     for (const [name, example] of variants) {
-      const spec = entitySpec(coll, example);
+      let spec = entitySpec(coll, example);
+      // Frozen S2 prompt versions retain their original vocabulary/fingerprints.
+      // Live authoring explicitly opts into Motion V1.
+      if (!motion && coll === 'params') { const { motion: ignored, ...fields } = spec.fields; spec = { ...spec, fields }; }
+      if (!motion && coll === 'features' && name === 'SPRING') {
+        const { extension: ignored, ...fields } = spec.fields.span.s.fields;
+        spec = { ...spec, fields: { ...spec.fields, span: { ...spec.fields.span, s: { ...spec.fields.span.s, fields } } } };
+      }
       const key = name ? `${coll}:${name}` : coll;
       const hidden = S2_HIDDEN_FIELDS[key] || new Set();
       out[key] = Object.fromEntries(Object.entries(spec.fields).filter(([k]) => !hidden.has(k)).map(([k, fl]) => [k,

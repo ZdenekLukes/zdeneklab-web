@@ -161,10 +161,14 @@ function localFeatures(part, defs, P, errors) {
         if (!['ALONG_EDGE', 'EDGE_NORMAL'].includes(d.compliance)) throw new Error('SPRING needs explicit compliance ALONG_EDGE or EDGE_NORMAL');
         const pct = String(d.span?.length ?? '');
         if (!/^\d+(\.\d+)?%$/.test(pct) || d.span?.at !== 'MID') throw new Error('SPRING span needs at MID and length "<n>%"');
+        const extension = num(d.span.extension ?? 0, P);
+        const length = (g.faceLen - extension) * parseFloat(pct) / 100 + extension;
+        if (!Number.isFinite(extension) || extension < 0 || !(length > 0) || (part.kind === 'FRAME' && d.compliance === 'ALONG_EDGE' && length >= part.size[g.run] - 2 * part.bar)) throw new Error('SPRING extension/span exceeds available rail');
         const pos = [0, 0, 0];
         pos[g.axis] = g.centreline;
         out.push({ id: modelId, model_id: modelId, type: 'SPRING', pos,
-          compliance: d.compliance === 'ALONG_EDGE' ? g.runUnit : g.n, size: { length: g.faceLen * parseFloat(pct) / 100 } });
+          compliance: d.compliance === 'ALONG_EDGE' ? g.runUnit : g.n, size: { length },
+          edge: d.edge, runUnit: g.runUnit });
       } else {
         throw new Error(`feature type "${d.type}" not supported in S0`);
       }
@@ -175,7 +179,7 @@ function localFeatures(part, defs, P, errors) {
   return out;
 }
 
-function worldFeature(f, inst) {
+function worldFeature(f, inst, v2 = false) {
   if (f.type === 'HOLE') return worldHole(f, inst);
   const w = {
     id: inst.index === null ? f.id : f.id.replace(`${inst.part}.`, `${inst.id}.`),
@@ -185,7 +189,7 @@ function worldFeature(f, inst) {
   if (f.type === 'PIN') { w.direction = axisName(rot(inst.R, f.dir)); w.size = f.size; }
   if (f.type === 'LATTICE') { w.pattern = f.pattern; w.max_opening = f.max_opening; w.rib = f.rib; w.host_size = [...inst.size]; w.host_bar = inst.bar; w.host_axes = { ...inst.axes }; }
   if (f.type === 'EYE') { w.bore_axis = axisName(rot(inst.R, f.axis)); w.size = f.size; w.index = f.index; w._pairOf = f.pairOf; }
-  if (f.type === 'SPRING') { w.compliance_axis = axisLetter(rot(inst.R, f.compliance)); w.size = f.size; }
+  if (f.type === 'SPRING') { w.compliance_axis = axisLetter(rot(inst.R, f.compliance)); w.size = f.size; if (v2) { w.edge = f.edge; w.run_axis = axisLetter(rot(inst.R, f.runUnit)); } }
   return w;
 }
 
@@ -235,7 +239,7 @@ export function resolve(model, opts = {}) {
   const worldFeatures = {};
   const place = (inst) => {
     instances.push(inst);
-    inst.features = local[inst.part].map((f) => worldFeature(f, inst));
+    inst.features = local[inst.part].map((f) => worldFeature(f, inst, v2));
     for (const wf of inst.features) worldFeatures[wf.id] = wf;
   };
 

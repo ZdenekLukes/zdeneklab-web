@@ -1,7 +1,7 @@
 {
   "generated_from": "https://github.com/ZdenekLukes/concept-sketcher",
   "branch": "main",
-  "commit": "1ee4d8b02b1dc1b589d1047d1502dbdb438437ca",
+  "commit": "75bb69540b0109c266d96d9bc7dba5829f23ecb0",
   "model": "examples/box_organizer.aiconcept",
   "hash": "sha256:5a307a53092d8411c9a5766bce081b499e19d7534e4abf5f38e9afe3c96cf608",
   "files": [
@@ -16,6 +16,8 @@
     "src/live_intent.js",
     "src/mechanics.js",
     "src/model.js",
+    "src/motion.js",
+    "src/motion_preview.js",
     "src/ops.js",
     "src/proposal.js",
     "src/resolve.js",
@@ -35,6 +37,9 @@
     "examples/s1_start.aiconcept",
     "examples/live_start.aiconcept",
     "examples/organizer_live_seed.aiconcept",
+    "examples/motion/hinge.aiconcept",
+    "examples/motion/slider.aiconcept",
+    "examples/motion/parameter.aiconcept",
     "view/preview.html",
     "view/render3d.js",
     "vendor/three/three.module.min.js",

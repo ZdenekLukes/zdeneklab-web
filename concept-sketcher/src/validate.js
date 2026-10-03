@@ -5,6 +5,7 @@
 // closed schema (src/schema.js), answers bound to structured facts, and
 // STATED answers (words the language cannot hold) keep blocking SKELETON_READY.
 
+import { motionDefinitionErrors } from './motion.js';
 import { conceptHash } from './model.js';
 import { resolve, featureDefs } from './resolve.js';
 import { checkModel, openSlots, isFactField, isOpen, COLLECTIONS, METHODS } from './schema.js';
@@ -133,6 +134,8 @@ export function validate(model, opts = {}) {
     rules[r.id] = fail ? 'FAIL' : 'PASS';
     if (fail) errors.push(`rule ${r.id} FAIL (${r.kind}: ${r.text}) — ${fail}`);
   }
+
+  errors.push(...motionDefinitionErrors(model, resolved));
 
   // freeze + gates
   const state = model.freeze?.state ?? 'DRAFT';

@@ -3,6 +3,8 @@
 // the evaluated proposal as a structured review, and passes the user's
 // ACCEPT/REJECT to the session. Zoom is inspection only.
 
+import { motionControls } from '../src/motion.js';
+import { motionPreview } from '../src/motion_preview.js';
 import { conceptHash } from '../src/model.js';
 import { validate } from '../src/validate.js';
 import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js';
@@ -12,7 +14,7 @@ import { reviewProposal } from '../src/proposal.js';
 import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js';
 import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js';
 import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=ghpoc4';
-import { createViewer, PART_PALETTE } from '../view/render3d.js?v=inspect10';
+import { createViewer, PART_PALETTE } from '../view/render3d.js?v=motion1';
 
 const LIVE = liveConfig();
 const STORE = LIVE.live ? `concept-sketcher.live.${LIVE.seed || 'blank'}.session` : 'concept-sketcher.s1.session';
@@ -27,6 +29,8 @@ let viewer;
 let view = defaultViewState();
 let tool = null;             // which view-tool row is open: 'section' | 'explode' | 'views' | null
 let cameraView = 'ISO';
+let motion = {}, motionHash = null, motionAnimation = null, motionError = '';
+let studioNow = null;
 let stage = null;            // what is drawn now: { model, v, candidate, vC, scenes, changed }
 
 function save() { try { localStorage.setItem(STORE, exportSession(session)); } catch { /* storage unavailable: session stays in memory */ } }
@@ -46,8 +50,16 @@ function normalizeViewerLegend() {
 // ---------------------------------------------------------------- 3D
 function render3d() {
   const model = acceptedModel(session);
-  const v = validate(model);
-  const acceptedScene = buildScene(model, v);
+  stopMotion();
+  const hash = conceptHash(model);
+  if (hash !== motionHash || pending) { motion = {}; motionHash = hash; }
+  let v = validate(model);
+  let acceptedScene = buildScene(model, v);
+  motionError = '';
+  if (!pending && motionControls(model).length) {
+    try { const preview = motionPreview(model, motion); acceptedScene = preview.scene; v = preview.validation; }
+    catch (e) { motionError = e.message; motion = {}; }
+  }
   let overlay = null, candidate = null, vC = null;
   const ps = $('pstate');
   ps.style.display = 'none';
@@ -72,6 +84,7 @@ function render3d() {
     entityOf: (id) => entityOf(id, model) ?? (candidate ? entityOf(id, candidate) : null),
     instanceOf: instanceOfItem,
   };
+  studioNow = studio;
   stage = { model, v, candidate, vC, scenes: [acceptedScene, overlay].filter(Boolean), changed: candidate ? changedEntities(model, v, candidate, vC) : [] };
   if (view.selected && !inspect(model, v, view.selected) && !(candidate && inspect(candidate, vC, view.selected))) view = updateView(view, { selected: null });
   if (view.isolatePart && ![...model.parts, ...(candidate?.parts || [])].some((p) => p.id === view.isolatePart)) view = updateView(view, { isolatePart: null });
@@ -127,9 +140,11 @@ function renderViewTools() {
     <div class="row">
       <button type="button" data-t="section" class="${sec.on ? 'on' : ''}" aria-pressed="${sec.on}">Section${sec.on ? ` ${sec.axis}` : ''}</button>
       <button type="button" data-t="explode" class="${view.explode ? 'on' : ''}" aria-pressed="${Boolean(view.explode)}">Explode${view.explode ? ` ${view.explode}%` : ''}</button>
+      <button type="button" data-t="motion" ${pending ? 'disabled' : ''} class="${tool === 'motion' ? 'on' : ''}">Motion</button>
       <button type="button" data-t="views" class="${tool === 'views' ? 'on' : ''}" aria-pressed="${tool === 'views'}">Views · ${cameraView}</button>
       ${view.isolatePart ? `<button type="button" data-showall class="on" title="Return to full assembly">Isolated · ${esc(view.isolatePart)} ×</button>` : ''}
     </div>
+    ${tool === 'motion' ? motionPanel() : ''}
     ${tool === 'section' ? `
     <div class="row"><span class="lab">SECTION</span><div class="seg" role="group" aria-label="Section axis">
       <button type="button" data-sec="off" class="${sec.on ? '' : 'on'}">Off</button>
@@ -143,6 +158,8 @@ function renderViewTools() {
     <div class="row"><span class="lab">VIEW</span>
       ${['ISO','FRONT','RIGHT','TOP','LEFT','BACK','BOTTOM'].map((v) => `<button type="button" data-view="${v}" class="${cameraView === v ? 'on' : ''}">${v[0] + v.slice(1).toLowerCase()}</button>`).join('')}
     </div>` : ''}`;
+  bindMotion();
+  box.querySelector('[data-t="motion"]').onclick = () => { tool = tool === 'motion' ? null : 'motion'; if (tool !== 'motion') stopMotion(); renderViewTools(); };
   box.querySelector('[data-t="section"]').onclick = () => {
     if (view.section.on) {
       tool = null;
@@ -204,6 +221,69 @@ function renderViewTools() {
   if (ereset) ereset.onclick = () => { setView({ explode: 0 }); viewer.whole(); };
 }
 
+// ---------------------------------------------------------------- generic motion (transient preview)
+function stopMotion() {
+  if (motionAnimation !== null) cancelAnimationFrame(motionAnimation);
+  motionAnimation = null;
+  document.querySelectorAll('[data-motion-animate]').forEach(b => b.textContent = '▶ Animate');
+}
+function motionPanel() {
+  const controls = motionControls(stage.model);
+  const exampleLink = (seed, label) => { const url = new URL(location.href); url.searchParams.set('live', '1'); url.searchParams.set('seed', seed); return `<a href="${esc(url.href)}">${label}</a>`; };
+  return `<div class="row"><span class="lab">MOTION · GEOMETRIC DEMO</span><button type="button" data-motion-reset>Reset</button></div>
+    ${controls.length ? controls.map(c => `<div class="row"><label for="motion-${esc(c.id)}">${esc(c.label)}</label>
+      <input type="range" id="motion-${esc(c.id)}" data-motion="${esc(c.id)}" aria-label="${esc(c.label)} (${c.unit})" min="${c.min}" max="${c.max}" step="${c.step}" value="${motion[c.id] ?? c.value}">
+      <span class="mono" data-motion-value="${esc(c.id)}">${(motion[c.id] ?? c.value).toFixed(1)} ${c.unit}</span>
+      <button type="button" data-motion-animate="${esc(c.id)}">${motionAnimation !== null ? '■ Stop' : '▶ Animate'}</button>
+      ${c.note ? `<small>${esc(c.note)}</small>` : ''}</div>`).join('') : '<div class="row">No motion declared. Add params/&lt;driver&gt;/motion in the concept.</div>'}
+    <div class="row"><small>Geometry only; force, stress and collisions are not simulated. Accepted design stays at its default pose.</small></div>
+    <div class="row"><small>Examples: ${exampleLink('organizer-motion', 'Flexure')} · ${exampleLink('motion-hinge', 'Hinge')} · ${exampleLink('motion-slider', 'Slider')} · ${exampleLink('motion-parameter', 'Extension')}</small></div>
+    <div class="row" id="motionError" role="status">${esc(motionError)}</div>`;
+}
+function displayMotion(next) {
+  try {
+    const preview = motionPreview(stage.model, next);
+    motion = { ...next }; motionError = '';
+    stage.v = preview.validation; stage.scenes = [preview.scene];
+    viewer.show(preview.scene, null, studioNow, { preserveCamera: true });
+    // Preserve slider DOM during dragging and animation.
+    viewer.setView({ showReference: view.showReference, plane: sectionPlane(view.section), offsets: offsetsNow(), selected: view.selected, isolatePart: view.isolatePart });
+    for (const c of motionControls(stage.model)) {
+      const value = preview.values[c.id];
+      const slider = document.getElementById(`motion-${c.id}`);
+      if (slider) slider.value = value;
+      const label = document.querySelector(`[data-motion-value="${c.id}"]`);
+      if (label) label.textContent = `${value.toFixed(1)} ${c.unit}`;
+    }
+    renderInspect();
+  } catch (e) { motionError = e.message; stopMotion(); }
+  if ($('motionError')) $('motionError').textContent = motionError || (stage.v.warnings.length ? `Pose checks: ${stage.v.warnings.join('; ')}` : '');
+}
+function bindMotion() {
+  document.querySelectorAll('[data-motion]').forEach(el => el.oninput = () => {
+    stopMotion(); displayMotion({ ...motion, [el.dataset.motion]: Number(el.value) });
+  });
+  document.querySelectorAll('[data-motion-animate]').forEach(b => b.onclick = () => {
+    if (motionAnimation !== null) { stopMotion(); return; }
+    const control = motionControls(stage.model).find(c => c.id === b.dataset.motionAnimate);
+    const startValue = motion[control.id] ?? control.value, started = performance.now();
+    let previous = -Infinity;
+    b.textContent = '■ Stop';
+    const tick = now => {
+      if (document.hidden || pending || tool !== 'motion') { stopMotion(); return; }
+      const phase = Math.min(1, (now-started)/4000);
+      const value = startValue + (control.max-startValue)*(1-Math.cos(phase*2*Math.PI))/2;
+      if (now-previous >= 100 || phase === 1) { previous = now; displayMotion({ ...motion, [control.id]: value }); }
+      if (phase === 1 || motionError) { stopMotion(); return; }
+      motionAnimation = requestAnimationFrame(tick);
+    };
+    motionAnimation = requestAnimationFrame(tick);
+  });
+  const reset = document.querySelector('[data-motion-reset]');
+  if (reset) reset.onclick = () => { stopMotion(); displayMotion({}); };
+}
+addEventListener('visibilitychange', () => { if (document.hidden) stopMotion(); });
+
 // ---------------------------------------------------------------- inspect (read-only dimensions)
 const statusTag = (r) => (r?.status && r.status !== 'fixed' && r.status !== 'stated' ? `<span class="st ${esc(r.status)}">${esc(r.status)}</span>` : '');
 function renderInspect() {
@@ -240,7 +320,7 @@ function renderInspect() {
         ${view.isolatePart ? `<button type="button" id="showAllParts">Show all</button><span class="mono">isolated: ${esc(view.isolatePart)}</span>` : ''}
       </div>`;
       body = `<div class="ihead"><button type="button" id="insClose" title="Clear selection" aria-label="Clear selection">✕</button><span class="ititle">${esc(r.title)}</span>${r.role ? `<span class="badge ${esc(r.role)}">${esc(r.role)}</span>` : ''}${r.state && r.state !== 'SAME' ? `<span class="badge ${esc(r.state)}">${esc(r.state)}</span>` : ''}</div>
-        ${isolateActions}<div class="dims">${rows}</div>`;
+        ${isolateActions}${motionControls(model).some(c => c.about.includes(view.selected) || c.about.includes(selectedPart)) ? '<button type="button" id="inspectMotion">Motion…</button>' : ''}<div class="dims">${rows}</div>`;
     }
   }
   box.className = `spanel ${body ? '' : 'empty'}`;
@@ -257,6 +337,7 @@ function renderInspect() {
     viewer.whole();
   };
   if ($('showAllParts')) $('showAllParts').onclick = () => { setView({ isolatePart: null }); viewer.whole(); };
+  if ($('inspectMotion')) $('inspectMotion').onclick = () => { tool = 'motion'; renderViewTools(); };
   if ($('insClose')) $('insClose').onclick = () => select(null);
 }
 
@@ -525,12 +606,13 @@ async function startSession(fresh = false) {
   if (!fresh) {
     try { const saved = localStorage.getItem(STORE); if (saved) return importSession(saved); } catch { /* fall through to the start fixture */ }
   }
-  const liveFixture = LIVE.seed === 'organizer' ? '../examples/organizer_live_seed.aiconcept' : '../examples/live_start.aiconcept';
+  const motionFixtures = { 'organizer-motion': '../examples/organizer_live_seed.aiconcept', 'motion-hinge': '../examples/motion/hinge.aiconcept', 'motion-slider': '../examples/motion/slider.aiconcept', 'motion-parameter': '../examples/motion/parameter.aiconcept' };
+  const liveFixture = motionFixtures[LIVE.seed] || (LIVE.seed === 'organizer' ? '../examples/organizer_live_seed.aiconcept' : '../examples/live_start.aiconcept');
   const fixture = LIVE.live ? liveFixture : '../examples/s1_start.aiconcept';
   const text = await (await fetch(fixture)).text();
   const s = createSession(text, {
     summary: LIVE.live ? (LIVE.seed === 'organizer' ? 'Live organizer seed' : 'Live Concept start') : 'S1 start: box, spring frame, divider with tabs pointing down',
-    source: LIVE.live ? (LIVE.seed === 'organizer' ? 'examples/organizer_live_seed.aiconcept' : 'examples/live_start.aiconcept') : 'examples/s1_start.aiconcept',
+    source: LIVE.live ? liveFixture.replace('../', '') : 'examples/s1_start.aiconcept',
   });
   try { localStorage.setItem(STORE, exportSession(s)); } catch { /* ignore */ }
   return s;

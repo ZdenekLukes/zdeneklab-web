@@ -3,9 +3,9 @@
   "schema": 2,
   "meta": {
     "id": "organizer-live",
-    "title": "Modular box organizer — Live seed",
+    "title": "Modular box organizer \u2014 Live seed",
     "revision": 1,
-    "intent": "Modular FDM organizer for a 300 × 200 × 80 mm plastic box: spring-spread base frame, paired through-hole eyes, and a repeatable gridded divider.",
+    "intent": "Modular FDM organizer for a 300 \u00d7 200 \u00d7 80 mm plastic box: spring-spread base frame, paired through-hole eyes, and a repeatable gridded divider.",
     "closed_world": true
   },
   "units": "mm",
@@ -44,12 +44,12 @@
     "frame_h": {
       "value": 5,
       "status": "fixed",
-      "note": "5 × 5 mm base-frame cross-section"
+      "note": "5 \u00d7 5 mm base-frame cross-section"
     },
     "rail_w": {
       "value": 5,
       "status": "fixed",
-      "note": "5 × 5 mm base-frame cross-section"
+      "note": "5 \u00d7 5 mm base-frame cross-section"
     },
     "frame_spread": {
       "value": 10,
@@ -104,7 +104,7 @@
     "pin_d": {
       "value": 3.5,
       "status": "placeholder",
-      "note": "PREVIEW ONLY: pin diameter/fit for Ø4 mm eye holes not stated"
+      "note": "PREVIEW ONLY: pin diameter/fit for \u00d84 mm eye holes not stated"
     },
     "lattice_limit": {
       "value": 10,
@@ -115,6 +115,24 @@
       "value": 2,
       "status": "placeholder",
       "note": "PREVIEW ONLY: lattice rib thickness not stated"
+    },
+    "width_extension": {
+      "value": 0,
+      "status": "rough",
+      "note": "Conceptual deformation driver; not a validated elastic travel.",
+      "motion": {
+        "label": "Width extension",
+        "min": 0,
+        "max": "=frame_spread",
+        "step": 0.1,
+        "unit": "mm",
+        "about": [
+          "BASE",
+          "BASE.SPRING_A",
+          "BASE.SPRING_B"
+        ],
+        "note": "Assembly spreading; exact flexure geometry remains OPEN (Q8)."
+      }
     }
   },
   "parts": [
@@ -147,7 +165,7 @@
       "role": "PRODUCED",
       "size": [
         "=frame_L",
-        "=frame_W",
+        "=frame_W+width_extension",
         "=frame_h"
       ],
       "bar": "=rail_w",
@@ -179,7 +197,7 @@
         "repeatable": false,
         "default_quantity": 1
       },
-      "intent": "Printed floor frame. One short side includes an integrated flexure so the long sides can temporarily spread for divider installation."
+      "intent": "Printed floor frame. Integrated short-side flexures let the long sides temporarily spread for divider installation."
     },
     {
       "id": "DIVIDER",
@@ -223,7 +241,8 @@
       "form": "INTEGRATED_FLEXURE",
       "span": {
         "at": "MID",
-        "length": "40%"
+        "length": "40%",
+        "extension": "=width_extension"
       },
       "compliance": "ALONG_EDGE",
       "travel": "=frame_spread",
@@ -237,6 +256,13 @@
         "BOX.+Y",
         "BOX.-Y"
       ]
+    },
+    {
+      "id": "SPRING_B",
+      "mirror": {
+        "of": "SPRING_A",
+        "plane": "YZ"
+      }
     },
     {
       "id": "EYE_A",
@@ -281,7 +307,7 @@
         "len": "=pin_len",
         "d": "=pin_d"
       },
-      "intent": "Round bottom pin for one Ø4 mm eye; exact diameter/fit remains OPEN."
+      "intent": "Round bottom pin for one \u00d84 mm eye; exact diameter/fit remains OPEN."
     },
     {
       "id": "PIN_L",
@@ -374,7 +400,7 @@
       "check": {
         "type": "DIRECTION",
         "features": {
-          "BASE.SPRING_A": "±Y"
+          "BASE.SPRING_A": "\u00b1Y"
         }
       }
     }
@@ -405,7 +431,7 @@
         "BASE.EYE_A",
         "BASE.EYE_B"
       ],
-      "text": "What pin diameter / fit should be used in the Ø4 mm through-holes?",
+      "text": "What pin diameter / fit should be used in the \u00d84 mm through-holes?",
       "options": [
         "LOOSE",
         "CLEARANCE",
@@ -440,7 +466,7 @@
         "BASE",
         "BOX"
       ],
-      "text": "What installed clearance should the base frame have to the 300 × 200 mm box walls?",
+      "text": "What installed clearance should the base frame have to the 300 \u00d7 200 mm box walls?",
       "options": [],
       "options_note": "frame_L and frame_W are preview placeholders only."
     },

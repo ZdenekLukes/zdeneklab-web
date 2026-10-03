@@ -1,0 +1,66 @@
+{
+  "format": "AI_CONCEPT",
+  "schema": 2,
+  "meta": {
+    "id": "motion-parameter",
+    "title": "Motion demo \u2014 telescoping envelope",
+    "revision": 1,
+    "intent": "Concept being described interactively",
+    "closed_world": true
+  },
+  "units": "mm",
+  "world": {
+    "up": "+Z",
+    "origin": "concept origin"
+  },
+  "params": {
+    "extension": {
+      "value": 0,
+      "status": "rough",
+      "motion": {
+        "label": "Extension",
+        "min": 0,
+        "max": 30,
+        "step": 0.5,
+        "unit": "mm",
+        "about": [
+          "TUBE"
+        ]
+      }
+    }
+  },
+  "parts": [
+    {
+      "id": "TUBE",
+      "kind": "ENVELOPE",
+      "role": "PRODUCED",
+      "size": [
+        "=40+extension",
+        10,
+        10
+      ],
+      "orient": {
+        "z": "+Z",
+        "y": "+Y"
+      },
+      "place": {
+        "at": [
+          "=extension/2",
+          0,
+          0
+        ],
+        "anchor": "CENTRE"
+      }
+    }
+  ],
+  "interfaces": [],
+  "features": [],
+  "joints": [],
+  "fasteners": [],
+  "volumes": [],
+  "rules": [],
+  "questions": [],
+  "freeze": {
+    "state": "DRAFT"
+  }
+}

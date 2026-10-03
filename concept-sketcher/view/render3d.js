@@ -70,6 +70,14 @@ function buildGroup(data, S = null) {
     if (!S || overlayStyle(p) || p.style === 'unresolved') return lineColor(p);
     return STUDIO_ROLE[p.role] ?? (p.part ? lighten(S.partColor(p.part), 0.35) : 0x9fb3c8);
   };
+  const posed = (mesh, item) => {
+    if (!item.pose) return mesh;
+    const { r, t } = item.pose;
+    const wrapper = new THREE.Group(); wrapper.add(mesh);
+    wrapper.applyMatrix4(new THREE.Matrix4().set(
+      ...r[0], t[0], ...r[1], t[1], ...r[2], t[2], 0, 0, 0, 1));
+    return wrapper;
+  };
   for (const p of data.primitives || []) {
     let mesh;
     if (p.shape === 'box' && (p.outline || p.role === 'volume')) {
@@ -118,17 +126,17 @@ function buildGroup(data, S = null) {
         mesh = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color }));
       }
     }
-    if (mesh) { if (S) mesh.renderOrder = isRef(p) ? 2 : overlayStyle(p) ? 1 : 0; group.add(tag(mesh, p.id, S, isRef(p))); }
+    if (mesh) { if (S) mesh.renderOrder = isRef(p) ? 2 : overlayStyle(p) ? 1 : 0; group.add(tag(posed(mesh, p), p.id, S, isRef(p))); }
   }
   for (const l of data.labels || []) {
     const t = label(l.text, '#3b4252');
     t.position.set(...l.at);
-    group.add(tag(t, l.id, S, false));
+    group.add(tag(posed(t, l), l.id, S, false));
   }
   for (const a of data.arrows || []) {
     if (S && String(a.label || '').startsWith('compliance ±')) continue;
     const color = { unresolved: STYLE_COLORS.unresolved, proposed: STYLE_COLORS.proposed, removed: STYLE_COLORS.removed }[a.style] ?? (S ? 0x9fb3c8 : 0x1d6b3a);
-    group.add(tag(new THREE.ArrowHelper(new THREE.Vector3(...DIR[a.dir]), new THREE.Vector3(...a.from), a.length, color, 4, 2.5), a.id, S, isRef(a)));
+    group.add(tag(posed(new THREE.ArrowHelper(new THREE.Vector3(...DIR[a.dir]), new THREE.Vector3(...a.from), a.length, color, 4, 2.5), a), a.id, S, isRef(a)));
   }
   // proposal layer: one text tag per changed group, so the state is not colour-only
   const tagged = new Set();
@@ -306,15 +314,20 @@ export function createViewer(root) {
   return {
     // accepted: scene from the accepted model; proposal: overlay layer or null;
     // studio: { refParts, partColor, entityOf, instanceOf } for the app's studio style
-    show(acceptedScene, proposalOverlay = null, studio = null) {
-      if (accepted) scene.remove(accepted);
-      if (overlay) scene.remove(overlay);
+    show(acceptedScene, proposalOverlay = null, studio = null, { preserveCamera = false } = {}) {
+      for (const old of [accepted, overlay]) if (old) {
+        scene.remove(old);
+        old.traverse(o => {
+          o.geometry?.dispose();
+          for (const m of (Array.isArray(o.material) ? o.material : o.material ? [o.material] : [])) { m.map?.dispose(); m.dispose(); }
+        });
+      }
       accepted = buildGroup(acceptedScene, studio);
       scene.add(accepted);
       overlay = proposalOverlay ? buildGroup(proposalOverlay, studio) : null;
       if (overlay) scene.add(overlay);
       applyView();
-      if (!framed) wholeView();
+      if (!preserveCamera && !framed) wholeView();
     },
     // view: { showReference, plane, offsets, selected, isolatePart }
     setView(next) { view = { ...view, ...next }; applyView(); },

@@ -36,7 +36,17 @@ export function buildScene(model, v) {
         ['bar+X', [L / 2 - inst.bar / 2, 0, 0], [inst.bar, W - 2 * inst.bar, T]], ['bar-X', [-(L / 2 - inst.bar / 2), 0, 0], [inst.bar, W - 2 * inst.bar, T]]]
       : [['body', [0, 0, 0], [L, W, T]]];
     for (const [sub_, c, s] of boxes) {
-      prims.push({ id: `${inst.id}#${sub_}`, shape: 'box', ...base, center: add(inst.origin, rotLocal(inst.axes, c)), size: worldSize(inst.axes, s) });
+      const spring = inst.features.find((f) => f.type === 'SPRING' && sub_ === `bar${f.edge}` && f.run_axis === f.compliance_axis);
+      if (spring) {
+        const run = spring.edge.endsWith('X') ? 1 : 0;
+        const gap = spring.size.length;
+        const rigid = (s[run] - gap) / 2;
+        if (rigid <= 0) throw new Error(`flexure ${spring.id}: span exceeds its rail`);
+        for (const sign of [-1, 1]) {
+          const cc = [...c], ss = [...s]; ss[run] = rigid; cc[run] = sign * (gap + rigid) / 2;
+          prims.push({ id: `${inst.id}#${sub_}:${sign}`, shape: 'box', ...base, center: add(inst.origin, rotLocal(inst.axes, cc)), size: worldSize(inst.axes, ss) });
+        }
+      } else prims.push({ id: `${inst.id}#${sub_}`, shape: 'box', ...base, center: add(inst.origin, rotLocal(inst.axes, c)), size: worldSize(inst.axes, s) });
     }
     for (const f of inst.features) {
       const fst = style(inst.role, f.unresolved);
@@ -60,8 +70,8 @@ export function buildScene(model, v) {
         prims.push(...featurePrims(inst, f, style));
       } else if (f.type === 'SPRING') {
         const run = f.compliance_axis === 'X' ? [1, 0, 0] : f.compliance_axis === 'Y' ? [0, 1, 0] : [0, 0, 1];
-        const amp = f.compliance_axis === 'X' ? [0, 1, 0] : [1, 0, 0];
-        const top = add(f.position, [0, 0, inst.size[2] / 2 + 0.5]);
+        const amp = model.schema === 2 ? (f.run_axis !== f.compliance_axis ? AXES['+' + f.run_axis] : rotLocal(inst.axes, f.edge?.endsWith('X') ? [1, 0, 0] : [0, 1, 0])) : f.compliance_axis === 'X' ? [0, 1, 0] : [1, 0, 0];
+        const top = model.schema === 2 ? f.position : add(f.position, [0, 0, inst.size[2] / 2 + 0.5]);
         const n = 10, a = (inst.bar ?? 4) * 0.4;
         const points = Array.from({ length: n + 1 }, (_, k) =>
           add(add(top, mul(run, -f.size.length / 2 + (k * f.size.length) / n)), mul(amp, k === 0 || k === n ? 0 : (k % 2 ? a : -a))));
@@ -265,8 +275,19 @@ function itemPoints(p) {
   return [];
 }
 
+export function posePoint(pose, x) {
+  return pose.r.map((row, i) => row.reduce((sum, a, k) => sum + a * x[k], pose.t[i]));
+}
+
 export function boundsOf(items) {
-  const pts = items.flatMap(itemPoints);
+  const pts = items.flatMap((p) => {
+    let points = itemPoints(p);
+    if (p.pose && ['ring', 'cylinder'].includes(p.shape)) {
+      const [a,b] = points;
+      points = [0,1].flatMap(i => [0,1].flatMap(j => [0,1].map(k => [i?b[0]:a[0],j?b[1]:a[1],k?b[2]:a[2]])));
+    }
+    return points.map(x => p.pose ? posePoint(p.pose, x) : x);
+  });
   if (!pts.length) return null;
   const min = [0, 1, 2].map((i) => Math.min(...pts.map((p) => p[i])));
   const max = [0, 1, 2].map((i) => Math.max(...pts.map((p) => p[i])));

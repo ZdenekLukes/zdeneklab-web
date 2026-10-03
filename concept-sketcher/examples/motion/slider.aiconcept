@@ -1,0 +1,294 @@
+{
+  "format": "AI_CONCEPT",
+  "schema": 2,
+  "meta": {
+    "id": "motion-slider",
+    "title": "Motion demo \u2014 slider",
+    "revision": 1,
+    "intent": "Base, arm tilting \u00b130\u00b0 about Y, plate tilting 0\u201390\u00b0 about X.",
+    "closed_world": true
+  },
+  "units": "mm",
+  "world": {
+    "up": "+Z",
+    "origin": "base bottom centre",
+    "x": "left-right",
+    "y": "front-back"
+  },
+  "params": {
+    "tilt": {
+      "value": 0,
+      "status": "fixed",
+      "motion": {
+        "label": "tilt",
+        "min": -30,
+        "max": 30,
+        "step": 1,
+        "unit": "deg",
+        "joint": "HINGE_1",
+        "about": [
+          "HINGE_1"
+        ]
+      }
+    },
+    "travel": {
+      "value": 0,
+      "status": "rough",
+      "motion": {
+        "label": "Linear travel",
+        "min": 0,
+        "max": 30,
+        "step": 0.5,
+        "unit": "mm",
+        "joint": "HINGE_2",
+        "about": [
+          "HINGE_2"
+        ]
+      }
+    }
+  },
+  "parts": [
+    {
+      "id": "BASE",
+      "kind": "BLOCK",
+      "role": "PRODUCED",
+      "size": [
+        40,
+        20,
+        20
+      ],
+      "orient": {
+        "z": "+Z",
+        "y": "+Y"
+      },
+      "place": {
+        "at": [
+          0,
+          0,
+          0
+        ],
+        "anchor": "BOTTOM_CENTRE"
+      }
+    },
+    {
+      "id": "PIN1",
+      "kind": "ROD",
+      "role": "PRODUCED",
+      "size": [
+        36,
+        3,
+        3
+      ],
+      "orient": {
+        "z": "+Z",
+        "y": "-X"
+      }
+    },
+    {
+      "id": "ARM1",
+      "kind": "BLOCK",
+      "role": "PRODUCED",
+      "size": [
+        10,
+        6,
+        60
+      ],
+      "orient": {
+        "z": "+Z",
+        "y": "+Y"
+      }
+    },
+    {
+      "id": "ARM2",
+      "kind": "PLATE",
+      "role": "PRODUCED",
+      "size": [
+        40,
+        30,
+        4
+      ],
+      "orient": {
+        "z": "+Z",
+        "y": "+Y"
+      }
+    }
+  ],
+  "interfaces": [
+    {
+      "id": "AX_B",
+      "part": "BASE",
+      "type": "AXIS",
+      "at": [
+        0,
+        0,
+        5
+      ],
+      "dir": "+Y"
+    },
+    {
+      "id": "AX_A",
+      "part": "ARM1",
+      "type": "AXIS",
+      "at": [
+        0,
+        0,
+        -25
+      ],
+      "dir": "+Y"
+    },
+    {
+      "id": "AX_2",
+      "part": "ARM1",
+      "type": "AXIS",
+      "at": [
+        0,
+        0,
+        25
+      ],
+      "dir": "+X"
+    },
+    {
+      "id": "AX_2B",
+      "part": "ARM2",
+      "type": "AXIS",
+      "at": [
+        -25,
+        0,
+        0
+      ],
+      "dir": "+X"
+    }
+  ],
+  "features": [
+    {
+      "id": "BORE_B",
+      "host": "BASE",
+      "type": "HOLE",
+      "kind": "BORE",
+      "on": "BASE.AX_B",
+      "profile": "ROUND",
+      "size": {
+        "d": 3
+      },
+      "depth": "THROUGH"
+    },
+    {
+      "id": "BORE_A",
+      "host": "ARM1",
+      "type": "HOLE",
+      "kind": "BORE",
+      "on": "ARM1.AX_A",
+      "profile": "ROUND",
+      "size": {
+        "d": 3.2
+      },
+      "depth": "THROUGH"
+    }
+  ],
+  "joints": [
+    {
+      "id": "PIN_IN_BASE",
+      "motion": "FIXED",
+      "part": "PIN1",
+      "method": "FORM_FIT",
+      "fit": "PRESS",
+      "links": [
+        {
+          "child": "PIN1.AXIS",
+          "parent": "BASE.BORE_B"
+        }
+      ],
+      "offset": 0,
+      "assembly": {
+        "direction": "+Y",
+        "removable": "NO"
+      }
+    },
+    {
+      "id": "HINGE_1",
+      "motion": "REVOLUTE",
+      "part": "ARM1",
+      "axis": "PIN1.AXIS",
+      "method": "FORM_FIT",
+      "fit": "CLEARANCE",
+      "links": [
+        {
+          "child": "ARM1.BORE_A",
+          "parent": "PIN1.AXIS"
+        }
+      ],
+      "offset": 13,
+      "limits": {
+        "min": -30,
+        "max": 30
+      },
+      "assembly": {
+        "direction": "-Y",
+        "removable": "NO"
+      }
+    },
+    {
+      "id": "HINGE_2",
+      "motion": "PRISMATIC",
+      "part": "ARM2",
+      "axis": "ARM1.AX_2",
+      "method": "OPEN:Q2",
+      "fit": "OPEN:Q2",
+      "links": [
+        {
+          "child": "ARM2.AX_2B",
+          "parent": "ARM1.AX_2"
+        }
+      ],
+      "offset": 0,
+      "limits": {
+        "min": 0,
+        "max": 30
+      },
+      "assembly": {
+        "direction": "OPEN:Q2",
+        "removable": "OPEN:Q2"
+      }
+    }
+  ],
+  "fasteners": [],
+  "volumes": [],
+  "rules": [],
+  "questions": [
+    {
+      "id": "Q1",
+      "status": "ANSWERED",
+      "blocks": "SKELETON_READY",
+      "about": [
+        "HINGE_1"
+      ],
+      "text": "What is the rotation range of HINGE_1?",
+      "options": [],
+      "answer": "\u00b130\u00b0 from the modelled pose",
+      "answered_by": "user (accepted proposal)",
+      "facts": [
+        "joints/HINGE_1/limits"
+      ]
+    },
+    {
+      "id": "Q2",
+      "status": "OPEN",
+      "blocks": "SKELETON_READY",
+      "about": [
+        "HINGE_2",
+        "ARM1",
+        "ARM2"
+      ],
+      "text": "How is the ARM1\u2013ARM2 hinge made (pin, bolt, printed in place), and how is ARM2 installed?",
+      "options": [
+        "separate pin",
+        "shoulder bolt",
+        "print-in-place",
+        "other, user-defined"
+      ]
+    }
+  ],
+  "freeze": {
+    "state": "DRAFT"
+  }
+}
