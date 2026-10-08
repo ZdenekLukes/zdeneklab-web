@@ -1,8 +1,8 @@
 {
   "generated_from": "https://github.com/ZdenekLukes/concept-sketcher",
   "branch": "main",
-  "commit": "14dc3aea2f1a91de8c27523168ebd8a51225f026",
-  "version": "14dc3aea2f1a",
+  "commit": "ade26ee692ab05f41c44f22a630cea775b66f2c4",
+  "version": "ade26ee692ab",
   "model": "examples/box_organizer.aiconcept",
   "hash": "sha256:5a307a53092d8411c9a5766bce081b499e19d7534e4abf5f38e9afe3c96cf608",
   "files": [
@@ -14,12 +14,12 @@
     {
       "path": "app/index.html",
       "bytes": 15977,
-      "sha256": "fb1f87307d2f9cef81eb76743ea1cfb30f9a886921de3c9474b119fcd805e92b"
+      "sha256": "554e94d0ef2776d23045026018c892f8d2e883708dbd392f9fa9a7733be83f73"
     },
     {
       "path": "app/app.js",
       "bytes": 56289,
-      "sha256": "e68313043dfb158a1a111c75581ec1d02fda2e305c68fa8a5bc229623a1e5e63"
+      "sha256": "0baa110b45341755e797d6dc3e8372d5560062efe01f5684ed6cffe64de4bcf9"
     },
     {
       "path": "app/live_client.js",
@@ -34,32 +34,32 @@
     {
       "path": "src/capabilities.js",
       "bytes": 12039,
-      "sha256": "b9348062f4610805e67729f38188cd985653a6451a86fc33c711ac436b115406"
+      "sha256": "24248a69e99df1ac6e9c4cd5c8d250749a4456b918eb8ce2be1dd004cca1a782"
     },
     {
       "path": "src/export.js",
       "bytes": 32651,
-      "sha256": "c77383b7c7aee02d730aa4612386eb10d51914c3ada076fa038067755c5c020b"
+      "sha256": "763054fb6e32d20b1a7a91a17c22369f5a407be65a18099cae6334000b40c996"
     },
     {
       "path": "src/inspect.js",
       "bytes": 17532,
-      "sha256": "04eaa21c4f962bae3fa5f34add0c34bb74fa2dd1d9e60bdda76a102f656a4b47"
+      "sha256": "41ffd03fd9ee20856942ff2ac0df5a6e27c11fef0e9d27886d12d692a6dc0178"
     },
     {
       "path": "src/live_edit.js",
       "bytes": 2876,
-      "sha256": "5011e7708539a6dcd7be905605bbf1255efeb9c7dd2011c3bc69706557237294"
+      "sha256": "993a0137f1e08245ae4a7475ee033671ca1b0042f5bed891a88f26d67f6c6abd"
     },
     {
       "path": "src/live_intent.js",
       "bytes": 11937,
-      "sha256": "b63f9b434434a0ac8754d359c9127f1fe32a44076d5f69afe01388f5b87f0eab"
+      "sha256": "f7dee32b94d0503e93a9489d3ceb0f91ff7a7245086e92df0e69dca3522a417b"
     },
     {
       "path": "src/mechanics.js",
       "bytes": 23431,
-      "sha256": "8c0b006658218ba58a9f492a201c09c712053533609b7f8e8656a09eba5689f9"
+      "sha256": "3ae65b6576de0c8d57ca2b941cceaef6d4d24d6d2b3cee4602ff7bd2c6015496"
     },
     {
       "path": "src/model.js",
@@ -69,32 +69,32 @@
     {
       "path": "src/motion.js",
       "bytes": 4631,
-      "sha256": "2a870e234c758c486d585735383ed281fbe46a7d59b3b2332bebd830cfd7ca01"
+      "sha256": "1105a6815a487e724c48c65384b4a5c6854e9490d9fa2dd6addade7ac7acadd8"
     },
     {
       "path": "src/motion_preview.js",
       "bytes": 1938,
-      "sha256": "8effb306c025557e8f2b552ebbc355ce4214cab236b0ffe3efe0fcc6fa38026d"
+      "sha256": "8f9861fc4c28599a7740489e74207391c08a7734afe0d9b285d24a8af0e6757c"
     },
     {
       "path": "src/ops.js",
       "bytes": 9735,
-      "sha256": "316a2e6aba3f8c14c8defcab47e3a47790e7cd99820512507b60f2b829b22d3c"
+      "sha256": "42990596d7eb4e1ed753a07771e00c805e53d88fee662363f0a1dd98b1d9d4d0"
     },
     {
       "path": "src/proposal.js",
       "bytes": 36062,
-      "sha256": "73387d06668c93d211a3b9ecc44fa004a5057e872fe3bf9ba95231068d6da32b"
+      "sha256": "f49211d96493c192ff822aaf52055cc56df78dfb9341082c9b5c255f56c68d6f"
     },
     {
       "path": "src/resolve.js",
       "bytes": 23932,
-      "sha256": "f509feef43d2f0ca0b745a42656b531ec8c139192ed99d99a6be86c8dd28cae0"
+      "sha256": "143b3276c479ebd7cebd7237e64982ac79387603d6c1911aca814d6122044273"
     },
     {
       "path": "src/scene.js",
       "bytes": 19544,
-      "sha256": "f2cf610df30c2a5d52f12f55de52b894623d474d37c5ff964bebdceecdb739c6"
+      "sha256": "069be4a934eb271bb8c7ff65fc1019149df7db3e11f77fd8c962ee3aaa1d0e70"
     },
     {
       "path": "src/schema.js",
@@ -104,37 +104,37 @@
     {
       "path": "src/scope.js",
       "bytes": 9133,
-      "sha256": "7d1dccfd42d1fd6c437a4aa21071c6ba7778b06ea81e234285d2c2cc7df62ba6"
+      "sha256": "9b96f747bdf5edc61459aa5b856582f002d8d2d7b82a4b0b9daaf234b98840a6"
     },
     {
       "path": "src/session.js",
       "bytes": 16087,
-      "sha256": "d7c876b9bc163cca67259a01b7fcdc0be2b7680598f36e2423450c395b34e408"
+      "sha256": "02accdff1fb01b80f50beeebcf0d1b71eb73330f70612d39ca15d20f484e4193"
     },
     {
       "path": "src/validate.js",
       "bytes": 26530,
-      "sha256": "994d4cad21c64a82466d3b6e4e5b2a4714bb5e72a9cec44499fbfcb9d435927b"
+      "sha256": "86c7246c2328770003628648d90d9c18b6d3102ec652df4360ff9f312261901e"
     },
     {
       "path": "src/view_state.js",
       "bytes": 6161,
-      "sha256": "a170a338ebc9148481795dda04a2c638194f52abcad4a59be30f74610801ae9b"
+      "sha256": "3121f9931bf9bfb751a4a07d8fc228b9a99a055efafad21f9b06a004e0aedb7b"
     },
     {
       "path": "src/interpret/fixture_interpreter.js",
       "bytes": 10318,
-      "sha256": "eda423fcb19936a37c5c9b539b9cec6c40dd63ac96d1d0dddc5f7c8f8d9225ba"
+      "sha256": "d3b01e8f1856c3d694fa19d991c121b38c15149d00b04ed20286641bf21c2701"
     },
     {
       "path": "src/interpret/input.js",
       "bytes": 5885,
-      "sha256": "89696865f3cefc55879d07dcc87e2917d3bd5a60b083bf8c6ec3f2e18973e72a"
+      "sha256": "64ede0938b1021d5543313fd345be25aa9c847e330b6f01acb7412f1f119eef2"
     },
     {
       "path": "src/interpret/lexicon.js",
       "bytes": 3835,
-      "sha256": "626981b36ba3c3214aa529601bd1ba80c140132a0dd47466b2b84ba704eb9153"
+      "sha256": "e7448450df3a48c762af355500417daad5d6ad3acc0451676b27c650aa9c03c0"
     },
     {
       "path": "src/interpret/normalize.js",
@@ -149,12 +149,12 @@
     {
       "path": "src/interpret/protocol.js",
       "bytes": 18179,
-      "sha256": "a9b8a2b7cb40afff663c86516523dd4c0832627cda71784f2e5ad5caabfaddf9"
+      "sha256": "7b11e762f918a36ff1925b3cc54d5680dd64ef7c21568536803a7a9fbacf5afe"
     },
     {
       "path": "src/interpret/provider.js",
       "bytes": 2555,
-      "sha256": "3b33eaa179cfee3b5817a2df423acba5b52eaaf53d59805be2102c275e58b4e1"
+      "sha256": "f653f82f591367aa5b6df83b9d4246598a627dbd566dbbfba166507069b45408"
     },
     {
       "path": "examples/s1_start.aiconcept",
@@ -189,12 +189,12 @@
     {
       "path": "view/preview.html",
       "bytes": 3041,
-      "sha256": "0759b8ad41df44597ce7a7895498d26de5ceeae584a5cc6f13586bdcbe6c8070"
+      "sha256": "403e696f387788272bd8f7807580d9740cd1c24559caca97de66f4b9e7c4e87b"
     },
     {
       "path": "view/render3d.js",
       "bytes": 19947,
-      "sha256": "a5691dc72f05959c4fef54eabb274356306e2db606a9582460666d25cdc9845b"
+      "sha256": "75bc4314296020eb86830c039c95a66790336adcff32b63072d6615f4519d8d2"
     },
     {
       "path": "vendor/three/three.module.min.js",

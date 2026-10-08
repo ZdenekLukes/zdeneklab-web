@@ -1,8 +1,8 @@
 // Parameter deformation uses the ordinary resolver and scene generator.
 // Joint motion is a declared rigid pose applied to the same generated scene.
-import { validate } from './validate.js?v=14dc3aea2f1a';
-import { buildScene } from './scene.js?v=14dc3aea2f1a';
-import { motionControls, motionValues, jointPoses } from './motion.js?v=14dc3aea2f1a';
+import { validate } from './validate.js?v=ade26ee692ab';
+import { buildScene } from './scene.js?v=ade26ee692ab';
+import { motionControls, motionValues, jointPoses } from './motion.js?v=ade26ee692ab';
 
 export function motionPreview(model, requested = {}) {
   const values = motionValues(model, requested);

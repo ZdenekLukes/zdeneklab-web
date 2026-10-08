@@ -3,13 +3,13 @@
 // revision stores its canonical model, so restoring is exact; the exported
 // history (root + ops) replays deterministically to the same hashes.
 
-import { canonical, conceptHash, legacyConceptHashV1, loadConcept } from './model.js?v=14dc3aea2f1a';
-import { validate, freezeConcept } from './validate.js?v=14dc3aea2f1a';
-import { applyOps } from './ops.js?v=14dc3aea2f1a';
-import { evaluateProposal, attachUtteranceEvidence, PROPOSAL_FORMAT } from './proposal.js?v=14dc3aea2f1a';
-import { evaluateLiveIntent } from './live_edit.js?v=14dc3aea2f1a';
-import { deriveScope, checkProtectedRemainder } from './scope.js?v=14dc3aea2f1a';
-import { exportAll } from './export.js?v=14dc3aea2f1a';
+import { canonical, conceptHash, legacyConceptHashV1, loadConcept } from './model.js?v=ade26ee692ab';
+import { validate, freezeConcept } from './validate.js?v=ade26ee692ab';
+import { applyOps } from './ops.js?v=ade26ee692ab';
+import { evaluateProposal, attachUtteranceEvidence, PROPOSAL_FORMAT } from './proposal.js?v=ade26ee692ab';
+import { evaluateLiveIntent } from './live_edit.js?v=ade26ee692ab';
+import { deriveScope, checkProtectedRemainder } from './scope.js?v=ade26ee692ab';
+import { exportAll } from './export.js?v=ade26ee692ab';
 
 // Exported history format. Format 1 (no `format` key) is what the app wrote
 // before 2026-10-03 (main ≤ f625e61); format 2 is written from Phase 1.1 on.
