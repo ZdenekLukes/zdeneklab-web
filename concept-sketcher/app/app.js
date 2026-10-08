@@ -3,19 +3,21 @@
 // the evaluated proposal as a structured review, and passes the user's
 // ACCEPT/REJECT to the session. Zoom is inspection only.
 
-import { motionControls } from '../src/motion.js?v=f5dbe684feae';
-import { motionPreview } from '../src/motion_preview.js?v=f5dbe684feae';
-import { conceptHash } from '../src/model.js?v=f5dbe684feae';
-import { validate } from '../src/validate.js?v=f5dbe684feae';
-import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js?v=f5dbe684feae';
-import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js?v=f5dbe684feae';
-import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js?v=f5dbe684feae';
-import { reviewProposal } from '../src/proposal.js?v=f5dbe684feae';
-import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js?v=f5dbe684feae';
-import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js?v=f5dbe684feae';
-import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=f5dbe684feae';
-import { createViewer, PART_PALETTE } from '../view/render3d.js?v=f5dbe684feae';
-import { ensureCurrentShell } from './build_version.js?v=f5dbe684feae';
+import { motionControls } from '../src/motion.js?v=f69a5921169d';
+import { motionPreview } from '../src/motion_preview.js?v=f69a5921169d';
+import { conceptHash } from '../src/model.js?v=f69a5921169d';
+import { validate } from '../src/validate.js?v=f69a5921169d';
+import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js?v=f69a5921169d';
+import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js?v=f69a5921169d';
+import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js?v=f69a5921169d';
+import { reviewProposal } from '../src/proposal.js?v=f69a5921169d';
+import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js?v=f69a5921169d';
+import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js?v=f69a5921169d';
+import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=f69a5921169d';
+import { createViewer, PART_PALETTE } from '../view/render3d.js?v=f69a5921169d';
+import { ensureCurrentShell } from './build_version.js?v=f69a5921169d';
+import { threadWords, valueSources } from '../src/live_context.js?v=f69a5921169d';
+import { newThread, loadThread, storeThread, threadMatches, addTurn, updateTurn, recentOf } from './conversation.js?v=f69a5921169d';
 
 const LIVE = liveConfig();
 const LEGACY_STORE = LIVE.live ? `concept-sketcher.live.${LIVE.seed || 'blank'}.session` : 'concept-sketcher.s1.session';
@@ -88,6 +90,31 @@ function save() {
   } catch (e) {
     storageWarning = `Autosave unavailable: ${e.message}`;
   }
+}
+
+// ---------------------------------------------------------------- conversation (Live)
+// The thread of turns since the accepted model last changed, per project
+// (app/conversation.js). Context for the AI and the user's words for evidence;
+// never design data.
+let conv = null;             // { key, thread }
+const convKey = () => `${activeStore}.conversation`;
+const convBase = () => ({ head: session.head, hash: conceptHash(acceptedModel(session)) });
+function thread() {
+  const key = convKey(), base = convBase();
+  if (!conv || conv.key !== key) conv = { key, thread: loadThread(localStorage, key, base) };
+  else if (!threadMatches(conv.thread, base)) conv.thread = newThread(base);
+  return conv.thread;
+}
+function remember(turn) {
+  const { thread: next, id } = addTurn(thread(), turn);
+  conv.thread = next;
+  storeThread(localStorage, conv.key, next);
+  return id;
+}
+function amendTurn(id, patch) {
+  if (!id || !conv || !conv.thread.turns.some((t) => t.id === id)) return;
+  conv.thread = updateTurn(conv.thread, id, patch);
+  storeThread(localStorage, conv.key, conv.thread);
 }
 
 // ---------------------------------------------------------------- 3D
@@ -519,6 +546,12 @@ function legacyNote(s) {
   if (n) sys(`${n} earlier revision${n > 1 ? 's were' : ' was'} accepted under the rules before 2026-10-03 and ${n > 1 ? 'are' : 'is'} kept as accepted then (marked in History). New changes use the current rules.`);
 }
 function switchSession(next, key, message) {
+  retireChoices();                          // a question of the previous project must not answer into this one
+  if (liveRequest) {                        // its reply belongs to the previous project: drop it when it comes
+    liveRequest.progress.remove();
+    sys(`The AI reply to “${liveRequest.text}” was for the previous project; it will be ignored.`);
+    liveRequest = null;
+  }
   supersede();
   session = next;
   activeStore = key;
@@ -527,6 +560,7 @@ function switchSession(next, key, message) {
   closeSheets();
   sys(message);
   legacyNote(next);
+  replayThread();
   refresh();
 }
 function renderProjects() {
@@ -641,8 +675,20 @@ function addEl(html, cls) {
   const d = document.createElement('div');
   d.className = cls; d.innerHTML = html;
   $('log').appendChild(d);
-  d.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  reveal(d);
   return d;
+}
+// Scroll only the conversation, never the page: scrollIntoView also scrolls the
+// viewport, which on a phone shifts the whole app up and leaves a gap under it.
+// A card taller than the log shows its top (the question), otherwise its bottom.
+function reveal(el) {
+  const log = $('log');
+  const r = el.getBoundingClientRect(), l = log.getBoundingClientRect();
+  let delta = 0;
+  if (r.bottom > l.bottom) delta = r.height > l.height ? r.top - l.top : r.bottom - l.bottom;
+  else if (r.top < l.top) delta = r.top - l.top;
+  if (delta) log.scrollBy({ top: delta, behavior: 'smooth' });
+  if (document.scrollingElement?.scrollTop) document.scrollingElement.scrollTop = 0;
 }
 const user = (t) => addEl(esc(t), 'msg user');
 const sys = (t) => addEl(esc(t), 'msg sys');
@@ -655,6 +701,7 @@ function setCardState(card, cls, text) {
 
 function supersede() {
   if (!pending) return;
+  amendTurn(pending.turn, { outcome: 'superseded', intent: undefined, said: undefined });
   setCardState(pending.card, 'SUPERSEDED', 'NOT APPLIED');
   pending = null;
   viewer.whole();
@@ -687,26 +734,37 @@ function proposalCard(ev, model, proposalText) {
   return addEl(html, 'card');
 }
 
-function liveIntentCard(ev, intentText) {
+// A question from the AI. Its suggested answers are UI only: a tap sends the
+// visible label as the user's next message through send(), exactly like typed text.
+// `active` is false for a question that is no longer the latest turn.
+function liveIntentCard(ev, intentText, { active = true } = {}) {
   const i = ev.intent;
   const errs = ev.errors.length ? `<ul class="err">${ev.errors.map((e) => `<li>${esc(e)}</li>`).join('')}</ul>` : '';
   if (ev.status === 'CLARIFY') {
-    return addEl(`
-      <div class="top"><span class="pill CLARIFY">CLARIFY</span><span class="muted">Live Intent</span></div>
-      <div><b>Question:</b> ${esc(ev.question)}</div>
-      <div class="muted">No model change was proposed.</div>
-      <details><summary>Advanced: raw intent JSON</summary><pre>${esc(JSON.stringify(JSON.parse(intentText), null, 2))}</pre></details>`, 'card');
+    const choices = Array.isArray(ev.choices) ? ev.choices : [];
+    const card = addEl(`
+      <div class="top"><span class="pill CLARIFY">QUESTION</span><span class="muted">Nothing changes until you accept a proposal</span></div>
+      <div class="question"><span class="vh">Question: </span>${esc(ev.question)}</div>
+      ${choices.length ? `<div class="choices${active ? '' : ' obsolete'}" role="group" aria-label="Suggested answers">${choices.map((c, k) => `<button type="button" data-choice="${k}" ${active ? '' : 'disabled'}>${esc(c.label)}</button>`).join('')}<button type="button" class="other" data-other ${active ? '' : 'disabled'}>Something else…</button></div>` : ''}
+      ${intentText ? `<details><summary>Advanced: raw intent JSON</summary><pre>${esc(JSON.stringify(JSON.parse(intentText), null, 2))}</pre></details>` : ''}`, 'card ask');
+    card.querySelectorAll('[data-choice]').forEach((b) => { b.onclick = () => choose(card, b, choices[Number(b.dataset.choice)].label); });   // exactly the words shown
+    card.querySelector('[data-other]')?.addEventListener('click', () => { $('input').placeholder = 'Type your own answer…'; $('input').focus(); });
+    return card;
   }
   const scope = ev.scope?.allow || [];
   const affects = ev.scope?.affects || [];
   const changed = ev.scope?.changed || [];
   const answers = i?.answers || [];
   const unknowns = i?.unknowns || [];
+  // which of the user's messages each checked number comes from (a later message may have replaced it)
+  const sources = ev.proposal ? valueSources(acceptedModel(session), ev.proposal.ops, ev.proposal.utterance) : [];
+  const shown = (v) => (typeof v === 'string' ? v : JSON.stringify(v));
   const html = `
     <div class="top"><span class="pill ${ev.status}">${ev.status === 'VALID' ? '+ PROPOSED' : ev.status}</span><span class="muted">Live Intent</span></div>
     ${i ? `<div><b>AI proposes:</b> ${esc(i.summary)}</div>` : ''}
     ${scope.length ? `<div class="box"><b>May change (derived from the edits):</b> ${scope.map(esc).join(' · ')}<br><span class="muted">Every other model path is checked to stay byte-identical.</span>${affects.length ? `<br><b>Refers to / depends on (not changed):</b> ${affects.map(esc).join(' · ')}` : ''}</div>` : ''}
     ${changed.length ? `<div class="box"><b>Actual diff:</b> ${changed.map(esc).join(' · ')}</div>` : ''}
+    ${sources.length ? `<div class="box"><b>Values from your messages:</b>${sources.map((x) => `<div class="src">${esc(x.what)} = <span class="new">${esc(shown(x.value))}</span> — from “${esc(x.from)}”${x.latest ? '' : `<div class="warn">⚠ This comes from an earlier message. Your latest message was “${esc(x.last)}”. Check it is still what you want before accepting.</div>`}</div>`).join('')}</div>` : ''}
     ${answers.length ? `<div class="box"><b>Resolved:</b> ${answers.map((a) => `${esc(a.id)} = ${esc(a.answer)}`).join(' · ')}</div>` : ''}
     ${unknowns.length ? `<div class="box"><span class="pill OPEN">? OPEN</span> ${unknowns.map((u) => esc(u.question)).join(' · ')}</div>` : ''}
     ${errs}
@@ -714,15 +772,48 @@ function liveIntentCard(ev, intentText) {
   return addEl(html, 'card');
 }
 
+// One tap per question: the chosen answer is marked, the others are disabled,
+// and its label goes through send() like typed text. If it was held back (a
+// reply is still awaited) the question stays open.
+async function choose(card, button, answer) {
+  const box = card.querySelector('.choices');
+  if (!box || box.classList.contains('obsolete') || box.dataset.busy) return;
+  box.dataset.busy = '1';
+  box.querySelectorAll('button').forEach((b) => { b.disabled = true; });
+  button.classList.add('chosen'); button.setAttribute('aria-pressed', 'true');
+  const sent = await send(answer, { via: 'choice' });
+  if (sent === false && !box.classList.contains('obsolete')) {
+    delete box.dataset.busy;
+    button.classList.remove('chosen'); button.removeAttribute('aria-pressed');
+    box.querySelectorAll('button').forEach((b) => { b.disabled = false; });
+  }
+}
+// Any new message answers or replaces every earlier question: their choices go out of date.
+function retireChoices() {
+  document.querySelectorAll('#log .choices:not(.obsolete)').forEach((box) => {
+    box.classList.add('obsolete');
+    box.querySelectorAll('button').forEach((b) => { b.disabled = true; });
+  });
+  $('input').placeholder = 'Describe the change in your own words…';
+}
+
+// A reply that cannot be used, or a transport failure: say that nothing changed
+// and offer to send the same words again.
+function retryButton(el, text) {
+  const retry = document.createElement('button');
+  retry.type = 'button'; retry.className = 'primary retry'; retry.dataset.retry = ''; retry.textContent = '↻ Try again';
+  retry.onclick = () => { retry.disabled = true; send(text).then((sent) => { if (sent === false) retry.disabled = false; }); };
+  el.appendChild(retry);
+}
+
 function aiReplyRejectedCard(text, e) {
   const card = addEl(`
     <div class="top"><span class="pill INVALID">NOT USED</span><span class="muted">Live Intent</span></div>
     <div>${esc(e.message)}</div>
     <div class="muted">Try again, or say it more specifically: what it is, its size and how it is made.</div>
-    <div><button type="button" class="primary" data-retry>↻ Try again</button></div>
+    <div class="retrybox"></div>
     ${e.details.length ? `<details><summary>Advanced: why it was refused</summary><ul class="err">${e.details.map((d) => `<li>${esc(d)}</li>`).join('')}</ul></details>` : ''}`, 'card');
-  const retry = card.querySelector('[data-retry]');
-  retry.onclick = () => { retry.disabled = true; send(text).then((sent) => { if (sent === false) retry.disabled = false; }); };
+  retryButton(card.querySelector('.retrybox'), text);
 }
 
 function onAccept() {
@@ -731,7 +822,7 @@ function onAccept() {
     session = pending.kind === 'live'
       ? acceptLive(session, pending.text, pending.said)
       : accept(session, pending.text);      // re-evaluated inside; never trusts the card
-    setCardState(pending.card, 'ACCEPTED', `✓ ACCEPTED → REV ${session.head}`);
+    setCardState(pending.card, 'ACCEPTED', `✓ ACCEPTED → REV ${session.head}`);   // the accepted state changed: the next message starts a new thread
     pending = null;
     save();
     viewer.whole();
@@ -744,6 +835,7 @@ function onAccept() {
 function onReject() {
   if (!pending) return;
   session = reject(session);
+  amendTurn(pending.turn, { outcome: 'rejected', intent: undefined, said: undefined });
   setCardState(pending.card, 'REJECTED', '✕ REJECTED — nothing changed');
   pending = null;
   viewer.whole();
@@ -753,26 +845,35 @@ function onReject() {
 // One Live request at a time. A second one would race the first for `pending`
 // (two cards shown as proposed, Accept applying whichever reply came last),
 // and the GitHub transport cancels a queued run once a third is dispatched.
-let liveInFlight = false;
+// The request belongs to the project it was sent from: switching project
+// abandons it (switchSession), and its reply, when it comes, is dropped
+// without touching the conversation, the pending proposal or the model.
+let liveRequest = null;      // { text, progress } of the Live request in flight
 
 // Returns false when the message was not sent because a Live reply is still awaited.
-async function send(text) {
+async function send(text, { via = 'typed' } = {}) {
   if (!text.trim()) return;
-  if (LIVE.live && liveInFlight) {
-    if (!$('input').value) $('input').value = text;
+  if (LIVE.live && liveRequest) {
+    if (via === 'typed' && !$('input').value) $('input').value = text;
     sys('The AI is still answering the previous message. Send this one when that reply has arrived.');
     return false;
   }
+  retireChoices();
   supersede();
   user(text);
   const model = acceptedModel(session);
-  const said = { utterance: text, base: baseOf(model), source: 'live-intent' };
 
   if (LIVE.live) {
-    liveInFlight = true;
+    // context: this project's thread since the accepted model last changed;
+    // evidence: the user's own words of that thread (never assistant turns)
+    const recent = recentOf(thread());
+    const said = { utterance: threadWords(recent, text), base: baseOf(model), source: 'live-intent' };
+    const progress = addEl(LIVE.transport === 'github' ? 'GitHub POC: preparing…' : 'AI is thinking…', 'msg sys thinking');
+    const mine = { text, progress };
+    liveRequest = mine;
+    const abandoned = () => liveRequest !== mine;
     try {
       let intentText;
-      const progress = LIVE.transport === 'github' ? addEl('GitHub POC: preparing…', 'msg sys') : null;
       const onProgress = (message) => { if (progress) progress.textContent = message; };
 
       const askGitHubToken = () => {
@@ -784,31 +885,43 @@ async function send(text) {
 
       try {
         if (LIVE.transport === 'github' && !storedGitHubToken() && !askGitHubToken()) {
-          if (progress) progress.textContent = 'GitHub POC cancelled — no token stored.';
+          progress.classList.remove('thinking');
+          progress.textContent = 'GitHub POC cancelled — no token stored.';
           return;
         }
         try {
-          intentText = await requestLiveIntent(LIVE, { utterance: text, model }, { onProgress });
+          intentText = await requestLiveIntent(LIVE, { utterance: text, model, recent }, { onProgress });
         } catch (e) {
           if (LIVE.transport !== 'github' || !['GITHUB_TOKEN_REQUIRED', 'GITHUB_AUTH_FAILED'].includes(e.code)) throw e;
           clearGitHubToken();
           if (!askGitHubToken()) throw e;
-          intentText = await requestLiveIntent(LIVE, { utterance: text, model }, { onProgress });
+          intentText = await requestLiveIntent(LIVE, { utterance: text, model, recent }, { onProgress });
         }
       } catch (e) {
-        if (e.code === 'AI_INTENT_INVALID') { progress?.remove(); aiReplyRejectedCard(text, e); return; }
-        if (progress) progress.textContent = `GitHub POC failed: ${e.message}`;
-        else sys(`Live AI unavailable: ${e.message}`);
+        if (abandoned()) return;
+        progress.remove();
+        if (e.code === 'AI_INTENT_INVALID') {
+          remember({ role: 'user', text, via });
+          remember({ role: 'assistant', kind: 'refused' });
+          aiReplyRejectedCard(text, e);
+          return;
+        }
+        const failed = sys(`${LIVE.transport === 'github' ? 'GitHub POC failed' : 'Live AI unavailable'}: ${e.message} — nothing was changed.`);
+        retryButton(failed, text);
         return;
       }
+      if (abandoned()) return;                                 // the user switched project meanwhile
+      progress.remove();
       supersede();                                             // e.g. a Property Editor proposal made while waiting
       const ev = evaluateLive(session, intentText, said);      // STALE if the accepted model moved meanwhile
+      remember({ role: 'user', text, via });                   // the turn is kept once a reply arrived (a lost request leaves no trace)
+      const turn = rememberReply(ev, intentText, said);
       const card = liveIntentCard(ev, intentText);
-      pending = ev.status === 'CLARIFY' ? null : { kind: 'live', text: intentText, said, evaluation: ev, card, targets: [], zoomIndex: -1 };
+      pending = ev.status === 'CLARIFY' ? null : { kind: 'live', text: intentText, said, evaluation: ev, card, targets: [], zoomIndex: -1, turn };
       refresh();
       return;
     } finally {
-      liveInFlight = false;
+      if (!abandoned()) liveRequest = null;
     }
   }
 
@@ -817,6 +930,38 @@ async function send(text) {
   const card = proposalCard(ev, model, proposalText);
   pending = ev.status === 'CLARIFY' ? null : { kind: 'proposal', text: proposalText, evaluation: ev, card, targets: [], zoomIndex: -1 };
   refresh();
+}
+
+// Record the AI reply in the thread. A VALID proposal keeps its intent and the
+// words it was evaluated with, so a reload can re-evaluate it (never apply it).
+function rememberReply(ev, intentText, said) {
+  if (ev.status === 'CLARIFY') return remember({ role: 'assistant', kind: 'question', text: ev.question, ...(ev.choices?.length ? { choices: ev.choices } : {}) });
+  const summary = ev.intent?.summary || 'a change';
+  if (ev.status === 'VALID') return remember({ role: 'assistant', kind: 'proposal', text: summary, outcome: 'pending', intent: intentText, said });
+  return remember({ role: 'assistant', kind: 'proposal', text: summary, outcome: ev.status === 'STALE' ? 'stale' : 'refused' });
+}
+
+// Show this project's thread again after a reload, a project switch or a
+// recovery. A proposal still waiting for a decision is evaluated again against
+// the accepted model (the same boundary as always) and only offered, never applied.
+function replayThread() {
+  if (!LIVE.live || !session) return;
+  const turns = thread().turns;
+  if (!turns.length) return;
+  sys('Continuing this conversation. Nothing in it is part of the concept until you accept a proposal.');
+  turns.forEach((t, i) => {
+    const last = i === turns.length - 1;
+    if (t.role === 'user') user(t.text);
+    else if (t.kind === 'question') liveIntentCard({ status: 'CLARIFY', question: t.text, choices: t.choices, errors: [] }, null, { active: last });
+    else if (t.kind === 'proposal' && t.outcome === 'pending' && last && t.intent && t.said) {
+      const ev = evaluateLive(session, t.intent, t.said);
+      const card = liveIntentCard(ev, t.intent);
+      if (ev.status === 'VALID') pending = { kind: 'live', text: t.intent, said: t.said, evaluation: ev, card, targets: [], zoomIndex: -1, turn: t.id };
+      else amendTurn(t.id, { outcome: ev.status === 'STALE' ? 'stale' : 'refused', intent: undefined, said: undefined });
+    } else if (t.kind === 'proposal') {
+      sys(`Earlier proposal: ${t.text} — ${t.outcome === 'rejected' ? 'rejected' : 'not applied'}.`);
+    } else if (t.kind === 'refused') sys('An earlier AI reply could not be used; nothing was changed.');
+  });
 }
 
 function refresh() { renderStatus(); render3d(); renderDecision(); }
@@ -899,6 +1044,7 @@ async function main() {
   sys(LIVE.live
     ? `Live Concept: REV ${acceptedModel(session).meta.revision} · transport ${LIVE.transport}. Describe the concept or a local change. AI only proposes; scoped validation and Accept control every mutation.`
     : `Accepted concept: REV ${acceptedModel(session).meta.revision} — ${acceptedModel(session).meta.title}. Tell me what to change. I only propose; nothing changes until you accept.`);
+  replayThread();
   refresh();
 
   // Hooks for automated checks and temporary integration testing.
@@ -913,6 +1059,7 @@ async function main() {
     select: (key) => { select(key); return view.selected; },
     inspection: () => (stage && view.selected ? (stage.candidate ? inspectChange(stage.model, stage.v, stage.candidate, stage.vC, view.selected) : inspect(stage.model, stage.v, view.selected)) : null),
     changed: () => stage?.changed ?? [],
+    conversation: () => structuredClone(thread()),
     injectIntent: (intent) => {
       const text = typeof intent === 'string' ? intent : JSON.stringify(intent);
       const said = { utterance: JSON.parse(text).utterance, base: baseOf(acceptedModel(session)), source: 'test-hook' };

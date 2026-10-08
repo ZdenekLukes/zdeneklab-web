@@ -2,13 +2,13 @@
 // concept model. evaluateProposal() never mutates its input; it dry-runs the
 // ops on a copy and reports VALID / INVALID / STALE / CLARIFY. Architecture §F.
 
-import { conceptHash, canonical } from './model.js?v=f5dbe684feae';
-import { validate } from './validate.js?v=f5dbe684feae';
-import { OPS, MECHANICAL, applyOps, parsePath, getPath, isOpenRef, locate } from './ops.js?v=f5dbe684feae';
-import { isFactField, isNumericField, factNumbers, openSlots, COLLECTIONS } from './schema.js?v=f5dbe684feae';
-import { exportAll } from './export.js?v=f5dbe684feae';
-import { numbersIn as statedNumbers } from './interpret/normalize.js?v=f5dbe684feae';
-import { checkProtectedRemainder, deriveScope } from './scope.js?v=f5dbe684feae';
+import { conceptHash, canonical } from './model.js?v=f69a5921169d';
+import { validate } from './validate.js?v=f69a5921169d';
+import { OPS, MECHANICAL, applyOps, parsePath, getPath, isOpenRef, locate } from './ops.js?v=f69a5921169d';
+import { isFactField, isNumericField, factNumbers, openSlots, COLLECTIONS } from './schema.js?v=f69a5921169d';
+import { exportAll } from './export.js?v=f69a5921169d';
+import { numbersIn as statedNumbers } from './interpret/normalize.js?v=f69a5921169d';
+import { checkProtectedRemainder, deriveScope } from './scope.js?v=f69a5921169d';
 
 export const PROPOSAL_FORMAT = 'AI_CONCEPT_PROPOSAL';
 

@@ -49,6 +49,18 @@
   button.primary { background: var(--ok); border-color: var(--ok); color: #fff; font-weight: 600; }
   button.danger { color: var(--bad); font-weight: 600; }
   button:disabled { opacity: .45; cursor: not-allowed; }
+  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .card.ask .question { font-size: 16px; font-weight: 600; line-height: 1.4; margin: 2px 0; }
+  .choices { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .choices button { min-height: 44px; border-radius: 22px; padding: 8px 16px; white-space: normal; text-align: left; border-color: var(--accent); color: var(--accent); font-weight: 600; touch-action: manipulation; }
+  .choices button.other { border-style: dashed; border-color: var(--line); color: var(--muted); font-weight: 400; }
+  .choices button.chosen, .choices button.chosen:disabled { background: var(--accent); border-color: var(--accent); color: #fff; opacity: 1; }
+  .choices.obsolete button:not(.chosen) { opacity: .4; }
+  .msg .retry { display: block; margin-top: 8px; }
+  .warn { margin-top: 4px; padding: 6px 8px; border-radius: 8px; background: var(--old); color: var(--fg); font-weight: 600; font-size: 14px; }
+  .thinking { animation: thinking 1.4s ease-in-out infinite; }
+  @keyframes thinking { 50% { opacity: .5; } }
+  @media (prefers-reduced-motion: reduce) { .thinking { animation: none; } }
   #composer { border-top: 1px solid var(--line); padding: 8px 12px; }
   #chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; }
   #examplesBtn { display: none; }
@@ -134,9 +146,10 @@
     #decision .long { display: none; } #decision .short { display: inline; }
     #chips { display: none; } body.nochips #chips { display: none; } #composer { padding: 6px 8px; }
     .rows { grid-template-columns: minmax(0, 1fr); } .why { grid-column: 1; }
+    .choices button { flex: 1 1 100%; }
   }
 </style>
-<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.min.js?v=f5dbe684feae" } }</script>
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.min.js?v=f69a5921169d" } }</script>
 </head>
 <body>
 <main>
@@ -170,6 +183,6 @@
 <aside id="projects" class="sheet" aria-label="Projects"><header><h2>Projects</h2><button id="closeProjects" type="button">Close</button></header><div class="body" id="projectList"></div></aside>
 <aside id="properties" class="sheet" aria-label="Exact properties"><header><h2>Exact properties</h2><button id="closeProperties" type="button">Close</button></header><div class="body" id="propertyList"></div></aside>
 <input id="openFile" type="file" accept=".aiconcept,application/json" hidden>
-<script type="module" src="app.js?v=f5dbe684feae"></script>
+<script type="module" src="app.js?v=f69a5921169d"></script>
 </body>
 </html>

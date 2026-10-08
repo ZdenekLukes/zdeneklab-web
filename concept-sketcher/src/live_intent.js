@@ -11,7 +11,7 @@
 //   utterance -> evaluateProposal (evidence, OPEN, answer, placeholder rules,
 //   derived scope + protected remainder, validate, export) -> review -> ACCEPT
 
-import { OPS, parsePath } from './ops.js?v=f5dbe684feae';
+import { OPS, parsePath } from './ops.js?v=f69a5921169d';
 
 export const LIVE_INTENT_FORMAT = 'AI_CONCEPT_INTENT';
 export const LIVE_INTENT_SCHEMA = 1;
@@ -28,7 +28,23 @@ const ADD_OP = {
   volumes: ['ADD_VOLUME','volume'],
 };
 
-const INTENT_KEYS = ['format','schema','action','summary','utterance','targets','edits','creates','deletes','mirrors','answers','unknowns','question'];
+const INTENT_KEYS = ['format','schema','action','summary','utterance','targets','edits','creates','deletes','mirrors','answers','unknowns','question','choices'];
+
+// Suggested answers a CLARIFY may offer (Phase 2B). They are UI only: a tapped
+// choice sends its visible `label` as the user's message through the same Live
+// path as typed text, so the user confirms exactly the words they see. A choice
+// never changes the model and never reaches the evaluator.
+export const CHOICE_LIMITS = Object.freeze({ count: 4, label: 60 });
+const CHOICE_ID = /^[a-z0-9][a-z0-9_-]{0,31}$/;
+const oneLine = (v, max) => typeof v === 'string' && v.trim().length > 0 && v.trim().length <= max && !/[\u0000-\u001f\u007f]/.test(v);
+export function choiceProblems(c) {
+  if (!obj(c)) return ['must be an object'];
+  const out = [];
+  for (const k of Object.keys(c)) if (!['id','label'].includes(k)) out.push(`unknown key "${k}"`);
+  if (typeof c.id !== 'string' || !CHOICE_ID.test(c.id)) out.push('id must be lower-case letters, digits, - or _ (max 32)');
+  if (!oneLine(c.label, CHOICE_LIMITS.label)) out.push(`label must be one line of 1–${CHOICE_LIMITS.label} characters`);
+  return out;
+}
 const obj = (v) => v && typeof v === 'object' && !Array.isArray(v);
 const knownKeys = (o, allowed, tag, errors) => {
   for (const k of Object.keys(o || {})) if (!allowed.includes(k)) errors.push(`${tag}: unknown key "${k}"`);
@@ -54,15 +70,46 @@ function nextQuestionIds(model, count) {
   return ids;
 }
 
-// Deterministic repair of one known malformed AI shape, applied by the Live
-// service before evaluation: a CLARIFY that carries its question(s) in
-// `unknowns` instead of `question`, uses only contract keys and proposes nothing
-// else. It becomes a plain CLARIFY, which never changes the model. Every other
-// shape, including a CLARIFY with edits, creates, deletes, mirrors or answers,
-// is returned unchanged for the evaluator to judge.
+// Deterministic repairs applied by the Live service before evaluation, to an
+// intent that uses contract keys only:
+//  1. choices are UI only: a CLARIFY keeps its usable choices (unique ids and
+//     labels, at most four, trimmed) as {id, label}; any text a choice would send
+//     besides its label (e.g. an `answer`) is removed, never shown or sent;
+//     unusable choices, and any on a PATCH, are dropped.
+//  2. a CLARIFY that carries its question(s) in `unknowns` instead of `question`
+//     and proposes nothing else becomes a plain CLARIFY, which never changes the model.
+// Every other shape, including a CLARIFY with edits, creates, deletes, mirrors or
+// answers, is returned for the evaluator to judge.
 export function normalizeLiveIntent(x) {
+  if (!obj(x) || Object.keys(x).some((k) => !INTENT_KEYS.includes(k))) return { intent: x, notes: [] };
+  const tidy = tidyChoices(x);
+  const repaired = repairClarify(tidy.intent);
+  return { intent: repaired.intent, notes: [...tidy.notes, ...repaired.notes] };
+}
+
+function tidyChoices(x) {
+  if (x.choices === undefined) return { intent: x, notes: [] };
+  const given = Array.isArray(x.choices) ? x.choices : [];
+  const kept = [], ids = new Set(), labels = new Set();
+  if (x.action === 'CLARIFY') {
+    for (const raw of given) {
+      const c = obj(raw) ? (({ answer: hidden, ...visible }) => visible)(raw) : raw;   // only the label is ever sent
+      if (kept.length === CHOICE_LIMITS.count || choiceProblems(c).length) continue;
+      const t = { id: c.id, label: c.label.trim() };
+      if (ids.has(t.id) || labels.has(t.label.toLowerCase())) continue;
+      ids.add(t.id); labels.add(t.label.toLowerCase()); kept.push(t);
+    }
+  }
+  if (JSON.stringify(kept) === JSON.stringify(x.choices)) return { intent: x, notes: [] };
+  const intent = { ...x };
+  if (kept.length) intent.choices = kept; else delete intent.choices;
+  const dropped = (Array.isArray(x.choices) ? x.choices.length : 1) - kept.length;
+  return { intent, notes: [dropped ? `dropped ${dropped} unusable choice(s)` : 'choices tidied'] };
+}
+
+function repairClarify(x) {
   const none = { intent: x, notes: [] };
-  if (!obj(x) || x.action !== 'CLARIFY' || Object.keys(x).some((k) => !INTENT_KEYS.includes(k))) return none;
+  if (x.action !== 'CLARIFY') return none;
   const empty = (k) => x[k] === undefined || (Array.isArray(x[k]) && x[k].length === 0);
   if (!['edits','creates','deletes','mirrors','answers'].every(empty)) return none;
   if (!Array.isArray(x.unknowns) || !x.unknowns.length) return none;
@@ -158,6 +205,17 @@ export function parseLiveIntent(text) {
     if (!Array.isArray(u.about) || !u.about.every((a) => typeof a === 'string')) errors.push(`unknowns[${i}].about must be a list of ids`);
   });
 
+  if (x.choices !== undefined) {
+    if (!Array.isArray(x.choices)) errors.push('choices must be an array');
+    else {
+      if (x.action !== 'CLARIFY') errors.push('only a CLARIFY may offer choices');
+      if (x.choices.length > CHOICE_LIMITS.count) errors.push(`at most ${CHOICE_LIMITS.count} choices`);
+      x.choices.forEach((c, i) => choiceProblems(c).forEach((p) => errors.push(`choices[${i}]: ${p}`)));
+      const ids = x.choices.map((c) => c?.id), labels = x.choices.map((c) => String(c?.label ?? '').trim().toLowerCase());
+      if (new Set(ids).size !== ids.length || new Set(labels).size !== labels.length) errors.push('choices must have unique ids and labels');
+    }
+  }
+
   if (x.action === 'CLARIFY') {
     if (typeof x.question !== 'string' || !x.question.trim()) errors.push('CLARIFY requires question');
     if (edits.length || creates.length || deletes.length || mirrors.length || answers.length || unknowns.length) errors.push('CLARIFY cannot mutate the model');
@@ -173,7 +231,7 @@ export function compileLiveIntent(model, text) {
   const parsed = parseLiveIntent(text);
   if (!parsed.intent) return parsed;
   const x = parsed.intent;
-  if (x.action === 'CLARIFY') return { intent: x, status: 'CLARIFY', question: x.question, ops: [], affects: [] };
+  if (x.action === 'CLARIFY') return { intent: x, status: 'CLARIFY', question: x.question, choices: x.choices || [], ops: [], affects: [] };
 
   const ops = [];
   const affects = [];

@@ -12,9 +12,9 @@
 //   for. When the accepted model has moved on, the result is STALE.
 // opts.scope: an optional narrower caller/UI scope (both must hold).
 
-import { conceptHash } from './model.js?v=f5dbe684feae';
-import { evaluateProposal, attachUtteranceEvidence, PROPOSAL_FORMAT } from './proposal.js?v=f5dbe684feae';
-import { compileLiveIntent } from './live_intent.js?v=f5dbe684feae';
+import { conceptHash } from './model.js?v=f69a5921169d';
+import { evaluateProposal, attachUtteranceEvidence, PROPOSAL_FORMAT } from './proposal.js?v=f69a5921169d';
+import { compileLiveIntent } from './live_intent.js?v=f69a5921169d';
 
 // Compile an intent to the proposal text the common evaluator receives.
 export function liveIntentProposal(accepted, text, opts = {}) {
@@ -43,6 +43,7 @@ export function evaluateLiveIntent(accepted, text, opts = {}) {
   if (compiled.status === 'CLARIFY') {
     out.status = 'CLARIFY';
     out.question = compiled.question;
+    out.choices = compiled.choices;          // UI only: a tapped choice is sent as the user's next message
     return out;
   }
   out.created_questions = compiled.created_questions || [];
