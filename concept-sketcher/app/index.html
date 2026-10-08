@@ -12,9 +12,11 @@
     --bg: #f4f5f7; --panel: #ffffff; --fg: #1d2330; --muted: #5d6677; --line: #d5d9e0;
     --accent: #2f5fb3; --ok: #1f9d55; --bad: #d93025; --open: #e8730c; --grey: #8a93a3;
     --user: #e7eefb; --bar: #1d2330; --bar-fg: #f4f5f7; --new: #e6f4ea; --old: #fdecea;
+    --choice: #1f4a94; --choice-edge: #1f4a94; --choice-chosen: #0f2a5c; --choice-ring: #6f9be8; --choice-other: #1f4a94;
   }
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) { --bg: #14171d; --panel: #1c2028; --fg: #e6e9ef; --muted: #9aa3b2; --line: #333a46; --user: #22324f; --bar: #0d0f13; --new: #16301f; --old: #3a1c1a; }
+    :root:not([data-theme="light"]) { --bg: #14171d; --panel: #1c2028; --fg: #e6e9ef; --muted: #9aa3b2; --line: #333a46; --user: #22324f; --bar: #0d0f13; --new: #16301f; --old: #3a1c1a;
+      --choice: #2f5fb3; --choice-edge: #6f9be8; --choice-chosen: #163a7a; --choice-ring: #9ec1ff; --choice-other: #a9c5f5; }
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); font: 15px/1.45 -apple-system, system-ui, sans-serif; }
@@ -52,10 +54,11 @@
   .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .card.ask .question { font-size: 16px; font-weight: 600; line-height: 1.4; margin: 2px 0; }
   .choices { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-  .choices button { min-height: 44px; border-radius: 22px; padding: 8px 16px; white-space: normal; text-align: left; border-color: var(--accent); color: var(--accent); font-weight: 600; touch-action: manipulation; }
-  .choices button.other { border-style: dashed; border-color: var(--line); color: var(--muted); font-weight: 400; }
-  .choices button.chosen, .choices button.chosen:disabled { background: var(--accent); border-color: var(--accent); color: #fff; opacity: 1; }
-  .choices.obsolete button:not(.chosen) { opacity: .4; }
+  .choices button { min-height: 44px; border-radius: 22px; padding: 8px 16px; white-space: normal; text-align: left; background: var(--choice); border-color: var(--choice-edge); color: #fff; font-weight: 600; touch-action: manipulation; }
+  .choices button.other { background: var(--panel); border-style: dashed; border-color: var(--choice-other); color: var(--choice-other); font-weight: 400; }
+  .choices button.chosen, .choices button.chosen:disabled { background: var(--choice-chosen); border-color: var(--choice-chosen); color: #fff; opacity: 1; box-shadow: 0 0 0 2px var(--panel), 0 0 0 4px var(--choice-ring); }
+  .choices button:disabled:not(.chosen) { background: transparent; border-color: var(--line); color: var(--muted); opacity: 1; }
+  .choices.obsolete button:not(.chosen) { opacity: .6; }
   .msg .retry { display: block; margin-top: 8px; }
   .warn { margin-top: 4px; padding: 6px 8px; border-radius: 8px; background: var(--old); color: var(--fg); font-weight: 600; font-size: 14px; }
   .thinking { animation: thinking 1.4s ease-in-out infinite; }
@@ -149,7 +152,7 @@
     .choices button { flex: 1 1 100%; }
   }
 </style>
-<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.min.js?v=f69a5921169d" } }</script>
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.min.js?v=d776a80047f5" } }</script>
 </head>
 <body>
 <main>
@@ -183,6 +186,6 @@
 <aside id="projects" class="sheet" aria-label="Projects"><header><h2>Projects</h2><button id="closeProjects" type="button">Close</button></header><div class="body" id="projectList"></div></aside>
 <aside id="properties" class="sheet" aria-label="Exact properties"><header><h2>Exact properties</h2><button id="closeProperties" type="button">Close</button></header><div class="body" id="propertyList"></div></aside>
 <input id="openFile" type="file" accept=".aiconcept,application/json" hidden>
-<script type="module" src="app.js?v=f69a5921169d"></script>
+<script type="module" src="app.js?v=d776a80047f5"></script>
 </body>
 </html>

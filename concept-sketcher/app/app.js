@@ -3,21 +3,21 @@
 // the evaluated proposal as a structured review, and passes the user's
 // ACCEPT/REJECT to the session. Zoom is inspection only.
 
-import { motionControls } from '../src/motion.js?v=f69a5921169d';
-import { motionPreview } from '../src/motion_preview.js?v=f69a5921169d';
-import { conceptHash } from '../src/model.js?v=f69a5921169d';
-import { validate } from '../src/validate.js?v=f69a5921169d';
-import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js?v=f69a5921169d';
-import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js?v=f69a5921169d';
-import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js?v=f69a5921169d';
-import { reviewProposal } from '../src/proposal.js?v=f69a5921169d';
-import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js?v=f69a5921169d';
-import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js?v=f69a5921169d';
-import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=f69a5921169d';
-import { createViewer, PART_PALETTE } from '../view/render3d.js?v=f69a5921169d';
-import { ensureCurrentShell } from './build_version.js?v=f69a5921169d';
-import { threadWords, valueSources } from '../src/live_context.js?v=f69a5921169d';
-import { newThread, loadThread, storeThread, threadMatches, addTurn, updateTurn, recentOf } from './conversation.js?v=f69a5921169d';
+import { motionControls } from '../src/motion.js?v=d776a80047f5';
+import { motionPreview } from '../src/motion_preview.js?v=d776a80047f5';
+import { conceptHash } from '../src/model.js?v=d776a80047f5';
+import { validate } from '../src/validate.js?v=d776a80047f5';
+import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js?v=d776a80047f5';
+import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js?v=d776a80047f5';
+import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js?v=d776a80047f5';
+import { reviewProposal } from '../src/proposal.js?v=d776a80047f5';
+import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js?v=d776a80047f5';
+import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js?v=d776a80047f5';
+import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=d776a80047f5';
+import { createViewer, PART_PALETTE } from '../view/render3d.js?v=d776a80047f5';
+import { ensureCurrentShell } from './build_version.js?v=d776a80047f5';
+import { threadWords, valueSources } from '../src/live_context.js?v=d776a80047f5';
+import { newThread, loadThread, storeThread, threadMatches, addTurn, updateTurn, recentOf } from './conversation.js?v=d776a80047f5';
 
 const LIVE = liveConfig();
 const LEGACY_STORE = LIVE.live ? `concept-sketcher.live.${LIVE.seed || 'blank'}.session` : 'concept-sketcher.s1.session';

@@ -2,11 +2,11 @@
 // from the accepted model, the pending proposal and the last utterances. It carries no
 // evaluation data of any kind: the builder never sees a corpus case.
 
-import { validate } from '../validate.js?v=f69a5921169d';
-import { openSlots } from '../schema.js?v=f69a5921169d';
-import { manifest } from '../capabilities.js?v=f69a5921169d';
-import { RESPONSE_PROTOCOL, DISPOSITIONS, OP_REQUIRED } from './protocol.js?v=f69a5921169d';
-import { POLICY, POLICY_VERSION } from './policy.js?v=f69a5921169d';
+import { validate } from '../validate.js?v=d776a80047f5';
+import { openSlots } from '../schema.js?v=d776a80047f5';
+import { manifest } from '../capabilities.js?v=d776a80047f5';
+import { RESPONSE_PROTOCOL, DISPOSITIONS, OP_REQUIRED } from './protocol.js?v=d776a80047f5';
+import { POLICY, POLICY_VERSION } from './policy.js?v=d776a80047f5';
 
 const AXES = { '+X': [1, 0, 0], '-X': [-1, 0, 0], '+Y': [0, 1, 0], '-Y': [0, -1, 0], '+Z': [0, 0, 1], '-Z': [0, 0, -1] };
 const r6 = (v) => v.map((x) => Math.round(x * 1e6) / 1e6 + 0);
