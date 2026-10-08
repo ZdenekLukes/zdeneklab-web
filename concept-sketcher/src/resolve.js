@@ -3,9 +3,9 @@
 // -> placement (root parts by `place`, attached parts by translating along the
 // first joint link; further links are only checked).
 
-import { evalParams, num } from './model.js?v=c5009ee32250';
-import { localInterfaces, localHoles, worldHole, worldInterface, placeMotionJoint, resolveFasteners, resolveVolumes, splitRef, DIRS } from './mechanics.js?v=c5009ee32250';
-import { ROUND_KINDS } from './schema.js?v=c5009ee32250';
+import { evalParams, num } from './model.js?v=68431d732f1e';
+import { localInterfaces, localHoles, worldHole, worldInterface, placeMotionJoint, resolveFasteners, resolveVolumes, splitRef, DIRS } from './mechanics.js?v=68431d732f1e';
+import { ROUND_KINDS } from './schema.js?v=68431d732f1e';
 
 export const AXES = {
   '+X': [1, 0, 0], '-X': [-1, 0, 0], '+Y': [0, 1, 0], '-Y': [0, -1, 0], '+Z': [0, 0, 1], '-Z': [0, 0, -1],

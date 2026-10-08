@@ -6,7 +6,7 @@
 // Entity keys: PART · PART.FEATURE (mirror pairs fold onto the mirrored
 // feature) · JOINT · FASTENER · VOLUME · PART.INTERFACE.
 
-import { featureDefs } from './resolve.js?v=c5009ee32250';
+import { featureDefs } from './resolve.js?v=68431d732f1e';
 
 const PARAM_REF = /^=([A-Za-z_][A-Za-z0-9_]*)$/;
 const OPEN_REF = /^OPEN:(Q\w+)$/;

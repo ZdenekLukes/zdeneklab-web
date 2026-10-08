@@ -4,8 +4,8 @@
 // axis-aligned (90° orientations only). There is no solver: a joint translates
 // its child so that link 1 coincides; further links are only checked.
 
-import { num } from './model.js?v=c5009ee32250';
-import { ROUND_KINDS, nominalDiameter, IFACE_REF } from './schema.js?v=c5009ee32250';
+import { num } from './model.js?v=68431d732f1e';
+import { ROUND_KINDS, nominalDiameter, IFACE_REF } from './schema.js?v=68431d732f1e';
 
 export const DIRS = { '+X': [1, 0, 0], '-X': [-1, 0, 0], '+Y': [0, 1, 0], '-Y': [0, -1, 0], '+Z': [0, 0, 1], '-Z': [0, 0, -1] };
 const EPS = 1e-6;
@@ -73,6 +73,25 @@ export function localHoles(model, part, defs, ifaces, P, errors) {
       if (on.type === 'AXIS' && d.offset) throw new Error('offset applies to a hole on a FACE only');
       if (d.profile === 'RECT' && on.type !== 'FACE') throw new Error('a RECT opening must sit on a FACE');
       const off = (d.offset || [0, 0]).map((v) => num(v, P));
+      // A declared FACE used as a drill origin must lie on a physical face,
+      // not at the part's centre or inside its empty cavity. Local coordinates
+      // are centre-relative even for BOTTOM_CENTRE placement. A separate
+      // additive PIN/TAB may have its own face beyond the base envelope; those
+      // cases are handled by the existing feature/interface semantics.
+      if (on.type === 'FACE' && on.kind === 'DECLARED' && !ROUND_KINDS.includes(part.kind)) {
+        const point = add(add(on.point, mul(on.a, off[0])), mul(on.b, off[1]));
+        const axis = axisIndex(on.dir), sign = on.dir[axis];
+        const half = part.size.map((s) => s / 2);
+        const outerFace = Math.abs(point[axis] - sign * half[axis]) < EPS;
+        const innerFace = part.kind === 'SHELL' &&
+          Math.abs(point[axis] + sign * (half[axis] - part.wall)) < EPS;
+        const inBounds = point.every((x, k) => Math.abs(x) <= half[k] + EPS);
+        const additiveFacePossible = Object.values(defs).some((f) =>
+          f.host === part.id && (f.type === 'PIN' || f.type === 'TAB'));
+        if ((!outerFace && !innerFace || !inBounds) && !additiveFacePossible) {
+          throw new Error(`declared FACE "${d.on}" at [${point.join(', ')}] is not on a physical face of ${part.id}; use an implicit face (e.g. ${part.id}.-Z for the bottom) or correct the part-local interface coordinates`);
+        }
+      }
       if (d.array && on.type !== 'FACE') throw new Error('a CIRCULAR array must sit on a FACE');
       if (d.array && d.profile !== 'ROUND') throw new Error('a CIRCULAR array currently supports ROUND holes only');
       const positions = d.array ? (() => {

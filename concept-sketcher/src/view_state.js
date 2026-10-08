@@ -6,7 +6,7 @@
 // Section and explode follow Mechanical Studio's semantics
 // (tools/mechanical_studio/frontend: sectionPlane(), sectionRange(), explodeOffset()).
 
-import { referenceParts } from './inspect.js?v=c5009ee32250';
+import { referenceParts } from './inspect.js?v=68431d732f1e';
 
 export const SECTION_AXES = ['X', 'Y', 'Z'];
 

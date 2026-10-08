@@ -3,24 +3,24 @@
 // the evaluated proposal as a structured review, and passes the user's
 // ACCEPT/REJECT to the session. Zoom is inspection only.
 
-import { motionControls } from '../src/motion.js?v=c5009ee32250';
-import { motionPreview } from '../src/motion_preview.js?v=c5009ee32250';
-import { conceptHash } from '../src/model.js?v=c5009ee32250';
-import { validate } from '../src/validate.js?v=c5009ee32250';
-import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js?v=c5009ee32250';
-import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js?v=c5009ee32250';
-import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js?v=c5009ee32250';
-import { reviewProposal } from '../src/proposal.js?v=c5009ee32250';
-import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js?v=c5009ee32250';
-import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js?v=c5009ee32250';
-import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=c5009ee32250';
-import { createViewer, PART_PALETTE } from '../view/render3d.js?v=c5009ee32250';
-import { ensureCurrentShell } from './build_version.js?v=c5009ee32250';
-import { threadWords, valueSources } from '../src/live_context.js?v=c5009ee32250';
-import { solidProgram, solidChanges } from '../src/geometry/solid_program.js?v=c5009ee32250';
-import { loadManifoldEngine } from '../src/geometry/manifold_engine.js?v=c5009ee32250';
-import { newThread, loadThread, storeThread, threadMatches, addTurn, updateTurn, recentOf } from './conversation.js?v=c5009ee32250';
-import { ACTIVE_PROJECT, NAME_MAX, slug, projectKey, listProducts, readIndex, displayName, cleanName, freeSlot, storeNewProduct, recordProduct, renameProduct, deleteProduct } from './library.js?v=c5009ee32250';
+import { motionControls } from '../src/motion.js?v=68431d732f1e';
+import { motionPreview } from '../src/motion_preview.js?v=68431d732f1e';
+import { conceptHash } from '../src/model.js?v=68431d732f1e';
+import { validate } from '../src/validate.js?v=68431d732f1e';
+import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js?v=68431d732f1e';
+import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js?v=68431d732f1e';
+import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js?v=68431d732f1e';
+import { reviewProposal } from '../src/proposal.js?v=68431d732f1e';
+import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js?v=68431d732f1e';
+import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js?v=68431d732f1e';
+import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=68431d732f1e';
+import { createViewer, PART_PALETTE } from '../view/render3d.js?v=68431d732f1e';
+import { ensureCurrentShell } from './build_version.js?v=68431d732f1e';
+import { threadWords, valueSources } from '../src/live_context.js?v=68431d732f1e';
+import { solidProgram, solidChanges } from '../src/geometry/solid_program.js?v=68431d732f1e';
+import { loadManifoldEngine } from '../src/geometry/manifold_engine.js?v=68431d732f1e';
+import { newThread, loadThread, storeThread, threadMatches, addTurn, updateTurn, recentOf } from './conversation.js?v=68431d732f1e';
+import { ACTIVE_PROJECT, NAME_MAX, slug, projectKey, listProducts, readIndex, displayName, cleanName, freeSlot, storeNewProduct, recordProduct, renameProduct, deleteProduct } from './library.js?v=68431d732f1e';
 
 const LIVE = liveConfig();
 const LEGACY_STORE = LIVE.live ? `concept-sketcher.live.${LIVE.seed || 'blank'}.session` : 'concept-sketcher.s1.session';
