@@ -1,4 +1,4 @@
-// Capability manifest for the S2 interpreter (docs/S2_ARCHITECTURE_AND_EVAL.md §11).
+// Capability manifest for the S2 interpreter (docs/archive/S2_ARCHITECTURE_AND_EVAL.md §11).
 // Two sources, no second catalog:
 //   - what EXISTS comes from the schema table (src/schema.js): every construct and enum
 //     below is looked up there at build time, and a reference that does not resolve is an error;
@@ -7,8 +7,8 @@
 //     the words that announce it and how to record it (STATED).
 // test/s2_manifest.test.js keeps both in lock-step with those sources.
 
-import { entitySpec, fieldSpec, FASTENER_SIZE } from './schema.js';
-import { OPS } from './ops.js';
+import { entitySpec, fieldSpec, FASTENER_SIZE } from './schema.js?v=14dc3aea2f1a';
+import { OPS } from './ops.js?v=14dc3aea2f1a';
 
 // Gate V2 SUPPORTED rows → the schema constructs that carry them ("collection[:variant].field[.sub]").
 export const SUPPORTED = [

@@ -3,12 +3,20 @@
 // revision stores its canonical model, so restoring is exact; the exported
 // history (root + ops) replays deterministically to the same hashes.
 
-import { canonical, conceptHash, loadConcept } from './model.js';
-import { validate, freezeConcept } from './validate.js';
-import { applyOps } from './ops.js';
-import { evaluateProposal, PROPOSAL_FORMAT } from './proposal.js';
-import { evaluateLiveIntent } from './live_edit.js';
-import { exportAll } from './export.js';
+import { canonical, conceptHash, legacyConceptHashV1, loadConcept } from './model.js?v=14dc3aea2f1a';
+import { validate, freezeConcept } from './validate.js?v=14dc3aea2f1a';
+import { applyOps } from './ops.js?v=14dc3aea2f1a';
+import { evaluateProposal, attachUtteranceEvidence, PROPOSAL_FORMAT } from './proposal.js?v=14dc3aea2f1a';
+import { evaluateLiveIntent } from './live_edit.js?v=14dc3aea2f1a';
+import { deriveScope, checkProtectedRemainder } from './scope.js?v=14dc3aea2f1a';
+import { exportAll } from './export.js?v=14dc3aea2f1a';
+
+// Exported history format. Format 1 (no `format` key) is what the app wrote
+// before 2026-10-03 (main ≤ f625e61); format 2 is written from Phase 1.1 on.
+export const HISTORY_FORMAT = 2;
+// Provenance marker for a revision that the pre-2026-10-03 product accepted but
+// the current transaction boundary refuses. See importSession.
+export const LEGACY_POLICY = 'accepted-before-2026-10-03';
 
 const deepFreeze = (o) => { Object.values(o).forEach((v) => v && typeof v === 'object' && deepFreeze(v)); return Object.freeze(o); };
 const strip = (model) => { const { history, resolved, ...m } = model; return m; };
@@ -19,9 +27,15 @@ function entry(model, fields) {
   return { ...fields, revision: model.meta.revision, hash: conceptHash(model), model: JSON.stringify(model) };
 }
 
+// No model becomes an accepted revision before schema + semantic validation
+// succeeds: an invalid start model is refused, never silently accepted.
 export function createSession(model, { summary = 'start', source = 'import' } = {}) {
-  const m = strip(loadConcept(model));
+  let m;
+  try { m = strip(loadConcept(model)); } catch (e) { throw new Error(`model is not readable JSON: ${e.message}`); }
+  if (!m || typeof m !== 'object' || Array.isArray(m)) throw new Error('model must be a JSON object');
   if (!Number.isInteger(m.meta?.revision)) throw new Error('model needs meta.revision');
+  const v = validate(m);
+  if (v.errors.length) throw new Error(`model is invalid: ${v.errors.join('; ')}`);
   const first = entry(m, { parent: null, kind: 'root', summary, source, utterance: null, ops: [] });
   return deepFreeze({ root: first.model, head: first.revision, revisions: [first] });
 }
@@ -34,10 +48,10 @@ export const history = (s) => s.revisions.map(({ model, ...r }) => r);
 const nextRevision = (s) => Math.max(...s.revisions.map((r) => r.revision)) + 1;
 const artifactBase = (model) => `${model.meta.id}-rev${model.meta.revision}`;
 
-// F3 invariant: a valid revision that enters the history can always be exported.
+// F3 invariant: only a valid, exportable model enters the history.
 function assertExportable(model, what) {
   const v = validate(model);
-  if (v.errors.length) return v;
+  if (v.errors.length) throw new Error(`${what} is invalid: ${v.errors.join('; ')}`);
   try { exportAll(model, v, `${artifactBase(model)}.aiconcept`); } catch (e) { throw new Error(`${what} is not exportable: ${e.message}`); }
   return v;
 }
@@ -46,7 +60,9 @@ export function evaluate(s, proposalText, opts = {}) {
   return evaluateProposal(acceptedModel(s), proposalText, opts);
 }
 
-// Product-path evaluator: compact Live Intent -> deterministic closed ops.
+// Live Intent / Property Editor: compiled to closed ops and evaluated by the
+// same evaluator as every proposal (src/live_edit.js). opts.utterance is the
+// user's own words (required); opts.base the revision the intent was made for.
 // The intent never mutates the accepted session; ACCEPT re-runs this evaluator.
 export function evaluateLive(s, intentText, opts = {}) {
   return evaluateLiveIntent(acceptedModel(s), intentText, opts);
@@ -64,17 +80,17 @@ export function accept(s, proposalText, opts = {}) {
   const model = applyOps(acceptedModel(s), ev.proposal.ops);
   model.meta.revision = nextRevision(s);
   model.freeze = { state: 'DRAFT' };
-  const v = assertExportable(model, 'accepted revision');
-  if (v.errors.length) throw new Error(`accepted model would not validate: ${v.errors.join('; ')}`);
+  assertExportable(model, 'accepted revision');
   const said = ev.proposal.utterance_id ? { utterance_id: ev.proposal.utterance_id, ...(ev.proposal.context?.length ? { context: ev.proposal.context } : {}) } : {};
   const rev = entry(model, { parent: s.head, kind: 'ops', summary: ev.proposal.summary, source: ev.proposal.source ?? null,
     utterance: ev.proposal.utterance, ...said, ops: ev.proposal.ops });
   return deepFreeze({ root: s.root, head: rev.revision, revisions: [...s.revisions, rev] });
 }
 
-// Live ACCEPT is also atomic and re-evaluated from the current accepted head.
-// History stores the compiled closed ops for exact replay and the compact intent
-// for inspection; the LLM output is never a replacement model.
+// Live ACCEPT is the same transaction: re-evaluated from the current accepted
+// head through the common evaluator. History stores the evaluated closed ops
+// (with the user's words as their evidence) for exact replay, the compact intent
+// for inspection, and the derived scope; the LLM output is never a replacement model.
 export function acceptLive(s, intentText, opts = {}) {
   const ev = evaluateLive(s, intentText, opts);
   if (ev.status !== 'VALID') {
@@ -82,20 +98,19 @@ export function acceptLive(s, intentText, opts = {}) {
     e.evaluation = ev;
     throw e;
   }
-  const model = applyOps(acceptedModel(s), ev.ops);
+  const model = applyOps(acceptedModel(s), ev.proposal.ops);
   model.meta.revision = nextRevision(s);
   model.freeze = { state: 'DRAFT' };
-  const v = assertExportable(model, 'accepted live revision');
-  if (v.errors.length) throw new Error(`accepted live model would not validate: ${v.errors.join('; ')}`);
+  assertExportable(model, 'accepted live revision');
   const rev = entry(model, {
     parent: s.head,
     kind: 'live_ops',
-    summary: ev.intent.summary,
-    source: 'live-intent',
-    utterance: ev.intent.utterance ?? null,
-    ops: ev.ops,
+    summary: ev.proposal.summary,
+    source: ev.proposal.source ?? 'live-intent',
+    utterance: ev.proposal.utterance,
+    ops: ev.proposal.ops,
     intent: ev.intent,
-    scope: ev.scope ? { allow: ev.scope.allow, label: ev.scope.label } : null,
+    scope: { allow: ev.scope.allow, affects: ev.scope.affects },
   });
   return deepFreeze({ root: s.root, head: rev.revision, revisions: [...s.revisions, rev] });
 }
@@ -123,28 +138,74 @@ export function freeze(s, at) {
 // .aiconcept with replayable history (history is not part of the hash).
 export function exportSession(s) {
   const model = acceptedModel(s);
-  model.history = { root: JSON.parse(s.root), head: s.head, revisions: history(s).slice(1) };
+  model.history = { format: HISTORY_FORMAT, root: JSON.parse(s.root), head: s.head, revisions: history(s).slice(1) };
   return JSON.stringify(model, null, 2) + '\n';
 }
 
-export function importSession(text) {
-  const file = loadConcept(text);
-  if (!file.history) return createSession(file);
-  let s = createSession(file.history.root);
-  for (const r of file.history.revisions) {
-    let model = acceptedModel(checkout(s, r.parent));
-    if (r.kind === 'ops' && model.schema === 2) {
-      // schema 2: a history revision must pass the same transaction boundary as a live proposal
-      const again = evaluateProposal(model, JSON.stringify({ format: PROPOSAL_FORMAT, schema: 1,
-        base: { revision: model.meta.revision, hash: conceptHash(model) }, utterance: r.utterance, summary: r.summary, source: r.source ?? 'import',
-        ...(r.utterance_id ? { utterance_id: r.utterance_id } : {}), ...(r.context ? { context: r.context } : {}), ops: r.ops }));
-      if (again.status !== 'VALID') throw new Error(`history revision ${r.revision} is not a valid proposal: ${again.errors.join('; ')}`);
-    }
+// Import replays the whole history through the same transaction boundary that
+// accepted it. Every revision (ordinary proposal or Live intent, schema 1 or 2)
+// must evaluate VALID against its parent, stay inside its derived scope, validate,
+// export and reproduce its recorded hash. Anything else fails explicitly; nothing
+// is repaired or replaced. Histories exported before hash v2 record hash v1
+// values: those are accepted as replay checks only, and the session continues
+// with v2 hashes (the final model comparison still covers the whole file).
+//
+// Bounded migration of history format 1 (files written before 2026-10-03, when
+// the Live path accepted under weaker rules): a revision that the current
+// boundary refuses is replayed under the rules the product applied then —
+// its recorded ops apply with the one reducer, stay inside their derived scope,
+// the resulting model validates and exports, and it reproduces its recorded
+// hash. It is kept exactly as accepted and marked `legacy` (policy, and why the
+// current rules refuse it). This admits no state that a validated plain model
+// would not, invents nothing, and changes no current rule: new edits always use
+// the current boundary. A format-2 export keeps the marker so the revision
+// replays the same way again. Unknown formats, invalid states, broken hashes
+// and unknown markers are refused.
+export function importSession(text, opts = {}) {
+  let file;
+  try { file = loadConcept(text); } catch (e) { throw new Error(`file is not readable JSON: ${e.message}`); }
+  if (!file || typeof file !== 'object' || Array.isArray(file)) throw new Error('file must be a JSON object');
+  if (!file.history) return createSession(file, opts);
+  const h = file.history;
+  if (!h || typeof h !== 'object' || !Array.isArray(h.revisions) || !h.root) throw new Error('history must have root and revisions');
+  if (h.format !== undefined && h.format !== HISTORY_FORMAT) throw new Error(`unsupported history format ${JSON.stringify(h.format)}`);
+  const formatOne = h.format === undefined;
+  let s;
+  try { s = createSession(h.root); } catch (e) { throw new Error(`history root: ${e.message}`); }
+  for (const r of h.revisions) {
+    if (!r || typeof r !== 'object') throw new Error('history revision must be an object');
+    if (s.revisions.some((x) => x.revision === r.revision)) throw new Error(`history revision ${r.revision} is duplicated`);
+    let parent;
+    try { parent = acceptedModel(checkout(s, r.parent)); } catch (e) { throw new Error(`history revision ${r.revision}: ${e.message}`); }
+    let model, scope = r.scope, legacy;
+    if (r.legacy !== undefined && r.legacy?.policy !== LEGACY_POLICY) throw new Error(`history revision ${r.revision} has an unknown legacy marker`);
     if (r.kind === 'ops' || r.kind === 'live_ops') {
-      model = applyOps(model, r.ops);
+      if (!Array.isArray(r.ops) || !r.ops.length) throw new Error(`history revision ${r.revision} has no ops`);
+      const legacyAllowed = formatOne || r.legacy?.policy === LEGACY_POLICY;
+      const said = typeof r.utterance === 'string' && r.utterance.trim();
+      if (!said && !legacyAllowed) throw new Error(`history revision ${r.revision} has no user utterance`);
+      const again = said ? evaluateProposal(parent, JSON.stringify({ format: PROPOSAL_FORMAT, schema: 1,
+        base: { revision: parent.meta.revision, hash: conceptHash(parent) }, utterance: r.utterance, summary: r.summary ?? '', source: r.source ?? 'import',
+        ...(r.utterance_id ? { utterance_id: r.utterance_id } : {}), ...(r.context ? { context: r.context } : {}),
+        ops: r.kind === 'live_ops' ? attachUtteranceEvidence(parent, r.ops, r.utterance) : r.ops })) : null;
+      if (again?.status === 'VALID') {
+        if (r.kind === 'live_ops') scope = { allow: again.scope.allow, affects: again.scope.affects };
+        if (r.legacy) legacy = r.legacy;
+        model = applyOps(parent, r.ops);
+      } else if (legacyAllowed) {
+        try { model = applyOps(parent, r.ops); } catch (e) { throw new Error(`history revision ${r.revision} does not apply: ${e.message}`); }
+        const derived = deriveScope(parent, r.ops);
+        const guard = checkProtectedRemainder(parent, { ...model, freeze: parent.freeze }, derived);
+        if (!guard.ok) throw new Error(`history revision ${r.revision} changes ${guard.forbidden.join(', ')} outside its ops`);
+        if (r.kind === 'live_ops') scope = { allow: derived.allow, affects: derived.affects };
+        legacy = r.legacy ?? { policy: LEGACY_POLICY, refused_now: (again ? again.errors : ['no user utterance recorded']).slice(0, 3) };
+      } else {
+        throw new Error(`history revision ${r.revision} is not a valid proposal: ${again.errors.join('; ')}`);
+      }
       model.meta.revision = r.revision;
       model.freeze = { state: 'DRAFT' };
     } else if (r.kind === 'freeze') {
+      model = parent;
       model.meta.revision = r.revision;
       const f = freezeConcept(model, r.at);
       if (!f.ok) throw new Error(`history revision ${r.revision} does not freeze: ${f.errors.join('; ')}`);
@@ -153,13 +214,24 @@ export function importSession(text) {
     assertExportable(model, `history revision ${r.revision}`);
     const e = entry(model, { parent: r.parent, kind: r.kind, summary: r.summary, source: r.source, utterance: r.utterance,
       ...(r.utterance_id ? { utterance_id: r.utterance_id } : {}), ...(r.context ? { context: r.context } : {}), ops: r.ops,
-      ...(r.intent ? { intent: r.intent } : {}), ...(r.scope ? { scope: r.scope } : {}), ...(r.at ? { at: r.at } : {}) });
-    if (e.hash !== r.hash) throw new Error(`history does not replay: revision ${r.revision} hash ${e.hash} ≠ recorded ${r.hash}`);
+      ...(r.intent ? { intent: r.intent } : {}), ...(scope ? { scope } : {}), ...(r.at ? { at: r.at } : {}), ...(legacy ? { legacy } : {}) });
+    if (e.hash !== r.hash && legacyConceptHashV1(model) !== r.hash) throw new Error(`history does not replay: revision ${r.revision} hash ${e.hash} ≠ recorded ${r.hash}`);
     s = deepFreeze({ root: s.root, head: e.revision, revisions: [...s.revisions, e] });
   }
-  const s2 = checkout(s, file.history.head);
-  if (canonical(acceptedModel(s2)) !== canonical(strip(file))) throw new Error('exported model does not equal its replayed head revision');
+  let s2;
+  try { s2 = checkout(s, h.head); } catch (e) { throw new Error(`history head: ${e.message}`); }
+  const replayed = acceptedModel(s2), stated = strip(file);
+  if (canonical(replayed) !== canonical(stated) && !legacyFreezeOnly(replayed, stated)) throw new Error('exported model does not equal its replayed head revision');
   return s2;
+}
+
+// A head frozen before hash v2 records freeze.hash v1. It is the same model when
+// that is the only difference and the recorded value is the v1 hash of the file.
+function legacyFreezeOnly(replayed, stated) {
+  if (!replayed.freeze?.hash || !stated.freeze?.hash || stated.freeze.hash !== legacyConceptHashV1(stated)) return false;
+  const a = structuredClone(replayed), b = structuredClone(stated);
+  delete a.freeze.hash; delete b.freeze.hash;
+  return canonical(a) === canonical(b);
 }
 
 // Downloads from the ACCEPTED model only, through the canonical S0 exporters.
@@ -190,7 +262,7 @@ export function historyView(s) {
     const branch = r.parent !== null && r.parent !== prev;
     const children = s.revisions.filter((c) => c.parent === n).map((c) => c.revision);
     return {
-      revision: n, parent: r.parent, summary: r.summary, kind: r.kind, utterance: r.utterance, hash: r.hash,
+      revision: n, parent: r.parent, summary: r.summary, kind: r.kind, utterance: r.utterance, hash: r.hash, legacy: Boolean(r.legacy),
       current: n === s.head, onCurrentLine: line.has(n), branch,
       text: `REV ${n}${r.parent === null ? ' (start)' : ` · parent REV ${r.parent}${branch ? ` — branch: continues from REV ${r.parent}, not from REV ${prev}` : ''}`}`
         + `${children.length > 1 ? ` · ${children.length} continuations: REV ${children.join(', REV ')}` : ''}`

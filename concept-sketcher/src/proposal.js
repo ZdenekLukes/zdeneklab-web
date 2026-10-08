@@ -2,13 +2,13 @@
 // concept model. evaluateProposal() never mutates its input; it dry-runs the
 // ops on a copy and reports VALID / INVALID / STALE / CLARIFY. Architecture §F.
 
-import { conceptHash } from './model.js';
-import { validate } from './validate.js';
-import { OPS, MECHANICAL, applyOps, parsePath, getPath, isOpenRef, locate } from './ops.js';
-import { isFactField, isNumericField, factNumbers, openSlots, COLLECTIONS } from './schema.js';
-import { exportAll } from './export.js';
-import { numbersIn as statedNumbers } from './interpret/normalize.js';
-import { checkProtectedRemainder } from './scope.js';
+import { conceptHash, canonical } from './model.js?v=14dc3aea2f1a';
+import { validate } from './validate.js?v=14dc3aea2f1a';
+import { OPS, MECHANICAL, applyOps, parsePath, getPath, isOpenRef, locate } from './ops.js?v=14dc3aea2f1a';
+import { isFactField, isNumericField, factNumbers, openSlots, COLLECTIONS } from './schema.js?v=14dc3aea2f1a';
+import { exportAll } from './export.js?v=14dc3aea2f1a';
+import { numbersIn as statedNumbers } from './interpret/normalize.js?v=14dc3aea2f1a';
+import { checkProtectedRemainder, deriveScope } from './scope.js?v=14dc3aea2f1a';
 
 export const PROPOSAL_FORMAT = 'AI_CONCEPT_PROPOSAL';
 
@@ -131,6 +131,20 @@ function placeholderRule(state, op, p, tag) {
   return [];
 }
 
+// An unresolved question (OPEN, or STATED words the language cannot hold) leaves
+// the SKELETON_READY gate only by being answered with structured facts. Turning
+// its `blocks` off would close the gate without any answer, so no proposal may
+// do it — whatever words or evidence accompany it.
+function unblockRule(state, op, tag) {
+  const { collection, id, field } = parsePath(op.path);
+  if (collection !== 'questions' || field !== 'blocks') return [];
+  const q = (state.questions || []).find((x) => x.id === id);
+  if (!q || !['OPEN', 'STATED'].includes(q.status)) return [];
+  const next = op.op === 'UNSET' ? undefined : op.value;
+  if (next === q.blocks) return [];
+  return [`${tag}: question ${id} is ${q.status}; an unresolved question cannot stop blocking ${q.blocks} — it is closed only by an ANSWER_QUESTION with structured facts`];
+}
+
 const openRefsIn = (v) => (isOpenRef(v) ? [v] : v && typeof v === 'object' ? [...new Set(Object.values(v).flatMap(openRefsIn))] : []);
 
 // Numbers stated in words (digits incl. decimal comma, CS/EN number words, units): see interpret/normalize.js.
@@ -190,6 +204,7 @@ function boundaryRules(accepted, p) {
           else if (!normalizeText(answerEvidence.get(q))) errors.push(`${tag}: the answer to ${q} has no evidence`);
         }
       }
+      if (op.op === 'SET' || op.op === 'UNSET') errors.push(...unblockRule(state, op, tag));
       if (accepted.schema === 2 && (op.op === 'SET' || op.op === 'UNSET')) errors.push(...placeholderRule(state, op, p, tag));
       if (op.op === 'DELETE' && op.collection === 'questions') {
         const q = (state.questions || []).find((x) => x.id === op.id);
@@ -208,23 +223,60 @@ function boundaryRules(accepted, p) {
 // Schema 2 (architecture Core V2 §4.2): an answer is structured or it is STATED.
 // - every fact an ANSWERED question lists is set or created by an op of this
 //   proposal (with that op's own evidence) and is a mechanical fact;
+// - every fact belongs to THAT question: it fills a slot bound to the question,
+//   or it is (or refers to) an element the question is about — judged by the
+//   question as accepted (or as created by this proposal), never by an `about`
+//   edited in the same proposal. A fact bound to another question's slot can
+//   never answer this one;
+// - a no-op assignment establishes nothing. A fact whose value does not change
+//   supports an answer only when it is the very element the question is about:
+//   the user confirms the value already shown for what was asked (accepted
+//   context stays usable without being restated);
 // - every slot bound to the question before the proposal is now one of its
 //   facts, re-bound to another OPEN question, or removed — never silently kept
 //   or filled outside the answer;
 // - a STATED answer (facts: []) leaves its slots OPEN.
+// Only the answers in THIS proposal are checked: questions answered in earlier
+// accepted revisions, and edits that answer nothing, are unaffected.
+const valueAt = (model, path) => {
+  const [coll, id, ...rest] = path.split('/');
+  const entity = coll === 'params' ? model.params?.[id] : (model[coll] || []).find((e) => e.id === id);
+  if (!rest.length) return entity;
+  try { return getPath(model, path); } catch { return undefined; }
+};
+const covers = (a, b) => a === b || a.startsWith(`${b}/`) || b.startsWith(`${a}/`);
+
+// The elements a question is about: "ID" names that entity, "PART.ELEMENT"
+// names that feature/interface (not the whole part).
+function aboutIds(q) {
+  return new Set((q?.about || []).map((ref) => String(ref).split('.').at(-1).replace(/\[.*\]$/, '')));
+}
+// Ids an entity refers to (host, part, links, through, mirror.of, …), by exact token.
+function refTokens(value, out = new Set()) {
+  if (Array.isArray(value)) value.forEach((v) => refTokens(v, out));
+  else if (value && typeof value === 'object') Object.values(value).forEach((v) => refTokens(v, out));
+  else if (typeof value === 'string' && !value.startsWith('=')) value.split(/[.:[\]\s]+/).forEach((t) => t && out.add(t));
+  return out;
+}
+
 function answerRulesV2(accepted, candidate, p) {
   const errors = [];
-  const established = (path) => p.ops.some((o) => {
-    if ((o.op === 'SET') && (o.path === path || path.startsWith(`${o.path}/`) || o.path.startsWith(`${path}/`))) return true;
+  const touched = (path) => p.ops.some((o) => {
+    if ((o.op === 'SET') && covers(o.path, path)) return true;
     const coll = { ADD_PART: 'parts', ADD_FEATURE: 'features', ADD_JOINT: 'joints', ADD_RULE: 'rules',
       ADD_INTERFACE: 'interfaces', ADD_FASTENER: 'fasteners', ADD_VOLUME: 'volumes' }[o.op];
     const e = coll && o[coll.slice(0, -1)];
     return Boolean(coll && e && (path === `${coll}/${e.id}` || path.startsWith(`${coll}/${e.id}/`)));
   });
+  const changed = (path) => canonical(valueAt(accepted, path)) !== canonical(valueAt(candidate, path));
   const before = openSlots(accepted);
   const after = new Map(openSlots(candidate).map((x) => [x.path, x.q]));
   for (const op of p.ops.filter((o) => o.op === 'ANSWER_QUESTION')) {
     const facts = op.facts || [];
+    const q = (accepted.questions || []).find((x) => x.id === op.id)
+      ?? p.ops.find((o) => o.op === 'ADD_QUESTION' && o.question?.id === op.id)?.question;
+    const about = aboutIds(q);
+    const mine = before.filter((x) => x.q === op.id);
     for (const path of facts) {
       const [coll, id, field] = path.split('/');
       if (!COLLECTIONS.includes(coll)) { errors.push(`ANSWER_QUESTION ${op.id}: fact "${path}" is not in a mechanical collection`); continue; }
@@ -232,9 +284,16 @@ function answerRulesV2(accepted, candidate, p) {
         const entity = (candidate[coll] || []).find((e) => e.id === id);
         if (!isFactField(coll, entity, field, entity?.[field])) { errors.push(`ANSWER_QUESTION ${op.id}: "${path}" is not a mechanical fact`); continue; }
       }
-      if (!established(path)) errors.push(`ANSWER_QUESTION ${op.id}: fact "${path}" is not established by this proposal — an answer must be backed by a structured change the user's words justify`);
+      if (!touched(path)) { errors.push(`ANSWER_QUESTION ${op.id}: fact "${path}" is not established by this proposal — an answer must be backed by a structured change the user's words justify`); continue; }
+      const other = before.find((x) => x.q !== op.id && covers(x.path, path));
+      if (other) { errors.push(`ANSWER_QUESTION ${op.id}: fact "${path}" fills ${other.path}, which belongs to ${other.q} — a fact answers only its own question`); continue; }
+      const direct = mine.some((x) => covers(x.path, path)) || about.has(id);
+      if (!changed(path) && !about.has(id)) { errors.push(`ANSWER_QUESTION ${op.id}: fact "${path}" does not change (it already is ${JSON.stringify(valueAt(accepted, path))}) — a no-op assignment cannot answer a question unless it confirms the element the question is about`); continue; }
+      const entity = valueAt(candidate, `${coll}/${id}`);
+      const associated = direct || [...refTokens(entity)].some((t) => t !== id && about.has(t));
+      if (!associated) errors.push(`ANSWER_QUESTION ${op.id}: fact "${path}" is not associated with ${op.id} (about: ${(q?.about || []).join(', ') || 'nothing'}${mine.length ? `; bound slots: ${mine.map((x) => x.path).join(', ')}` : ''}) — a fact answers only the question it belongs to`);
     }
-    for (const { path, q } of before.filter((x) => x.q === op.id)) {
+    for (const { path } of mine) {
       const now = after.get(path);
       let exists = true;
       try { exists = getPath(candidate, path) !== undefined; } catch { exists = false; }
@@ -269,18 +328,23 @@ export function evaluateProposal(accepted, text, opts = {}) {
   try { candidate = applyOps(accepted, proposal.ops); } catch (e) { out.errors = [e.message]; return out; }
   candidate.freeze = { state: 'DRAFT' };       // any change leaves the frozen state
 
-  // LIVE EDIT invariant: when a deterministic scope is supplied, the candidate
-  // may change only those paths. The LLM never gets to widen this allow-list.
-  if (opts.scope) {
-    let scoped;
-    try { scoped = checkProtectedRemainder(accepted, candidate, opts.scope); }
-    catch (e) { out.errors = [`invalid edit scope: ${e.message}`]; return out; }
-    out.scope = scoped;
-    if (!scoped.ok) {
-      out.candidate = candidate;
-      out.errors = scoped.forbidden.map((p) => `protected remainder changed outside edit scope: ${p}`);
-      return out;
-    }
+  // Edit scope: derived from the validated ops and the accepted model, never from
+  // the interpreter. The candidate may change only those paths (protected
+  // remainder). A caller (UI selection) may narrow it further with opts.scope;
+  // both must hold. Nothing an interpreter declares can widen either.
+  let derived, guard, requested = null;
+  try {
+    derived = deriveScope(accepted, proposal.ops, opts.affects || []);
+    guard = checkProtectedRemainder(accepted, candidate, derived);
+    if (opts.scope) requested = checkProtectedRemainder(accepted, candidate, opts.scope);
+  } catch (e) { out.errors = [`invalid edit scope: ${e.message}`]; return out; }
+  const forbidden = [...new Set([...guard.forbidden, ...(requested?.forbidden || [])])].sort();
+  out.scope = { allow: requested ? requested.allow.filter((a) => derived.allow.some((d) => d === a || d.startsWith(`${a}/`) || a.startsWith(`${d}/`))) : derived.allow,
+    derived: derived.allow, requested: requested ? requested.allow : null, affects: derived.affects, changed: guard.changed, forbidden };
+  if (forbidden.length) {
+    out.candidate = candidate;
+    out.errors = forbidden.map((p) => `protected remainder changed outside edit scope: ${p}`);
+    return out;
   }
 
   const v = validate(candidate);
@@ -299,6 +363,29 @@ export function evaluateProposal(accepted, text, opts = {}) {
   if (v.stated) out.stated = v.stated.filter((q) => wasOpen.has(q));
   out.status = 'VALID';
   return out;
+}
+
+// Structured intents (Live AI, Property Editor) carry no per-fact quotes. They
+// enter the boundary with the user's actual utterance — supplied by the caller
+// that received it, never copied from interpreter output — as the evidence for
+// every fact an op sets. The ordinary rules then apply unchanged: numbers in a
+// numeric fact and a concrete fit must occur in those words, a PLACEHOLDER only
+// changes when the words state its value, OPEN slots need an answer, and every
+// answered fact must be established by this proposal. Existing evidence is kept.
+export function attachUtteranceEvidence(model, ops, utterance) {
+  let state = structuredClone(model);
+  return ops.map((op) => {
+    const out = structuredClone(op);
+    try {
+      if (out.evidence === undefined) {
+        const fields = concreteFacts(out, state).map((f) => f.field);
+        if (out.op === 'SET' && String(out.path).startsWith('params/')) fields.push('value');
+        if (fields.length) out.evidence = Object.fromEntries([...new Set(fields)].map((f) => [f, utterance]));
+      }
+      state = applyOps(state, [out]);
+    } catch { /* the evaluator reports the failing op */ }
+    return out;
+  });
 }
 
 // Plain-language line for one op (shown on the proposal card).

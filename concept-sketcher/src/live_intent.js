@@ -1,14 +1,17 @@
 // Live Intent Contract v1.
 //
 // This is deliberately smaller than .aiconcept and the old S2 protocol.
-// The model proposes a local PATCH or asks one CLARIFY question. It never
-// supplies mutation scope independently: scope is derived deterministically
-// from declared targets + newly created entities.
+// The model proposes a local PATCH or asks one CLARIFY question. Its `targets`
+// are semantic hints that its own edits, deletes and answer facts must stay
+// inside (a consistency check). They are never an authorization: the
+// enforcement scope is derived from the compiled ops (src/scope.js deriveScope).
 //
-// Safety chain:
-//   intent -> compile closed ops -> protected-remainder diff -> validate -> review -> ACCEPT
+// Safety chain (one boundary for every mutation, see src/live_edit.js):
+//   intent -> compile closed ops -> AI_CONCEPT_PROPOSAL with the user's own
+//   utterance -> evaluateProposal (evidence, OPEN, answer, placeholder rules,
+//   derived scope + protected remainder, validate, export) -> review -> ACCEPT
 
-import { OPS, parsePath } from './ops.js';
+import { OPS, parsePath } from './ops.js?v=14dc3aea2f1a';
 
 export const LIVE_INTENT_FORMAT = 'AI_CONCEPT_INTENT';
 export const LIVE_INTENT_SCHEMA = 1;
@@ -102,7 +105,7 @@ export function parseLiveIntent(text) {
     const root = `${d.collection}/${d.id}`;
     if (!CREATE_COLLECTIONS.has(d.collection) || d.collection === 'params') errors.push(`deletes[${i}].collection is not deletable here`);
     if (typeof d.id !== 'string' || !d.id) errors.push(`deletes[${i}].id is required`);
-    if (!targets.some((t) => coveredBy(root, t) || coveredBy(t, root))) errors.push(`deletes[${i}] "${root}" is outside declared targets`);
+    if (!targets.some((t) => coveredBy(root, t))) errors.push(`deletes[${i}] "${root}" is outside declared targets (a target must cover the whole entity)`);
   });
 
   mirrors.forEach((m,i) => {
@@ -150,22 +153,20 @@ export function compileLiveIntent(model, text) {
   const parsed = parseLiveIntent(text);
   if (!parsed.intent) return parsed;
   const x = parsed.intent;
-  if (x.action === 'CLARIFY') return { intent: x, status: 'CLARIFY', question: x.question, ops: [], scope: null };
+  if (x.action === 'CLARIFY') return { intent: x, status: 'CLARIFY', question: x.question, ops: [], affects: [] };
 
   const ops = [];
-  const allow = [...x.targets];
+  const affects = [];
 
   for (const e of x.edits) ops.push({ op: 'SET', path: e.path, value: structuredClone(e.value) });
 
   for (const c of x.creates) {
     if (c.collection === 'params') {
       ops.push({ op: 'ADD_PARAM', name: c.name, param: structuredClone(c.entity) });
-      allow.push(`params/${c.name}`);
     } else {
       const [op,key] = ADD_OP[c.collection] || [];
       if (!op || !OPS.includes(op)) return { errors: [`no closed op for collection ${c.collection}`] };
       ops.push({ op, [key]: structuredClone(c.entity) });
-      allow.push(`${c.collection}/${c.entity.id}`);
     }
   }
 
@@ -191,7 +192,7 @@ export function compileLiveIntent(model, text) {
       return { errors: [`mirror source ${m.source}: mirror of an Euler-oriented part is not representable as a proper rotation`] };
     }
     ops.push({ op: 'ADD_PART', part });
-    allow.push(`parts/${part.id}`);
+    affects.push(`parts/${source.id}`);          // the mirror is derived from its source; the source itself is not changed
   }
 
   for (const a of x.answers) {
@@ -213,7 +214,6 @@ export function compileLiveIntent(model, text) {
     }
     const coreFacts = a.facts.filter((p) => !p.startsWith('params/'));
     ops.push({ op: 'ANSWER_QUESTION', id: a.id, answer: a.answer, facts: coreFacts });
-    allow.push(`questions/${a.id}`);
   }
 
   const qids = nextQuestionIds(model, x.unknowns.length);
@@ -223,14 +223,7 @@ export function compileLiveIntent(model, text) {
       id, status: 'OPEN', blocks: 'SKELETON_READY',
       about: [...u.about], text: u.question, options: [],
     }});
-    allow.push(`questions/${id}`);
   });
 
-  return {
-    intent: x,
-    status: 'PATCH',
-    ops,
-    scope: { allow: [...new Set(allow)].sort(), label: x.summary },
-    created_questions: qids,
-  };
+  return { intent: x, status: 'PATCH', ops, affects: [...new Set(affects)].sort(), created_questions: qids };
 }

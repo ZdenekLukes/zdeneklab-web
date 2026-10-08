@@ -3,18 +3,19 @@
 // the evaluated proposal as a structured review, and passes the user's
 // ACCEPT/REJECT to the session. Zoom is inspection only.
 
-import { motionControls } from '../src/motion.js';
-import { motionPreview } from '../src/motion_preview.js';
-import { conceptHash } from '../src/model.js';
-import { validate } from '../src/validate.js';
-import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js';
-import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js';
-import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js';
-import { reviewProposal } from '../src/proposal.js';
-import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js';
-import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js';
-import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=ghpoc5';
-import { createViewer, PART_PALETTE } from '../view/render3d.js?v=motion1';
+import { motionControls } from '../src/motion.js?v=14dc3aea2f1a';
+import { motionPreview } from '../src/motion_preview.js?v=14dc3aea2f1a';
+import { conceptHash } from '../src/model.js?v=14dc3aea2f1a';
+import { validate } from '../src/validate.js?v=14dc3aea2f1a';
+import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js?v=14dc3aea2f1a';
+import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js?v=14dc3aea2f1a';
+import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js?v=14dc3aea2f1a';
+import { reviewProposal } from '../src/proposal.js?v=14dc3aea2f1a';
+import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js?v=14dc3aea2f1a';
+import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js?v=14dc3aea2f1a';
+import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=14dc3aea2f1a';
+import { createViewer, PART_PALETTE } from '../view/render3d.js?v=14dc3aea2f1a';
+import { ensureCurrentShell } from './build_version.js?v=14dc3aea2f1a';
 
 const LIVE = liveConfig();
 const LEGACY_STORE = LIVE.live ? `concept-sketcher.live.${LIVE.seed || 'blank'}.session` : 'concept-sketcher.s1.session';
@@ -36,6 +37,25 @@ let studioNow = null;
 let stage = null;            // what is drawn now: { model, v, candidate, vC, scenes, changed }
 let activeStore = null;
 let storageWarning = '';
+// A saved project that failed validation on restore or open is never discarded:
+// its raw text is first copied byte-for-byte to a quarantine key (listed in
+// Projects for download). Only when that copy could not be made is the original
+// slot itself kept, and autosave then refuses to write to it.
+const UNREADABLE_PREFIX = 'concept-sketcher.unreadable.';
+let unreadable = null;       // { key: slot autosave must not touch | null, qkey, raw, error }
+function quarantine(key, raw, error) {
+  const qkey = `${UNREADABLE_PREFIX}${Date.now()}`;
+  try {
+    localStorage.setItem(qkey, raw);
+    if (localStorage.getItem(qkey) !== raw) throw new Error('copy does not read back');
+    unreadable = { key: null, qkey, raw, error };
+  } catch {
+    unreadable = { key, qkey: null, raw, error };
+  }
+}
+function unreadableSaves() {
+  try { return Object.keys(localStorage).filter((k) => k.startsWith(UNREADABLE_PREFIX)).sort(); } catch { return []; }
+}
 
 const slug = (s) => String(s || 'concept').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'concept';
 const projectKey = (id) => `concept-sketcher.project.${slug(id)}.session`;
@@ -56,6 +76,10 @@ function save() {
   if (!session) return;
   try {
     activeStore ||= projectKey(acceptedModel(session).meta.id);
+    if (unreadable?.key && activeStore === unreadable.key) {
+      storageWarning = `Autosave paused: the saved project in this slot could not be validated and could not be copied aside, so it is kept untouched (${unreadable.error})`;
+      return;
+    }
     const previous = localStorage.getItem(activeStore);
     if (previous) localStorage.setItem(`${activeStore}.backup`, previous);
     localStorage.setItem(activeStore, exportSession(session));
@@ -64,18 +88,6 @@ function save() {
   } catch (e) {
     storageWarning = `Autosave unavailable: ${e.message}`;
   }
-}
-
-// Normalize the top viewer legend in JS as well as HTML. This deliberately
-// repairs an older cached iOS home-screen shell once its app.js refreshes.
-function normalizeViewerLegend() {
-  const legend = $('legend');
-  if (!legend) return;
-  legend.innerHTML = `
-    <button type="button" id="legendRef" aria-pressed="true" title="Hide or show REFERENCE geometry"><i style="background:rgba(127,159,189,.22);border:1px dashed #c6d9ea"></i>REFERENCE</button>
-    <span title="Proposed change"><i style="background:#1f9d55"></i>+ PROPOSED</span>
-    <span title="Removed by proposal"><i style="background:none;border:2px dashed #d93025"></i>− REMOVED</span>
-    <span title="Open / unresolved"><i style="background:none;border:2px dashed #e8730c"></i>? OPEN</span>`;
 }
 
 // ---------------------------------------------------------------- 3D
@@ -448,7 +460,7 @@ function renderHistory() {
   $('revs').innerHTML = rows.map((r) => `
     <div class="rev ${r.current ? 'cur' : ''} ${r.onCurrentLine ? '' : 'off'}">
       <div><div>${esc(r.text)}</div><div>${esc(r.summary)}</div>
-        <div class="muted">${r.utterance ? `you said: “${esc(r.utterance)}”` : esc(r.kind)} · #${esc(r.hash.slice(7, 15))}</div></div>
+        <div class="muted">${r.utterance ? `you said: “${esc(r.utterance)}”` : esc(r.kind)} · #${esc(r.hash.slice(7, 15))}${r.legacy ? ' · accepted under the rules before 2026-10-03' : ''}</div></div>
       ${r.current ? '<span class="muted">current</span>' : `<button type="button" data-rev="${r.revision}">Restore</button>`}
     </div>`).join('') + `<p class="muted">Restore moves the current concept to that exact revision. Accepting a proposal afterwards starts a branch from it; nothing is deleted.</p>
     <div class="dbtns" style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" id="freezeBtn">Freeze concept</button><button type="button" id="resetBtn" class="danger">Start over</button></div>`;
@@ -501,6 +513,11 @@ function blankModel(id, title) {
     freeze: { state: 'DRAFT' },
   };
 }
+// Revisions migrated from a pre-2026-10-03 history are kept as accepted then; say so once.
+function legacyNote(s) {
+  const n = historyView(s).filter((r) => r.legacy).length;
+  if (n) sys(`${n} earlier revision${n > 1 ? 's were' : ' was'} accepted under the rules before 2026-10-03 and ${n > 1 ? 'are' : 'is'} kept as accepted then (marked in History). New changes use the current rules.`);
+}
 function switchSession(next, key, message) {
   supersede();
   session = next;
@@ -509,6 +526,7 @@ function switchSession(next, key, message) {
   save();
   closeSheets();
   sys(message);
+  legacyNote(next);
   refresh();
 }
 function renderProjects() {
@@ -517,6 +535,7 @@ function renderProjects() {
   $('projectList').innerHTML = `
     <p><b>${esc(model.meta.title)}</b><br><span class="muted">${esc(model.meta.id)} · REV ${model.meta.revision} · autosaved locally</span></p>
     <div class="sheet-actions"><button type="button" id="projectSave" class="primary">Save .aiconcept</button><button type="button" id="projectOpen">Open file…</button><button type="button" id="projectBackup" ${localStorage.getItem(`${activeStore}.backup`) ? '' : 'disabled'}>Restore autosave backup</button></div>
+    ${unreadable || unreadableSaves().length ? `<div class="box err"><b>Unreadable saved projects</b>${unreadable ? `<br>${esc(unreadable.error)}` : ''}<br><span class="muted">They failed validation. Their exact text is kept in this browser; nothing was replaced.</span><div class="sheet-actions">${unreadableSaves().map((k) => `<button type="button" data-unreadable="${esc(k)}">Download ${esc(new Date(Number(k.slice(UNREADABLE_PREFIX.length))).toLocaleString())}</button>`).join('')}${unreadable && !unreadable.qkey ? '<button type="button" id="projectUnreadable">Download unreadable save</button>' : ''}</div></div>` : ''}
     <h3>New blank project</h3>
     <form id="newProject"><div class="formgrid"><label for="newTitle">Title</label><input id="newTitle" required value="New concept"><label for="newId">Project ID</label><input id="newId" required pattern="[a-z0-9][a-z0-9-]*" value="new-concept"></div><div class="sheet-actions"><button class="primary" type="submit">Create</button></div></form>
     <h3>Recent local projects</h3>
@@ -527,6 +546,8 @@ function renderProjects() {
     downloadText(name, files[name]);
   };
   $('projectOpen').onclick = () => $('openFile').click();
+  if ($('projectUnreadable')) $('projectUnreadable').onclick = () => downloadText('unreadable-concept-sketcher-save.json', unreadable.raw);
+  $('projectList').querySelectorAll('[data-unreadable]').forEach((b) => { b.onclick = () => downloadText(`unreadable-concept-sketcher-save-${b.dataset.unreadable.slice(UNREADABLE_PREFIX.length)}.json`, localStorage.getItem(b.dataset.unreadable) || ''); });
   $('projectBackup').onclick = () => {
     try {
       const raw = localStorage.getItem(`${activeStore}.backup`);
@@ -542,11 +563,16 @@ function renderProjects() {
     catch (err) { sys(`Project was not created: ${err.message}`); }
   };
   $('projectList').querySelectorAll('[data-project]').forEach((b) => { b.onclick = () => {
+    let raw = null;
     try {
-      const raw = localStorage.getItem(b.dataset.project);
+      raw = localStorage.getItem(b.dataset.project);
       if (!raw) throw new Error('Local project data is missing.');
       switchSession(importSession(raw), b.dataset.project, `Opened “${acceptedModel(importSession(raw)).meta.title}”.`);
-    } catch (e) { sys(`Project was not opened: ${e.message}`); }
+    } catch (e) {
+      // keep its exact text (quarantine copy, or protect its slot) and offer it for download
+      if (raw) { quarantine(b.dataset.project, raw, e.message); renderProjects(); }
+      sys(`Project was not opened: ${e.message}`);
+    }
   }; });
 }
 
@@ -598,11 +624,14 @@ function renderProperties() {
     const edits = [...$('propertyForm').querySelectorAll('[data-path]')].map((el) => ({ path: el.dataset.path, value: el.tagName === 'SELECT' ? el.value : Number(el.value), old: el.dataset.old })).filter((x) => String(x.value) !== x.old);
     if (!edits.length) { sys('No exact value changed.'); return; }
     supersede();
-    const intent = { format: 'AI_CONCEPT_INTENT', schema: 1, action: 'PATCH', summary: `Exact values for ${desc.title}`, utterance: `Exact property edit for ${desc.title}`, targets: [desc.target], edits: edits.map(({ path, value }) => ({ path, value })), creates: [], deletes: [], answers: [], unknowns: [] };
+    // What the user typed is their statement; it is the evidence the common boundary checks.
+    const utterance = `Exact property edit for ${desc.title}: ${edits.map(({ path, value }) => `${path} = ${value}`).join('; ')}`;
+    const intent = { format: 'AI_CONCEPT_INTENT', schema: 1, action: 'PATCH', summary: `Exact values for ${desc.title}`, utterance, targets: [desc.target], edits: edits.map(({ path, value }) => ({ path, value })), creates: [], deletes: [], answers: [], unknowns: [] };
     const text = JSON.stringify(intent);
-    const ev = evaluateLive(session, text);
+    const said = { utterance, base: baseOf(acceptedModel(session)), source: 'property-editor' };
+    const ev = evaluateLive(session, text, said);
     const card = liveIntentCard(ev, text);
-    pending = { kind: 'live', text, evaluation: ev, card, targets: [], zoomIndex: -1 };
+    pending = { kind: 'live', text, said, evaluation: ev, card, targets: [], zoomIndex: -1 };
     closeSheets(); refresh();
   };
 }
@@ -669,13 +698,14 @@ function liveIntentCard(ev, intentText) {
       <details><summary>Advanced: raw intent JSON</summary><pre>${esc(JSON.stringify(JSON.parse(intentText), null, 2))}</pre></details>`, 'card');
   }
   const scope = ev.scope?.allow || [];
+  const affects = ev.scope?.affects || [];
   const changed = ev.scope?.changed || [];
   const answers = i?.answers || [];
   const unknowns = i?.unknowns || [];
   const html = `
     <div class="top"><span class="pill ${ev.status}">${ev.status === 'VALID' ? '+ PROPOSED' : ev.status}</span><span class="muted">Live Intent</span></div>
     ${i ? `<div><b>AI proposes:</b> ${esc(i.summary)}</div>` : ''}
-    ${scope.length ? `<div class="box"><b>Editable scope:</b> ${scope.map(esc).join(' · ')}<br><span class="muted">Everything outside this scope is protected.</span></div>` : ''}
+    ${scope.length ? `<div class="box"><b>May change (derived from the edits):</b> ${scope.map(esc).join(' · ')}<br><span class="muted">Every other model path is checked to stay byte-identical.</span>${affects.length ? `<br><b>Refers to / depends on (not changed):</b> ${affects.map(esc).join(' · ')}` : ''}</div>` : ''}
     ${changed.length ? `<div class="box"><b>Actual diff:</b> ${changed.map(esc).join(' · ')}</div>` : ''}
     ${answers.length ? `<div class="box"><b>Resolved:</b> ${answers.map((a) => `${esc(a.id)} = ${esc(a.answer)}`).join(' · ')}</div>` : ''}
     ${unknowns.length ? `<div class="box"><span class="pill OPEN">? OPEN</span> ${unknowns.map((u) => esc(u.question)).join(' · ')}</div>` : ''}
@@ -688,7 +718,7 @@ function onAccept() {
   if (!pending) return;
   try {
     session = pending.kind === 'live'
-      ? acceptLive(session, pending.text)
+      ? acceptLive(session, pending.text, pending.said)
       : accept(session, pending.text);      // re-evaluated inside; never trusts the card
     setCardState(pending.card, 'ACCEPTED', `✓ ACCEPTED → REV ${session.head}`);
     pending = null;
@@ -714,6 +744,7 @@ async function send(text) {
   supersede();
   user(text);
   const model = acceptedModel(session);
+  const said = { utterance: text, base: baseOf(model), source: 'live-intent' };
 
   if (LIVE.live) {
     let intentText;
@@ -745,9 +776,9 @@ async function send(text) {
       else sys(`Live AI unavailable: ${e.message}`);
       return;
     }
-    const ev = evaluateLive(session, intentText);
+    const ev = evaluateLive(session, intentText, said);      // STALE if the accepted model moved meanwhile
     const card = liveIntentCard(ev, intentText);
-    pending = ev.status === 'CLARIFY' ? null : { kind: 'live', text: intentText, evaluation: ev, card, targets: [], zoomIndex: -1 };
+    pending = ev.status === 'CLARIFY' ? null : { kind: 'live', text: intentText, said, evaluation: ev, card, targets: [], zoomIndex: -1 };
     refresh();
     return;
   }
@@ -760,20 +791,28 @@ async function send(text) {
 }
 
 function refresh() { renderStatus(); render3d(); renderDecision(); }
+const baseOf = (model) => ({ revision: model.meta.revision, hash: conceptHash(model) });
 
 async function startSession(fresh = false) {
   if (!fresh) {
+    let key = null, raw = null;
     try {
-      activeStore = localStorage.getItem(ACTIVE_PROJECT);
-      const saved = activeStore && localStorage.getItem(activeStore);
-      if (saved) return importSession(saved);
-      const legacy = localStorage.getItem(LEGACY_STORE);
-      if (legacy) {
-        const migrated = importSession(legacy);
-        activeStore = projectKey(acceptedModel(migrated).meta.id);
-        return migrated;
+      key = localStorage.getItem(ACTIVE_PROJECT);
+      raw = key && localStorage.getItem(key);
+      if (!raw) { key = LEGACY_STORE; raw = localStorage.getItem(LEGACY_STORE); }
+    } catch (e) { storageWarning = `Browser storage unavailable: ${e.message}`; }
+    if (raw) {
+      try {
+        const restored = importSession(raw);
+        activeStore = key === LEGACY_STORE ? projectKey(acceptedModel(restored).meta.id) : key;
+        return restored;
+      } catch (e) {
+        // Fail explicitly. The saved text is kept byte-for-byte (quarantine copy, or its slot is protected).
+        quarantine(key, raw, e.message);
+        storageWarning = `Saved project could not be restored: ${e.message}`;
+        try { localStorage.removeItem(ACTIVE_PROJECT); } catch { /* storage unavailable */ }
       }
-    } catch (e) { storageWarning = `Local project recovery failed: ${e.message}`; }
+    }
   }
   const motionFixtures = { 'organizer-motion': '../examples/organizer_live_seed.aiconcept', 'motion-hinge': '../examples/motion/hinge.aiconcept', 'motion-slider': '../examples/motion/slider.aiconcept', 'motion-parameter': '../examples/motion/parameter.aiconcept' };
   const liveFixture = motionFixtures[LIVE.seed] || (LIVE.seed === 'organizer' ? '../examples/organizer_live_seed.aiconcept' : '../examples/live_start.aiconcept');
@@ -785,7 +824,7 @@ async function startSession(fresh = false) {
   });
   activeStore = projectKey(acceptedModel(s).meta.id);
   session = s;
-  save();
+  save();                                   // refuses the slot of an unreadable project (see save)
   return s;
 }
 
@@ -796,12 +835,13 @@ function unavailableViewer(message) {
 }
 
 async function main() {
-  normalizeViewerLegend();
+  if (!ensureCurrentShell()) return;     // a stale cached shell must not start the current app half-way
   try { viewer = createViewer($('view')); }
   catch (e) { storageWarning = `3D unavailable: ${e.message}`; viewer = unavailableViewer(e.message); }
   viewer.onPick((key) => select(key));
   $('legendRef').onclick = () => setView({ showReference: !view.showReference });
   session = await startSession();
+  if ($('modeLabel')) $('modeLabel').dataset.boot = 'ready';   // release smoke test: the module graph loaded and the app initialised
   if ($('modeLabel')) $('modeLabel').textContent = LIVE.live ? `LIVE · ${LIVE.transport === 'github' ? 'GitHub POC' : 'HTTP'}${LIVE.seed ? ` · ${LIVE.seed}` : ''}` : 'S1 · demo interpreter (no AI connected)';
   $('chips').innerHTML = LIVE.live ? '' : DEMO_SENTENCES.map((s) => `<button type="button">${esc(s)}</button>`).join('');
   $('chips').querySelectorAll('button').forEach((b) => { b.onclick = () => { document.body.classList.remove('showchips'); send(b.textContent); }; });
@@ -818,13 +858,15 @@ async function main() {
     if (!file) return;
     try {
       const raw = await file.text();
-      let next;
-      try { next = importSession(raw); }
-      catch { next = createSession(raw, { summary: `Opened ${file.name}`, source: file.name }); }
+      // A file with history must replay through the transaction boundary; a plain
+      // model must validate. Either failure is reported, never papered over.
+      const next = importSession(raw, { summary: `Opened ${file.name}`, source: file.name });
       const m = acceptedModel(next);
       switchSession(next, projectKey(m.meta.id), `Opened and validated “${m.meta.title}” from ${file.name}.`);
     } catch (err) { sys(`File was not opened: ${err.message}`); }
   };
+  legacyNote(session);
+  if (unreadable) sys(`Saved project was NOT restored: ${unreadable.error}. Its exact text is kept in this browser (Projects → Unreadable saved projects → Download). A new start concept is shown instead.`);
   sys(LIVE.live
     ? `Live Concept: REV ${acceptedModel(session).meta.revision} · transport ${LIVE.transport}. Describe the concept or a local change. AI only proposes; scoped validation and Accept control every mutation.`
     : `Accepted concept: REV ${acceptedModel(session).meta.revision} — ${acceptedModel(session).meta.title}. Tell me what to change. I only propose; nothing changes until you accept.`);
@@ -844,9 +886,10 @@ async function main() {
     changed: () => stage?.changed ?? [],
     injectIntent: (intent) => {
       const text = typeof intent === 'string' ? intent : JSON.stringify(intent);
-      const ev = evaluateLive(session, text);
+      const said = { utterance: JSON.parse(text).utterance, base: baseOf(acceptedModel(session)), source: 'test-hook' };
+      const ev = evaluateLive(session, text, said);
       const card = liveIntentCard(ev, text);
-      pending = ev.status === 'CLARIFY' ? null : { kind: 'live', text, evaluation: ev, card, targets: [], zoomIndex: -1 };
+      pending = ev.status === 'CLARIFY' ? null : { kind: 'live', text, said, evaluation: ev, card, targets: [], zoomIndex: -1 };
       refresh();
       return ev.status;
     },

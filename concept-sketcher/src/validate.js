@@ -5,10 +5,10 @@
 // closed schema (src/schema.js), answers bound to structured facts, and
 // STATED answers (words the language cannot hold) keep blocking SKELETON_READY.
 
-import { motionDefinitionErrors } from './motion.js';
-import { conceptHash } from './model.js';
-import { resolve, featureDefs } from './resolve.js';
-import { checkModel, openSlots, isFactField, isOpen, COLLECTIONS, METHODS, PART_ROLES } from './schema.js';
+import { motionDefinitionErrors } from './motion.js?v=14dc3aea2f1a';
+import { conceptHash, legacyConceptHashV1 } from './model.js?v=14dc3aea2f1a';
+import { resolve, featureDefs } from './resolve.js?v=14dc3aea2f1a';
+import { checkModel, openSlots, isFactField, isOpen, COLLECTIONS, METHODS, PART_ROLES } from './schema.js?v=14dc3aea2f1a';
 
 const PART_KINDS = ['BLOCK', 'PLATE', 'FRAME', 'ROD', 'CYLINDER', 'ENVELOPE'];
 const STATES = ['DRAFT', 'CONCEPT_FROZEN', 'SKELETON_READY'];
@@ -141,7 +141,9 @@ export function validate(model, opts = {}) {
   const state = model.freeze?.state ?? 'DRAFT';
   if (!STATES.includes(state)) errors.push(`freeze.state must be one of ${STATES.join(', ')}`);
   if (state !== 'DRAFT' && model.freeze?.hash !== conceptHash(model)) {
-    errors.push(`freeze.hash does not match the model (edited after freeze?) — expected ${conceptHash(model)}`);
+    errors.push(model.freeze?.hash && model.freeze.hash === legacyConceptHashV1(model)
+      ? `freeze.hash was computed with the legacy concept hash (v1, which ignored interfaces, fasteners and volumes) — freeze the concept again to record ${conceptHash(model)}`
+      : `freeze.hash does not match the model (edited after freeze?) — expected ${conceptHash(model)}`);
   }
   const open = (model.questions || []).filter((q) => q.status === 'OPEN').map((q) => q.id);
   const stated = (model.questions || []).filter((q) => q.status === 'STATED').map((q) => q.id);

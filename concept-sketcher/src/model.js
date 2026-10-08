@@ -1,10 +1,19 @@
 // Concept model: loading, canonical form, hashing and parameter evaluation.
 // Pure functions, no dependencies, runs in Node and in the browser.
 
-export const AUTHORING_KEYS = [
-  'format', 'schema', 'meta', 'units', 'world',
-  'params', 'parts', 'features', 'joints', 'rules', 'questions',
-];
+// The authoring boundary is defined once, negatively: every top-level key of a
+// concept model is authoring content (and therefore part of its identity) except
+// these. `freeze` is state about the content (it records the hash itself),
+// `resolved` is derived output and `history` is the session that produced it.
+// A new collection is covered automatically; it never has to be remembered here.
+export const NON_AUTHORING_KEYS = Object.freeze(['freeze', 'resolved', 'history']);
+
+// Keys hashed before 2026-10 (hash v1). It omitted the Core V2 collections
+// (interfaces, fasteners, volumes), so it is kept ONLY to verify histories that
+// were exported with it (see session.js importSession). Never use it to
+// identify or freeze a concept.
+const LEGACY_V1_KEYS = ['format', 'schema', 'meta', 'units', 'world',
+  'params', 'parts', 'features', 'joints', 'rules', 'questions'];
 
 export function loadConcept(input) {
   const model = typeof input === 'string' ? JSON.parse(input) : input;
@@ -21,9 +30,20 @@ export function canonical(value) {
   return JSON.stringify(value);
 }
 
-export function conceptHash(model) {
+export function authoringContent(model) {
   const authoring = {};
-  for (const k of AUTHORING_KEYS) if (k in model) authoring[k] = model[k];
+  for (const k of Object.keys(model)) if (!NON_AUTHORING_KEYS.includes(k)) authoring[k] = model[k];
+  return authoring;
+}
+
+export function conceptHash(model) {
+  return 'sha256:' + sha256(canonical(authoringContent(model)));
+}
+
+// Hash v1 (incomplete). Read-only compatibility for importing older exports.
+export function legacyConceptHashV1(model) {
+  const authoring = {};
+  for (const k of LEGACY_V1_KEYS) if (k in model) authoring[k] = model[k];
   return 'sha256:' + sha256(canonical(authoring));
 }
 

@@ -1,4 +1,4 @@
-// Closed schema for `schema: 2` (Core V2 safety core, docs/CORE_V2_ARCHITECTURE.md §5).
+// Closed schema for `schema: 2` (Core V2 safety core, docs/archive/CORE_V2_ARCHITECTURE.md §5).
 // One declarative table drives the validator, the op reducer (ADD / SET),
 // the evidence rules (which fields are mechanical facts) and the Skeleton
 // Spec projection. A key that is not in this table does not exist: it is an
@@ -270,6 +270,10 @@ const MODEL = obj({
     skeleton_ready: f(obj({ ready: f(bool, 'req'), blocked_by: f(list(text), 'req') })) })),
   history: f(any),                       // exported sessions only; replayed and re-validated by importSession
 });
+
+// Every top-level key a schema-2 concept model may have. The concept hash covers
+// all of them except model.js NON_AUTHORING_KEYS (tested in remediation_phase1).
+export const MODEL_KEYS = Object.freeze(Object.keys(MODEL.fields));
 
 // The spec of one entity (features and rule checks depend on their type).
 export function entitySpec(coll, entity) {
