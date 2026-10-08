@@ -11,7 +11,7 @@
 //   utterance -> evaluateProposal (evidence, OPEN, answer, placeholder rules,
 //   derived scope + protected remainder, validate, export) -> review -> ACCEPT
 
-import { OPS, parsePath } from './ops.js?v=d776a80047f5';
+import { OPS, parsePath } from './ops.js?v=fc0aae918fa8';
 
 export const LIVE_INTENT_FORMAT = 'AI_CONCEPT_INTENT';
 export const LIVE_INTENT_SCHEMA = 1;

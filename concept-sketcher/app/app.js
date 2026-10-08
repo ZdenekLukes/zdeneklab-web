@@ -3,26 +3,25 @@
 // the evaluated proposal as a structured review, and passes the user's
 // ACCEPT/REJECT to the session. Zoom is inspection only.
 
-import { motionControls } from '../src/motion.js?v=d776a80047f5';
-import { motionPreview } from '../src/motion_preview.js?v=d776a80047f5';
-import { conceptHash } from '../src/model.js?v=d776a80047f5';
-import { validate } from '../src/validate.js?v=d776a80047f5';
-import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js?v=d776a80047f5';
-import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js?v=d776a80047f5';
-import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js?v=d776a80047f5';
-import { reviewProposal } from '../src/proposal.js?v=d776a80047f5';
-import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js?v=d776a80047f5';
-import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js?v=d776a80047f5';
-import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=d776a80047f5';
-import { createViewer, PART_PALETTE } from '../view/render3d.js?v=d776a80047f5';
-import { ensureCurrentShell } from './build_version.js?v=d776a80047f5';
-import { threadWords, valueSources } from '../src/live_context.js?v=d776a80047f5';
-import { newThread, loadThread, storeThread, threadMatches, addTurn, updateTurn, recentOf } from './conversation.js?v=d776a80047f5';
+import { motionControls } from '../src/motion.js?v=fc0aae918fa8';
+import { motionPreview } from '../src/motion_preview.js?v=fc0aae918fa8';
+import { conceptHash } from '../src/model.js?v=fc0aae918fa8';
+import { validate } from '../src/validate.js?v=fc0aae918fa8';
+import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js?v=fc0aae918fa8';
+import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js?v=fc0aae918fa8';
+import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js?v=fc0aae918fa8';
+import { reviewProposal } from '../src/proposal.js?v=fc0aae918fa8';
+import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js?v=fc0aae918fa8';
+import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js?v=fc0aae918fa8';
+import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=fc0aae918fa8';
+import { createViewer, PART_PALETTE } from '../view/render3d.js?v=fc0aae918fa8';
+import { ensureCurrentShell } from './build_version.js?v=fc0aae918fa8';
+import { threadWords, valueSources } from '../src/live_context.js?v=fc0aae918fa8';
+import { newThread, loadThread, storeThread, threadMatches, addTurn, updateTurn, recentOf } from './conversation.js?v=fc0aae918fa8';
+import { ACTIVE_PROJECT, NAME_MAX, slug, projectKey, listProducts, readIndex, displayName, cleanName, freeSlot, storeNewProduct, recordProduct, renameProduct, deleteProduct } from './library.js?v=fc0aae918fa8';
 
 const LIVE = liveConfig();
 const LEGACY_STORE = LIVE.live ? `concept-sketcher.live.${LIVE.seed || 'blank'}.session` : 'concept-sketcher.s1.session';
-const PROJECT_INDEX = 'concept-sketcher.projects.v1';
-const ACTIVE_PROJECT = 'concept-sketcher.projects.active';
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const isPhone = () => matchMedia('(max-width: 760px)').matches;
@@ -46,6 +45,8 @@ let storageWarning = '';
 const UNREADABLE_PREFIX = 'concept-sketcher.unreadable.';
 let unreadable = null;       // { key: slot autosave must not touch | null, qkey, raw, error }
 function quarantine(key, raw, error) {
+  const copy = unreadableSaves().find((k) => { try { return localStorage.getItem(k) === raw; } catch { return false; } });
+  if (copy) { unreadable = { key: null, qkey: copy, raw, error }; return; }   // this exact text is already kept aside
   const qkey = `${UNREADABLE_PREFIX}${Date.now()}`;
   try {
     localStorage.setItem(qkey, raw);
@@ -59,36 +60,44 @@ function unreadableSaves() {
   try { return Object.keys(localStorage).filter((k) => k.startsWith(UNREADABLE_PREFIX)).sort(); } catch { return []; }
 }
 
-const slug = (s) => String(s || 'concept').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'concept';
-const projectKey = (id) => `concept-sketcher.project.${slug(id)}.session`;
-function projectIndex() {
-  try { const x = JSON.parse(localStorage.getItem(PROJECT_INDEX) || '[]'); return Array.isArray(x) ? x : []; }
-  catch { return []; }
-}
-function updateProjectIndex() {
-  const m = acceptedModel(session);
-  const row = { id: m.meta.id, title: m.meta.title, key: activeStore, revision: m.meta.revision, hash: conceptHash(m), updated: new Date().toISOString() };
-  const rows = projectIndex().filter((x) => x.key !== activeStore && x.id !== row.id);
-  rows.unshift(row);
-  localStorage.setItem(PROJECT_INDEX, JSON.stringify(rows.slice(0, 30)));
-  localStorage.setItem(ACTIVE_PROJECT, activeStore);
+// The product's library name (app/library.js); the accepted meta.title until renamed.
+function currentName() {
+  let row = null;
+  try { row = readIndex(localStorage).find((r) => r.key === activeStore); } catch { /* storage unavailable */ }
+  return row?.name || acceptedModel(session).meta.title;
 }
 
+// Autosave of the open product into its own slot (app/library.js). The backup
+// keeps the previous saved state and moves only when the saved state changes, so
+// merely opening a product neither touches its backup nor its modified time.
+// A failure is said once in the conversation, not only in the status bar.
+let autosaveFailed = false;
 function save() {
   if (!session) return;
   try {
-    activeStore ||= projectKey(acceptedModel(session).meta.id);
+    activeStore ||= freeSlot(localStorage, acceptedModel(session).meta.id).key;
     if (unreadable?.key && activeStore === unreadable.key) {
       storageWarning = `Autosave paused: the saved project in this slot could not be validated and could not be copied aside, so it is kept untouched (${unreadable.error})`;
       return;
     }
+    const text = exportSession(session);
     const previous = localStorage.getItem(activeStore);
-    if (previous) localStorage.setItem(`${activeStore}.backup`, previous);
-    localStorage.setItem(activeStore, exportSession(session));
-    updateProjectIndex();
+    const changed = previous !== text;
+    if (changed) {
+      if (previous) localStorage.setItem(`${activeStore}.backup`, previous);
+      localStorage.setItem(activeStore, text);
+    }
+    const m = acceptedModel(session);
+    recordProduct(localStorage, { key: activeStore, id: m.meta.id, title: m.meta.title, revision: m.meta.revision, hash: conceptHash(m) }, { changed });
+    localStorage.setItem(ACTIVE_PROJECT, activeStore);
     storageWarning = '';
+    if (autosaveFailed) { autosaveFailed = false; sys('Autosave works again: this product is saved in this browser.'); }
   } catch (e) {
     storageWarning = `Autosave unavailable: ${e.message}`;
+    if (!autosaveFailed) {
+      autosaveFailed = true;
+      sys(`Autosave failed: ${e.message}. The latest state of this product is only in this tab. Keep a copy with Products → Save .aiconcept before closing; the previously saved state is unchanged.`);
+    }
   }
 }
 
@@ -449,7 +458,7 @@ function renderStatus() {
     ${storageWarning ? `<span class="tag err" title="${esc(storageWarning)}">AUTOSAVE ✕</span>` : ''}
     <span class="sp"></span>
     <button type="button" id="toggle3d">${document.body.classList.contains('show3d') ? '◂ Chat' : '3D ▸'}</button>
-    <button type="button" id="projectBtn">Projects</button>
+    <button type="button" id="projectBtn">Products</button>
     <button type="button" id="propertyBtn" ${view.selected ? '' : 'disabled'}>Properties</button>
     <button type="button" id="histBtn">History</button>
     <button type="button" id="exportBtn">Export</button>`;
@@ -563,17 +572,40 @@ function switchSession(next, key, message) {
   replayThread();
   refresh();
 }
+// ---------------------------------------------------------------- Product Library
+// The products saved in this browser (app/library.js). Open, Rename and Delete
+// act on one product's own slot; Rename and Delete open a small form in that
+// row first, so no single tap renames or deletes anything.
+let libraryUi = null;        // { key, mode: 'rename' | 'delete' }: the one row showing a form
+const when = (iso) => { const t = Date.parse(iso); return Number.isFinite(t) ? new Date(t).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : 'not recorded'; };
+function productRow(r, model) {
+  const cur = r.key === activeStore;
+  const name = displayName(r);
+  const rev = cur ? model.meta.revision : r.revision;
+  const ui = libraryUi?.key === r.key ? libraryUi.mode : null;
+  return `<div class="product${cur ? ' current' : ''}" data-key="${esc(r.key)}">
+    <div class="pmain"><div class="pname">${esc(name)}${cur ? ' <span class="pill ACCEPTED">Open now</span>' : ''}</div>
+      <div class="muted">REV ${rev ?? '?'} · modified ${esc(when(r.updated))}</div></div>
+    <div class="pactions">${cur ? '' : `<button type="button" data-project="${esc(r.key)}">Open</button>`}<button type="button" data-rename="${esc(r.key)}">Rename</button><button type="button" data-delete="${esc(r.key)}">Delete</button></div>
+    ${ui === 'rename' ? `<form class="pform" id="renameForm"><label for="renameInput">New name</label><input id="renameInput" maxlength="${NAME_MAX}" required value="${esc(name)}" autocomplete="off"><div class="sheet-actions"><button type="submit" class="primary">Save name</button><button type="button" id="renameCancel">Cancel</button></div></form>` : ''}
+    ${ui === 'delete' ? `<div class="pform confirm" role="alertdialog" aria-labelledby="deleteTitle"><b id="deleteTitle">Delete “${esc(name)}”?</b><p>This removes its accepted model (REV ${rev ?? '?'}), its whole revision history, its autosave backup and its AI conversation from this browser. It cannot be undone. Other products are not affected.</p><div class="sheet-actions"><button type="button" id="deleteDownload">Download .aiconcept first</button><button type="button" id="deleteCancel">Cancel</button><button type="button" class="danger" id="deleteConfirm">Delete “${esc(name)}”</button></div></div>` : ''}
+  </div>`;
+}
 function renderProjects() {
   const model = acceptedModel(session);
-  const rows = projectIndex();
+  let rows = [], listError = '';
+  try { rows = listProducts(localStorage); } catch (e) { listError = e.message; }
+  if (!rows.some((r) => r.key === activeStore)) rows.unshift({ key: activeStore, id: model.meta.id, title: model.meta.title, revision: model.meta.revision, updated: null });
+  if (libraryUi && !rows.some((r) => r.key === libraryUi.key)) libraryUi = null;
   $('projectList').innerHTML = `
-    <p><b>${esc(model.meta.title)}</b><br><span class="muted">${esc(model.meta.id)} · REV ${model.meta.revision} · autosaved locally</span></p>
-    <div class="sheet-actions"><button type="button" id="projectSave" class="primary">Save .aiconcept</button><button type="button" id="projectOpen">Open file…</button><button type="button" id="projectBackup" ${localStorage.getItem(`${activeStore}.backup`) ? '' : 'disabled'}>Restore autosave backup</button></div>
+    <form id="newProject" class="newproduct"><label for="newTitle">New product</label><div class="np"><input id="newTitle" required maxlength="${NAME_MAX}" placeholder="Name, e.g. Desk cable tray" autocomplete="off"><button class="primary" type="submit">Create</button></div></form>
     ${unreadable || unreadableSaves().length ? `<div class="box err"><b>Unreadable saved projects</b>${unreadable ? `<br>${esc(unreadable.error)}` : ''}<br><span class="muted">They failed validation. Their exact text is kept in this browser; nothing was replaced.</span><div class="sheet-actions">${unreadableSaves().map((k) => `<button type="button" data-unreadable="${esc(k)}">Download ${esc(new Date(Number(k.slice(UNREADABLE_PREFIX.length))).toLocaleString())}</button>`).join('')}${unreadable && !unreadable.qkey ? '<button type="button" id="projectUnreadable">Download unreadable save</button>' : ''}</div></div>` : ''}
-    <h3>New blank project</h3>
-    <form id="newProject"><div class="formgrid"><label for="newTitle">Title</label><input id="newTitle" required value="New concept"><label for="newId">Project ID</label><input id="newId" required pattern="[a-z0-9][a-z0-9-]*" value="new-concept"></div><div class="sheet-actions"><button class="primary" type="submit">Create</button></div></form>
-    <h3>Recent local projects</h3>
-    <div>${rows.map((r) => `<div class="project-row"><div><b>${esc(r.title)}</b><div class="muted">${esc(r.id)} · REV ${r.revision} · ${esc(new Date(r.updated).toLocaleString())}</div></div><button type="button" data-project="${esc(r.key)}" ${r.key === activeStore ? 'disabled' : ''}>Open</button></div>`).join('') || '<p class="muted">No other local projects yet.</p>'}</div>`;
+    <h3>Your products (${rows.length})</h3>
+    ${listError ? `<p class="err">The product list could not be read: ${esc(listError)}</p>` : ''}
+    <div id="productRows">${rows.map((r) => productRow(r, model)).join('')}</div>
+    <h3>This product: ${esc(currentName())}</h3>
+    <div class="sheet-actions"><button type="button" id="projectSave" class="primary">Save .aiconcept</button><button type="button" id="projectOpen">Open file…</button><button type="button" id="projectBackup" ${localStorage.getItem(`${activeStore}.backup`) ? '' : 'disabled'}>Restore autosave backup</button></div>
+    <p class="muted">Products are saved in this browser only. Opening a file always adds it as a new product; it never replaces one.</p>`;
   $('projectSave').onclick = () => {
     const files = acceptedArtifacts(session);
     const name = Object.keys(files).find((x) => x.endsWith('.aiconcept'));
@@ -591,23 +623,95 @@ function renderProjects() {
   };
   $('newProject').onsubmit = (e) => {
     e.preventDefault();
-    const title = $('newTitle').value.trim();
-    const id = slug($('newId').value);
-    try { switchSession(createSession(JSON.stringify(blankModel(id, title)), { summary: 'New blank project', source: 'Projects' }), projectKey(id), `Created blank project “${title}”.`); }
-    catch (err) { sys(`Project was not created: ${err.message}`); }
+    try {
+      const name = cleanName($('newTitle').value);
+      const { id, key } = freeSlot(localStorage, name);           // a slot no product uses: never overwrites
+      const next = createSession(JSON.stringify(blankModel(id, name)), { summary: 'New blank project', source: 'Products' });
+      storeNewProduct(localStorage, key, exportSession(next));    // stored completely, or not at all
+      libraryUi = null;
+      switchSession(next, key, `Created product “${name}”.`);
+    } catch (err) { sys(`Product was not created: ${err.message}. Nothing was changed.`); }
   };
   $('projectList').querySelectorAll('[data-project]').forEach((b) => { b.onclick = () => {
+    const key = b.dataset.project;
     let raw = null;
     try {
-      raw = localStorage.getItem(b.dataset.project);
+      raw = localStorage.getItem(key);
       if (!raw) throw new Error('Local project data is missing.');
-      switchSession(importSession(raw), b.dataset.project, `Opened “${acceptedModel(importSession(raw)).meta.title}”.`);
+      const next = importSession(raw);
+      const row = rows.find((r) => r.key === key);
+      libraryUi = null;
+      switchSession(next, key, `Opened “${displayName(row || acceptedModel(next).meta)}”.`);
     } catch (e) {
       // keep its exact text (quarantine copy, or protect its slot) and offer it for download
-      if (raw) { quarantine(b.dataset.project, raw, e.message); renderProjects(); }
+      if (raw) { quarantine(key, raw, e.message); renderProjects(); }
       sys(`Project was not opened: ${e.message}`);
     }
   }; });
+  $('projectList').querySelectorAll('[data-rename]').forEach((b) => { b.onclick = () => { libraryUi = { key: b.dataset.rename, mode: 'rename' }; renderProjects(); $('renameInput')?.focus(); }; });
+  $('projectList').querySelectorAll('[data-delete]').forEach((b) => { b.onclick = () => { libraryUi = { key: b.dataset.delete, mode: 'delete' }; renderProjects(); $('deleteCancel')?.focus(); }; });
+  if ($('renameForm')) {
+    const key = libraryUi.key;
+    $('renameCancel').onclick = () => { libraryUi = null; renderProjects(); };
+    $('renameForm').onsubmit = (e) => {
+      e.preventDefault();
+      try {
+        const name = renameProduct(localStorage, key, $('renameInput').value);
+        libraryUi = null;
+        sys(`Renamed to “${name}”. Only the library name changed; the accepted model and its history are unchanged.`);
+        renderProjects();
+      } catch (err) { sys(`Not renamed: ${err.message}. Nothing was changed.`); }
+    };
+  }
+  if ($('deleteConfirm')) {
+    const key = libraryUi.key, row = rows.find((r) => r.key === key);
+    $('deleteCancel').onclick = () => { libraryUi = null; renderProjects(); };
+    // The open product: its accepted state in this tab, with the full history (newer than the
+    // saved copy if autosave failed). Any other product: its saved slot, which holds its history.
+    $('deleteDownload').onclick = () => {
+      if (key === activeStore) {
+        const m = acceptedModel(session);
+        downloadText(`${slug(m.meta.id)}-rev${m.meta.revision}.aiconcept`, exportSession(session));
+        return;
+      }
+      const raw = localStorage.getItem(key);
+      if (raw) downloadText(`${slug(row?.id || displayName(row))}-rev${row?.revision ?? 'x'}.aiconcept`, raw);
+      else sys(`“${displayName(row)}” has no saved data to download.`);
+    };
+    $('deleteConfirm').onclick = () => deleteFromLibrary(key, displayName(row));
+  }
+}
+
+// Delete one product after its confirmation. The open product is first replaced
+// by another one (or a new blank product), so nothing autosaves into the deleted
+// slot afterwards; only then are its own keys removed.
+function deleteFromLibrary(key, name) {
+  libraryUi = null;
+  if (unreadable?.key === key) {
+    sys(`“${name}” was not deleted: its saved text could not be validated or copied aside, so this slot is its only copy. Download it first (Unreadable saved projects).`);
+    renderProjects();
+    return;
+  }
+  try {
+    if (key === activeStore) {
+      const fallback = productAfterDelete(key);
+      switchSession(fallback.session, fallback.key, fallback.message);
+    }
+    deleteProduct(localStorage, key);
+    sys(`Deleted “${name}” from this browser.`);
+  } catch (e) {
+    sys(`“${name}” was not deleted completely: ${e.message}`);
+  }
+  if ($('projects').classList.contains('open')) renderProjects();
+}
+function productAfterDelete(deleted) {
+  for (const r of listProducts(localStorage)) {
+    if (r.key === deleted) continue;
+    try { return { session: importSession(localStorage.getItem(r.key)), key: r.key, message: `Opened “${displayName(r)}”.` }; }
+    catch { /* not readable now: it stays listed and untouched; try the next one */ }
+  }
+  const { id, key } = freeSlot(localStorage, 'New product');
+  return { session: createSession(JSON.stringify(blankModel(id, 'New product')), { summary: 'New blank project', source: 'Products' }), key, message: 'Created a new blank product “New product”.' };
 }
 
 const axes = ['+X','-X','+Y','-Y','+Z','-Z'];
@@ -973,12 +1077,16 @@ async function startSession(fresh = false) {
     try {
       key = localStorage.getItem(ACTIVE_PROJECT);
       raw = key && localStorage.getItem(key);
-      if (!raw) { key = LEGACY_STORE; raw = localStorage.getItem(LEGACY_STORE); }
+      if (!raw) {                           // no open product recorded: the most recently modified one, else a pre-library save
+        const recent = listProducts(localStorage)[0];
+        if (recent) { key = recent.key; raw = localStorage.getItem(key); }
+        else { key = LEGACY_STORE; raw = localStorage.getItem(LEGACY_STORE); }
+      }
     } catch (e) { storageWarning = `Browser storage unavailable: ${e.message}`; }
     if (raw) {
       try {
         const restored = importSession(raw);
-        activeStore = key === LEGACY_STORE ? projectKey(acceptedModel(restored).meta.id) : key;
+        activeStore = key === LEGACY_STORE ? freeSlot(localStorage, acceptedModel(restored).meta.id).key : key;
         return restored;
       } catch (e) {
         // Fail explicitly. The saved text is kept byte-for-byte (quarantine copy, or its slot is protected).
@@ -996,7 +1104,8 @@ async function startSession(fresh = false) {
     summary: LIVE.live ? (LIVE.seed === 'organizer' ? 'Live organizer seed' : 'Live Concept start') : 'S1 start: box, spring frame, divider with tabs pointing down',
     source: LIVE.live ? liveFixture.replace('../', '') : 'examples/s1_start.aiconcept',
   });
-  activeStore = projectKey(acceptedModel(s).meta.id);
+  try { activeStore = freeSlot(localStorage, acceptedModel(s).meta.id).key; }   // a new slot: never another product's
+  catch { activeStore = projectKey(acceptedModel(s).meta.id); }                  // storage unavailable: save() reports it
   session = s;
   save();                                   // refuses the slot of an unreadable project (see save)
   return s;
@@ -1036,11 +1145,15 @@ async function main() {
       // model must validate. Either failure is reported, never papered over.
       const next = importSession(raw, { summary: `Opened ${file.name}`, source: file.name });
       const m = acceptedModel(next);
-      switchSession(next, projectKey(m.meta.id), `Opened and validated “${m.meta.title}” from ${file.name}.`);
+      // Always a new product in a free slot: a file never replaces a product, even with the same ID.
+      const same = listProducts(localStorage).some((r) => r.id === m.meta.id);
+      const { key } = freeSlot(localStorage, m.meta.id);
+      storeNewProduct(localStorage, key, exportSession(next));
+      switchSession(next, key, `Opened and validated “${m.meta.title}” from ${file.name}${same ? ' as a new product (a product with the same ID is already here and was not changed)' : ''}.`);
     } catch (err) { sys(`File was not opened: ${err.message}`); }
   };
   legacyNote(session);
-  if (unreadable) sys(`Saved project was NOT restored: ${unreadable.error}. Its exact text is kept in this browser (Projects → Unreadable saved projects → Download). A new start concept is shown instead.`);
+  if (unreadable) sys(`Saved project was NOT restored: ${unreadable.error}. Its exact text is kept in this browser (Products → Unreadable saved projects → Download). A new start concept is shown instead.`);
   sys(LIVE.live
     ? `Live Concept: REV ${acceptedModel(session).meta.revision} · transport ${LIVE.transport}. Describe the concept or a local change. AI only proposes; scoped validation and Accept control every mutation.`
     : `Accepted concept: REV ${acceptedModel(session).meta.revision} — ${acceptedModel(session).meta.title}. Tell me what to change. I only propose; nothing changes until you accept.`);

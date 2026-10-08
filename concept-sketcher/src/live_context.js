@@ -12,10 +12,10 @@
 //     evaluator checks facts against. Only user turns count. Assistant turns
 //     (questions, proposals) are context for the AI and never evidence.
 
-import { concreteFacts } from './proposal.js?v=d776a80047f5';
-import { applyOps } from './ops.js?v=d776a80047f5';
-import { factNumbers } from './schema.js?v=d776a80047f5';
-import { numbersIn as statedNumbers } from './interpret/normalize.js?v=d776a80047f5';
+import { concreteFacts } from './proposal.js?v=fc0aae918fa8';
+import { applyOps } from './ops.js?v=fc0aae918fa8';
+import { factNumbers } from './schema.js?v=fc0aae918fa8';
+import { numbersIn as statedNumbers } from './interpret/normalize.js?v=fc0aae918fa8';
 
 export const CONTEXT_LIMITS = Object.freeze({ turns: 10, turnChars: 400, totalChars: 2400 });
 

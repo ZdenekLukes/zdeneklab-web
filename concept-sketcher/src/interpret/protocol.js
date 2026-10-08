@@ -3,11 +3,11 @@
 // proposal, and the proposal still goes through evaluateProposal() and ACCEPT.
 // Anything outside the protocol refuses the whole response; nothing is repaired.
 
-import { conceptHash, parseExpr } from '../model.js?v=d776a80047f5';
-import { OPS } from '../ops.js?v=d776a80047f5';
-import { PROPOSAL_FORMAT } from '../proposal.js?v=d776a80047f5';
-import { fold, quantities, ranges, justifies, assemblyDirection } from './normalize.js?v=d776a80047f5';
-import { mechanicalHits, isInterrogative } from './lexicon.js?v=d776a80047f5';
+import { conceptHash, parseExpr } from '../model.js?v=fc0aae918fa8';
+import { OPS } from '../ops.js?v=fc0aae918fa8';
+import { PROPOSAL_FORMAT } from '../proposal.js?v=fc0aae918fa8';
+import { fold, quantities, ranges, justifies, assemblyDirection } from './normalize.js?v=fc0aae918fa8';
+import { mechanicalHits, isInterrogative } from './lexicon.js?v=fc0aae918fa8';
 
 export const RESPONSE_PROTOCOL = 'CS_INTERPRETER_RESPONSE';
 export const DISPOSITIONS = ['STRUCTURED', 'OPEN', 'STATED', 'CLARIFY', 'NOT_MECHANICAL'];
