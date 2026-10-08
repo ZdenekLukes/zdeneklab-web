@@ -11,7 +11,7 @@
 //   utterance -> evaluateProposal (evidence, OPEN, answer, placeholder rules,
 //   derived scope + protected remainder, validate, export) -> review -> ACCEPT
 
-import { OPS, parsePath } from './ops.js?v=ade26ee692ab';
+import { OPS, parsePath } from './ops.js?v=f5dbe684feae';
 
 export const LIVE_INTENT_FORMAT = 'AI_CONCEPT_INTENT';
 export const LIVE_INTENT_SCHEMA = 1;
@@ -28,6 +28,7 @@ const ADD_OP = {
   volumes: ['ADD_VOLUME','volume'],
 };
 
+const INTENT_KEYS = ['format','schema','action','summary','utterance','targets','edits','creates','deletes','mirrors','answers','unknowns','question'];
 const obj = (v) => v && typeof v === 'object' && !Array.isArray(v);
 const knownKeys = (o, allowed, tag, errors) => {
   for (const k of Object.keys(o || {})) if (!allowed.includes(k)) errors.push(`${tag}: unknown key "${k}"`);
@@ -53,6 +54,25 @@ function nextQuestionIds(model, count) {
   return ids;
 }
 
+// Deterministic repair of one known malformed AI shape, applied by the Live
+// service before evaluation: a CLARIFY that carries its question(s) in
+// `unknowns` instead of `question`, uses only contract keys and proposes nothing
+// else. It becomes a plain CLARIFY, which never changes the model. Every other
+// shape, including a CLARIFY with edits, creates, deletes, mirrors or answers,
+// is returned unchanged for the evaluator to judge.
+export function normalizeLiveIntent(x) {
+  const none = { intent: x, notes: [] };
+  if (!obj(x) || x.action !== 'CLARIFY' || Object.keys(x).some((k) => !INTENT_KEYS.includes(k))) return none;
+  const empty = (k) => x[k] === undefined || (Array.isArray(x[k]) && x[k].length === 0);
+  if (!['edits','creates','deletes','mirrors','answers'].every(empty)) return none;
+  if (!Array.isArray(x.unknowns) || !x.unknowns.length) return none;
+  const asked = x.unknowns.map((u) => (obj(u) && typeof u.question === 'string' ? u.question.trim() : ''));
+  if (asked.some((q) => !q)) return none;
+  const own = typeof x.question === 'string' ? x.question.trim() : '';
+  const question = [...new Set([own, ...asked].filter(Boolean))].join(' ');
+  return { intent: { ...x, question, unknowns: [] }, notes: ['CLARIFY question was given in unknowns; moved to question'] };
+}
+
 export function parseLiveIntent(text) {
   let x;
   try { x = typeof text === 'string' ? JSON.parse(text) : structuredClone(text); }
@@ -60,7 +80,7 @@ export function parseLiveIntent(text) {
 
   const errors = [];
   if (!obj(x)) return { errors: ['intent must be an object'] };
-  knownKeys(x, ['format','schema','action','summary','utterance','targets','edits','creates','deletes','mirrors','answers','unknowns','question'], 'intent', errors);
+  knownKeys(x, INTENT_KEYS, 'intent', errors);
   if (x.format !== LIVE_INTENT_FORMAT) errors.push(`format must be "${LIVE_INTENT_FORMAT}"`);
   if (x.schema !== LIVE_INTENT_SCHEMA) errors.push(`schema must be ${LIVE_INTENT_SCHEMA}`);
   if (!['PATCH','CLARIFY'].includes(x.action)) errors.push('action must be PATCH or CLARIFY');

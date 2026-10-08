@@ -3,19 +3,19 @@
 // the evaluated proposal as a structured review, and passes the user's
 // ACCEPT/REJECT to the session. Zoom is inspection only.
 
-import { motionControls } from '../src/motion.js?v=ade26ee692ab';
-import { motionPreview } from '../src/motion_preview.js?v=ade26ee692ab';
-import { conceptHash } from '../src/model.js?v=ade26ee692ab';
-import { validate } from '../src/validate.js?v=ade26ee692ab';
-import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js?v=ade26ee692ab';
-import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js?v=ade26ee692ab';
-import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js?v=ade26ee692ab';
-import { reviewProposal } from '../src/proposal.js?v=ade26ee692ab';
-import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js?v=ade26ee692ab';
-import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js?v=ade26ee692ab';
-import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=ade26ee692ab';
-import { createViewer, PART_PALETTE } from '../view/render3d.js?v=ade26ee692ab';
-import { ensureCurrentShell } from './build_version.js?v=ade26ee692ab';
+import { motionControls } from '../src/motion.js?v=f5dbe684feae';
+import { motionPreview } from '../src/motion_preview.js?v=f5dbe684feae';
+import { conceptHash } from '../src/model.js?v=f5dbe684feae';
+import { validate } from '../src/validate.js?v=f5dbe684feae';
+import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js?v=f5dbe684feae';
+import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js?v=f5dbe684feae';
+import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js?v=f5dbe684feae';
+import { reviewProposal } from '../src/proposal.js?v=f5dbe684feae';
+import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js?v=f5dbe684feae';
+import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js?v=f5dbe684feae';
+import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=f5dbe684feae';
+import { createViewer, PART_PALETTE } from '../view/render3d.js?v=f5dbe684feae';
+import { ensureCurrentShell } from './build_version.js?v=f5dbe684feae';
 
 const LIVE = liveConfig();
 const LEGACY_STORE = LIVE.live ? `concept-sketcher.live.${LIVE.seed || 'blank'}.session` : 'concept-sketcher.s1.session';
@@ -714,6 +714,17 @@ function liveIntentCard(ev, intentText) {
   return addEl(html, 'card');
 }
 
+function aiReplyRejectedCard(text, e) {
+  const card = addEl(`
+    <div class="top"><span class="pill INVALID">NOT USED</span><span class="muted">Live Intent</span></div>
+    <div>${esc(e.message)}</div>
+    <div class="muted">Try again, or say it more specifically: what it is, its size and how it is made.</div>
+    <div><button type="button" class="primary" data-retry>↻ Try again</button></div>
+    ${e.details.length ? `<details><summary>Advanced: why it was refused</summary><ul class="err">${e.details.map((d) => `<li>${esc(d)}</li>`).join('')}</ul></details>` : ''}`, 'card');
+  const retry = card.querySelector('[data-retry]');
+  retry.onclick = () => { retry.disabled = true; send(text).then((sent) => { if (sent === false) retry.disabled = false; }); };
+}
+
 function onAccept() {
   if (!pending) return;
   try {
@@ -739,48 +750,66 @@ function onReject() {
   refresh();
 }
 
+// One Live request at a time. A second one would race the first for `pending`
+// (two cards shown as proposed, Accept applying whichever reply came last),
+// and the GitHub transport cancels a queued run once a third is dispatched.
+let liveInFlight = false;
+
+// Returns false when the message was not sent because a Live reply is still awaited.
 async function send(text) {
   if (!text.trim()) return;
+  if (LIVE.live && liveInFlight) {
+    if (!$('input').value) $('input').value = text;
+    sys('The AI is still answering the previous message. Send this one when that reply has arrived.');
+    return false;
+  }
   supersede();
   user(text);
   const model = acceptedModel(session);
   const said = { utterance: text, base: baseOf(model), source: 'live-intent' };
 
   if (LIVE.live) {
-    let intentText;
-    const progress = LIVE.transport === 'github' ? addEl('GitHub POC: preparing…', 'msg sys') : null;
-    const onProgress = (message) => { if (progress) progress.textContent = message; };
-
-    const askGitHubToken = () => {
-      const token = prompt('GitHub-only POC needs a fine-grained token for ZdenekLukes/concept-sketcher. It is stored only in this browser and sent only to api.github.com. Paste token:');
-      if (!token) return false;
-      storeGitHubToken(token);
-      return true;
-    };
-
+    liveInFlight = true;
     try {
-      if (LIVE.transport === 'github' && !storedGitHubToken() && !askGitHubToken()) {
-        if (progress) progress.textContent = 'GitHub POC cancelled — no token stored.';
+      let intentText;
+      const progress = LIVE.transport === 'github' ? addEl('GitHub POC: preparing…', 'msg sys') : null;
+      const onProgress = (message) => { if (progress) progress.textContent = message; };
+
+      const askGitHubToken = () => {
+        const token = prompt('GitHub-only POC needs a fine-grained token for ZdenekLukes/concept-sketcher. It is stored only in this browser and sent only to api.github.com. Paste token:');
+        if (!token) return false;
+        storeGitHubToken(token);
+        return true;
+      };
+
+      try {
+        if (LIVE.transport === 'github' && !storedGitHubToken() && !askGitHubToken()) {
+          if (progress) progress.textContent = 'GitHub POC cancelled — no token stored.';
+          return;
+        }
+        try {
+          intentText = await requestLiveIntent(LIVE, { utterance: text, model }, { onProgress });
+        } catch (e) {
+          if (LIVE.transport !== 'github' || !['GITHUB_TOKEN_REQUIRED', 'GITHUB_AUTH_FAILED'].includes(e.code)) throw e;
+          clearGitHubToken();
+          if (!askGitHubToken()) throw e;
+          intentText = await requestLiveIntent(LIVE, { utterance: text, model }, { onProgress });
+        }
+      } catch (e) {
+        if (e.code === 'AI_INTENT_INVALID') { progress?.remove(); aiReplyRejectedCard(text, e); return; }
+        if (progress) progress.textContent = `GitHub POC failed: ${e.message}`;
+        else sys(`Live AI unavailable: ${e.message}`);
         return;
       }
-      try {
-        intentText = await requestLiveIntent(LIVE, { utterance: text, model }, { onProgress });
-      } catch (e) {
-        if (LIVE.transport !== 'github' || !['GITHUB_TOKEN_REQUIRED', 'GITHUB_AUTH_FAILED'].includes(e.code)) throw e;
-        clearGitHubToken();
-        if (!askGitHubToken()) throw e;
-        intentText = await requestLiveIntent(LIVE, { utterance: text, model }, { onProgress });
-      }
-    } catch (e) {
-      if (progress) progress.textContent = `GitHub POC failed: ${e.message}`;
-      else sys(`Live AI unavailable: ${e.message}`);
+      supersede();                                             // e.g. a Property Editor proposal made while waiting
+      const ev = evaluateLive(session, intentText, said);      // STALE if the accepted model moved meanwhile
+      const card = liveIntentCard(ev, intentText);
+      pending = ev.status === 'CLARIFY' ? null : { kind: 'live', text: intentText, said, evaluation: ev, card, targets: [], zoomIndex: -1 };
+      refresh();
       return;
+    } finally {
+      liveInFlight = false;
     }
-    const ev = evaluateLive(session, intentText, said);      // STALE if the accepted model moved meanwhile
-    const card = liveIntentCard(ev, intentText);
-    pending = ev.status === 'CLARIFY' ? null : { kind: 'live', text: intentText, said, evaluation: ev, card, targets: [], zoomIndex: -1 };
-    refresh();
-    return;
   }
 
   const proposalText = interpret(text, model);        // untrusted text

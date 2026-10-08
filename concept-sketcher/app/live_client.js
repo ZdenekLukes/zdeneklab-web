@@ -49,6 +49,17 @@ export function clearGitHubToken(storage = localStorage) {
   try { storage.removeItem(GH_TOKEN_KEY); } catch { /* no-op */ }
 }
 
+// The AI reply reached the service but failed the deterministic checks, so it
+// was not applied. The browser shows a plain message and a retry instead of
+// the evaluator's wording, which stays available as details.
+export const AI_REPLY_REJECTED = 'AI intent failed deterministic validation';
+function aiReplyRejected(details) {
+  const e = new Error('The AI reply did not pass the safety checks, so nothing was changed.');
+  e.code = 'AI_INTENT_INVALID';
+  e.details = Array.isArray(details) ? details : [];
+  return e;
+}
+
 async function responseJson(res) {
   try { return await res.json(); } catch { return null; }
 }
@@ -100,6 +111,7 @@ export async function requestHttpIntent(endpoint, { utterance, model, recent = [
   });
   const body = await responseJson(res);
   if (!res.ok) {
+    if (res.status === 422 && body?.error === AI_REPLY_REJECTED) throw aiReplyRejected(body.details);
     const detail = Array.isArray(body?.details) && body.details.length ? `: ${body.details.join(' · ')}` : '';
     throw new Error((body?.error || `Live AI backend returned HTTP ${res.status}`) + detail);
   }
@@ -190,6 +202,7 @@ export async function requestGitHubIntent(config, input, options = {}) {
     catch { throw new Error('GitHub POC returned an unreadable result.'); }
 
     if (!result.ok) {
+      if (result.error === AI_REPLY_REJECTED) throw aiReplyRejected(result.details);
       const detail = Array.isArray(result.details) && result.details.length ? `: ${result.details.join(' · ')}` : '';
       throw new Error((result.error || 'GitHub POC AI job failed.') + detail);
     }
