@@ -5,10 +5,10 @@
 // closed schema (src/schema.js), answers bound to structured facts, and
 // STATED answers (words the language cannot hold) keep blocking SKELETON_READY.
 
-import { motionDefinitionErrors } from './motion.js?v=fc0aae918fa8';
-import { conceptHash, legacyConceptHashV1 } from './model.js?v=fc0aae918fa8';
-import { resolve, featureDefs } from './resolve.js?v=fc0aae918fa8';
-import { checkModel, openSlots, isFactField, isOpen, COLLECTIONS, METHODS, PART_ROLES } from './schema.js?v=fc0aae918fa8';
+import { motionDefinitionErrors } from './motion.js?v=c5009ee32250';
+import { conceptHash, legacyConceptHashV1 } from './model.js?v=c5009ee32250';
+import { resolve, featureDefs } from './resolve.js?v=c5009ee32250';
+import { checkModel, openSlots, isFactField, isOpen, COLLECTIONS, METHODS, PART_ROLES } from './schema.js?v=c5009ee32250';
 
 const PART_KINDS = ['BLOCK', 'PLATE', 'FRAME', 'ROD', 'CYLINDER', 'ENVELOPE'];
 const STATES = ['DRAFT', 'CONCEPT_FROZEN', 'SKELETON_READY'];

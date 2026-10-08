@@ -3,22 +3,24 @@
 // the evaluated proposal as a structured review, and passes the user's
 // ACCEPT/REJECT to the session. Zoom is inspection only.
 
-import { motionControls } from '../src/motion.js?v=fc0aae918fa8';
-import { motionPreview } from '../src/motion_preview.js?v=fc0aae918fa8';
-import { conceptHash } from '../src/model.js?v=fc0aae918fa8';
-import { validate } from '../src/validate.js?v=fc0aae918fa8';
-import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js?v=fc0aae918fa8';
-import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js?v=fc0aae918fa8';
-import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js?v=fc0aae918fa8';
-import { reviewProposal } from '../src/proposal.js?v=fc0aae918fa8';
-import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js?v=fc0aae918fa8';
-import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js?v=fc0aae918fa8';
-import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=fc0aae918fa8';
-import { createViewer, PART_PALETTE } from '../view/render3d.js?v=fc0aae918fa8';
-import { ensureCurrentShell } from './build_version.js?v=fc0aae918fa8';
-import { threadWords, valueSources } from '../src/live_context.js?v=fc0aae918fa8';
-import { newThread, loadThread, storeThread, threadMatches, addTurn, updateTurn, recentOf } from './conversation.js?v=fc0aae918fa8';
-import { ACTIVE_PROJECT, NAME_MAX, slug, projectKey, listProducts, readIndex, displayName, cleanName, freeSlot, storeNewProduct, recordProduct, renameProduct, deleteProduct } from './library.js?v=fc0aae918fa8';
+import { motionControls } from '../src/motion.js?v=c5009ee32250';
+import { motionPreview } from '../src/motion_preview.js?v=c5009ee32250';
+import { conceptHash } from '../src/model.js?v=c5009ee32250';
+import { validate } from '../src/validate.js?v=c5009ee32250';
+import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js?v=c5009ee32250';
+import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js?v=c5009ee32250';
+import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js?v=c5009ee32250';
+import { reviewProposal } from '../src/proposal.js?v=c5009ee32250';
+import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js?v=c5009ee32250';
+import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js?v=c5009ee32250';
+import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=c5009ee32250';
+import { createViewer, PART_PALETTE } from '../view/render3d.js?v=c5009ee32250';
+import { ensureCurrentShell } from './build_version.js?v=c5009ee32250';
+import { threadWords, valueSources } from '../src/live_context.js?v=c5009ee32250';
+import { solidProgram, solidChanges } from '../src/geometry/solid_program.js?v=c5009ee32250';
+import { loadManifoldEngine } from '../src/geometry/manifold_engine.js?v=c5009ee32250';
+import { newThread, loadThread, storeThread, threadMatches, addTurn, updateTurn, recentOf } from './conversation.js?v=c5009ee32250';
+import { ACTIVE_PROJECT, NAME_MAX, slug, projectKey, listProducts, readIndex, displayName, cleanName, freeSlot, storeNewProduct, recordProduct, renameProduct, deleteProduct } from './library.js?v=c5009ee32250';
 
 const LIVE = liveConfig();
 const LEGACY_STORE = LIVE.live ? `concept-sketcher.live.${LIVE.seed || 'blank'}.session` : 'concept-sketcher.s1.session';
@@ -35,6 +37,8 @@ let tool = null;             // which view-tool row is open: 'section' | 'explod
 let cameraView = 'ISO';
 let motion = {}, motionHash = null, motionAnimation = null, motionError = '';
 let studioNow = null;
+// Solid geometry engine (src/geometry): loaded lazily; until then the existing primitives are drawn.
+let geometry = { engine: null, error: null, last: null };
 let stage = null;            // what is drawn now: { model, v, candidate, vC, scenes, changed }
 let activeStore = null;
 let storageWarning = '';
@@ -139,14 +143,15 @@ function render3d() {
     try { const preview = motionPreview(model, motion); acceptedScene = preview.scene; v = preview.validation; }
     catch (e) { motionError = e.message; motion = {}; }
   }
-  let overlay = null, candidate = null, vC = null;
+  let overlay = null, candidate = null, candidateScene = null, vC = null;
   const ps = $('pstate');
   ps.style.display = 'none';
   if (pending) {
     const ev = pending.evaluation;
     if (ev.status === 'VALID') {
       candidate = ev.candidate; vC = validate(candidate);
-      overlay = buildProposalOverlay(acceptedScene, buildScene(candidate, vC));
+      candidateScene = buildScene(candidate, vC);
+      overlay = buildProposalOverlay(acceptedScene, candidateScene);
       pending.targets = zoomTargets(overlay);
       ps.textContent = '+ PROPOSAL — not accepted'; ps.style.background = '#1f9d55'; ps.style.display = 'block';
     } else {
@@ -164,11 +169,62 @@ function render3d() {
     instanceOf: instanceOfItem,
   };
   studioNow = studio;
+  const solids = buildSolids(model, v, candidate, vC, acceptedScene, candidateScene, overlay);
+  if (candidate && overlay) pending.targets = zoomTargets(overlay);
   stage = { model, v, candidate, vC, scenes: [acceptedScene, overlay].filter(Boolean), changed: candidate ? changedEntities(model, v, candidate, vC) : [] };
   if (view.selected && !inspect(model, v, view.selected) && !(candidate && inspect(candidate, vC, view.selected))) view = updateView(view, { selected: null });
   if (view.isolatePart && ![...model.parts, ...(candidate?.parts || [])].some((p) => p.id === view.isolatePart)) view = updateView(view, { isolatePart: null });
-  viewer.show(acceptedScene, overlay, studio);
+  viewer.show(acceptedScene, overlay, studio, { solids });
   applyView();
+  if ($('geomTag')) $('geomTag').outerHTML = geometryTag();
+}
+
+// The physical solids of the accepted model and of a valid proposal, from the
+// engine. Unchanged solids are drawn as accepted; a proposal's changed or new
+// solids are drawn proposed and the accepted ones they replace as removed, so an
+// accepted body never hides a proposed opening.
+function buildSolids(model, v, candidate, vC, acceptedScene, candidateScene, overlay) {
+  if (!geometry.engine) { geometry.last = null; return null; }
+  const t0 = performance.now();
+  const progA = solidProgram(model, v), builtA = geometry.engine.build(progA);
+  const progC = candidate ? solidProgram(candidate, vC) : null, builtC = progC ? geometry.engine.build(progC) : null;
+  const changes = progC ? solidChanges(progA, progC) : { changed: [], added: [], removed: [] };
+  const replaced = new Set([...changes.changed, ...changes.removed]);
+  const poseOf = (id) => acceptedScene.primitives.find((p) => p.instance === id && p.pose)?.pose;
+  const item = (prog, built, style) => (s) => (built.solids.has(s.id) ? [{ id: s.id, part: s.part, style, mesh: built.solids.get(s.id), ...(poseOf(s.id) ? { pose: poseOf(s.id) } : {}) }] : []);
+  const accepted = progA.solids.filter((s) => !replaced.has(s.id)).flatMap(item(progA, builtA, 'produced'));
+  const proposal = [
+    ...(progC ? progC.solids.filter((s) => changes.changed.includes(s.id) || changes.added.includes(s.id)).flatMap(item(progC, builtC, 'proposed')) : []),
+    ...progA.solids.filter((s) => replaced.has(s.id)).flatMap(item(progA, builtA, 'removed')),
+  ];
+  const oldSolids = new Set(builtA.solids.keys());
+  const newSolids = new Set(builtC?.solids.keys() || []);
+  const oldInstances = new Set(v.resolved.instances.map((x) => x.id));
+  const newInstances = new Set(vC?.resolved?.instances.map((x) => x.id) || []);
+  const toSymbolic = new Set([...oldSolids].filter((id) => newInstances.has(id) && !newSolids.has(id)));
+  // The primitive scene diff excludes unchanged walls. If a solid becomes
+  // symbolic, supply its complete candidate fallback as PROPOSED; otherwise
+  // the former solid disappears and only its removed ghost remains.
+  if (toSymbolic.size && candidateScene && overlay) {
+    const existing = new Set(overlay.primitives.filter((p) => p.style === 'proposed').map((p) => p.id));
+    for (const p of candidateScene.primitives) {
+      if (!toSymbolic.has(p.instance) || (p.role && p.role !== 'hole') || existing.has(p.id)) continue;
+      overlay.primitives.push({ ...p, layer: 'proposal', style: 'proposed' });
+      existing.add(p.id);
+    }
+  }
+  // The reverse transition needs the old opaque symbolic body hidden, so
+  // the newly proposed solid isn't concealed. Removed symbols remain visible
+  // through the separate proposal primitive diff.
+  const acceptedSkip = new Set([...oldSolids, ...[...newSolids].filter((id) => oldInstances.has(id) && !oldSolids.has(id))]);
+  // Skip old and new primitive representations separately by proposal style.
+  const overlaySkip = { proposed: newSolids, removed: oldSolids };
+  const notes = [...progA.skipped, ...(progC?.skipped || [])].filter((x, i, a) => a.findIndex((y) => y.instance === x.instance) === i)
+    .filter((x) => !/^(reference part|envelope)/.test(x.reason)).map((x) => `${x.instance}: ${x.reason}`);
+  for (const e of [...builtA.errors, ...(builtC?.errors || [])]) notes.push(`${e.id}: solid not built (${e.error}); drawn with the existing primitives`);
+  geometry.last = { ms: performance.now() - t0, notes, changes,
+    solids: [...accepted, ...proposal].map((x) => ({ id: x.id, style: x.style, genus: x.mesh.genus, volume: Math.round(x.mesh.volume * 1000) / 1000, triangles: x.mesh.triangles })) };
+  return { accepted, proposal, acceptedSkip, overlaySkip };
 }
 
 // ---------------------------------------------------------------- view tools (UI state only)
@@ -456,6 +512,7 @@ function renderStatus() {
     <span class="tag ${v.open.length ? 'open' : 'ok'}">${v.open.length ? '?' : '✓'} OPEN ${v.open.length}${v.open.length ? ` (${v.open.join(', ')})` : ''}</span>
     <span class="tag prop">PROPOSAL ${p ? p.status : '—'}</span>
     ${storageWarning ? `<span class="tag err" title="${esc(storageWarning)}">AUTOSAVE ✕</span>` : ''}
+    ${geometryTag()}
     <span class="sp"></span>
     <button type="button" id="toggle3d">${document.body.classList.contains('show3d') ? '◂ Chat' : '3D ▸'}</button>
     <button type="button" id="projectBtn">Products</button>
@@ -467,6 +524,15 @@ function renderStatus() {
   $('propertyBtn').onclick = () => { renderProperties(); $('properties').classList.add('open'); };
   $('histBtn').onclick = () => { renderHistory(); $('history').classList.add('open'); };
   $('exportBtn').onclick = () => { renderExports(); $('exports').classList.add('open'); };
+}
+
+// What the 3D view shows: engine solids (exact material), partly symbolic, or still loading.
+function geometryTag() {
+  if (geometry.error) return `<span class="tag err" id="geomTag" title="${esc(`Solid geometry unavailable: ${geometry.error}. Openings are shown as symbols.`)}">3D SYMBOLIC</span>`;
+  if (!geometry.engine) return '<span class="tag" id="geomTag" title="Loading the solid geometry engine…">3D …</span>';
+  const notes = geometry.last?.notes || [];
+  return notes.length ? `<span class="tag open" id="geomTag" title="${esc(`Partly symbolic:\n${notes.join('\n')}`)}">3D ≈ ${notes.length}</span>`
+    : `<span class="tag ok" id="geomTag" title="${esc(`Solid geometry (${geometry.engine.name}): openings and protrusions are real material and empty space.`)}">3D SOLID</span>`;
 }
 
 function renderDecision() {
@@ -1122,6 +1188,8 @@ async function main() {
   try { viewer = createViewer($('view')); }
   catch (e) { storageWarning = `3D unavailable: ${e.message}`; viewer = unavailableViewer(e.message); }
   viewer.onPick((key) => select(key));
+  loadManifoldEngine().then((engine) => { geometry.engine = engine; if (session) refresh(); })
+    .catch((e) => { geometry.error = e.message; if (session) renderStatus(); });
   $('legendRef').onclick = () => setView({ showReference: !view.showReference });
   session = await startSession();
   if ($('modeLabel')) $('modeLabel').dataset.boot = 'ready';   // release smoke test: the module graph loaded and the app initialised
@@ -1173,6 +1241,9 @@ async function main() {
     inspection: () => (stage && view.selected ? (stage.candidate ? inspectChange(stage.model, stage.v, stage.candidate, stage.vC, view.selected) : inspect(stage.model, stage.v, view.selected)) : null),
     changed: () => stage?.changed ?? [],
     conversation: () => structuredClone(thread()),
+    geometry: () => ({ engine: geometry.engine?.name ?? null, loadMs: geometry.engine?.loadMs ?? null, error: geometry.error, ...structuredClone(geometry.last ?? {}) }),
+    probe: (origin, dir) => viewer.probe?.(origin, dir) ?? [],
+    camera: (name) => viewer.view(name),
     injectIntent: (intent) => {
       const text = typeof intent === 'string' ? intent : JSON.stringify(intent);
       const said = { utterance: JSON.parse(text).utterance, base: baseOf(acceptedModel(session)), source: 'test-hook' };

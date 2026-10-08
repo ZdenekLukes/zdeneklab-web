@@ -3,7 +3,7 @@
 // proposal overlay. No geometry decisions happen here.
 
 import * as THREE from 'three';
-import { OrbitControls } from '../vendor/three/OrbitControls.js?v=fc0aae918fa8';
+import { OrbitControls } from '../vendor/three/OrbitControls.js?v=c5009ee32250';
 
 export const STYLE_COLORS = { produced: 0x6f8fb8, reference: 0x9aa3b2, unresolved: 0xe8730c, proposed: 0x1f9d55, removed: 0xd93025 };
 const OPACITY = { produced: 1, reference: 0.08, unresolved: 0.55, proposed: 0.6, removed: 0.18 };
@@ -46,10 +46,13 @@ function label(text, color) {
   s.scale.set(0.1, 0.025, 1); s.renderOrder = 10; return s;
 }
 
-function buildGroup(data, S = null) {
+// skip: instances drawn as engine solids (data.solids); their material and hole primitives are not drawn again.
+function buildGroup(data, S = null, skip = null) {
   const group = new THREE.Group();
   const isRef = (p) => Boolean(S && S.refParts.has(p.part ?? S.instanceOf(p.id).replace(/@\d+$/, '')));
   const overlayStyle = (p) => p.style === 'proposed' || p.style === 'removed';
+  const skipPrimitive = (p) => (skip instanceof Set ? skip.has(p.instance) : skip?.[p.style]?.has(p.instance))
+    && (!p.role || p.role === 'hole');
   // studio fill for a solid primitive (proposal layer keeps its own style)
   const fill = (p, base) => {
     if (!S || overlayStyle(p)) return base();
@@ -79,6 +82,7 @@ function buildGroup(data, S = null) {
     return wrapper;
   };
   for (const p of data.primitives || []) {
+    if (skipPrimitive(p)) continue;
     let mesh;
     if (p.shape === 'box' && (p.outline || p.role === 'volume')) {
       // an opening outline, or a typed volume (translucent, dashed edges; a failed check is red)
@@ -133,6 +137,31 @@ function buildGroup(data, S = null) {
     }
     if (mesh) { if (S) mesh.renderOrder = isRef(p) ? 2 : overlayStyle(p) ? 1 : 0; group.add(tag(posed(mesh, p), p.id, S, isRef(p))); }
   }
+  // engine solids (src/geometry): closed meshes of material with real openings
+  for (const item of data.solids || []) {
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(item.mesh.positions, 3));
+    geo.setIndex(new THREE.BufferAttribute(item.mesh.indices, 1));
+    const flat = geo.toNonIndexed(); geo.dispose(); flat.computeVertexNormals();
+    const p = { id: `${item.id}#solid`, part: item.part, instance: item.id, style: item.style };
+    const mesh = new THREE.Mesh(flat, fill(p, () => material(p.style)));
+    const lines = new THREE.EdgesGeometry(flat, 30);
+    const ref = isRef(p), dashed = p.style === 'removed' || p.style === 'unresolved';
+    const color = p.style === 'proposed' ? 0x0d6b34 : p.style === 'removed' ? STYLE_COLORS.removed : S ? 0x0c0f14 : 0x2b3a52;
+    const e = new THREE.LineSegments(lines, dashed ? new THREE.LineDashedMaterial({ color, dashSize: 2, gapSize: 1.5 }) : new THREE.LineBasicMaterial({ color, transparent: Boolean(S), opacity: S ? 0.6 : 1 }));
+    e.computeLineDistances();
+    mesh.add(e);
+    mesh.userData.solid = item.id; mesh.userData.style = item.style;
+    if (S) mesh.renderOrder = ref ? 2 : overlayStyle(p) ? 1 : 0;
+    group.add(tag(posed(mesh, item), p.id, S, ref));
+    if (overlayStyle(p)) {
+      flat.computeBoundingBox();
+      const c = flat.boundingBox.getCenter(new THREE.Vector3());
+      const t = label(p.style === 'proposed' ? '+ PROPOSED' : '− REMOVED', p.style === 'proposed' ? '#1f9d55' : '#d93025');
+      t.position.set(c.x, c.y, flat.boundingBox[p.style === 'proposed' ? 'max' : 'min'].z + (p.style === 'proposed' ? 8 : -8));
+      group.add(tag(posed(t, item), p.id, S, ref));
+    }
+  }
   for (const l of data.labels || []) {
     const t = label(l.text, '#3b4252');
     t.position.set(...l.at);
@@ -149,6 +178,7 @@ function buildGroup(data, S = null) {
   const partTagged = new Set((data.primitives || []).filter((p) => !groupOf(p).includes('.')).map((p) => `${p.style}:${groupOf(p)}`));
   for (const p of data.primitives || []) {
     if (p.style !== 'proposed' && p.style !== 'removed') continue;
+    if (skipPrimitive(p)) continue;   // drawn (and tagged) as an engine solid
     const g = groupOf(p);
     const key = `${p.style}:${g}`;
     if (tagged.has(key) || (g.includes('.') && partTagged.has(`${p.style}:${g.split('.')[0]}`))) continue;   // one tag per changed part
@@ -319,7 +349,9 @@ export function createViewer(root) {
   return {
     // accepted: scene from the accepted model; proposal: overlay layer or null;
     // studio: { refParts, partColor, entityOf, instanceOf } for the app's studio style
-    show(acceptedScene, proposalOverlay = null, studio = null, { preserveCamera = false } = {}) {
+    // solids (optional): { accepted: [item], proposal: [item], acceptedSkip: Set, overlaySkip: Set },
+    // item { id (instance), part, style, mesh: { positions, indices }, pose? } from src/geometry
+    show(acceptedScene, proposalOverlay = null, studio = null, { preserveCamera = false, solids = null } = {}) {
       for (const old of [accepted, overlay]) if (old) {
         scene.remove(old);
         old.traverse(o => {
@@ -327,9 +359,9 @@ export function createViewer(root) {
           for (const m of (Array.isArray(o.material) ? o.material : o.material ? [o.material] : [])) { m.map?.dispose(); m.dispose(); }
         });
       }
-      accepted = buildGroup(acceptedScene, studio);
+      accepted = buildGroup({ ...acceptedScene, solids: solids?.accepted }, studio, solids?.acceptedSkip);
       scene.add(accepted);
-      overlay = proposalOverlay ? buildGroup(proposalOverlay, studio) : null;
+      overlay = proposalOverlay || solids?.proposal?.length ? buildGroup({ ...(proposalOverlay || {}), solids: solids?.proposal }, studio, solids?.overlaySkip) : null;
       if (overlay) scene.add(overlay);
       applyView();
       if (!preserveCamera && !framed) wholeView();
@@ -337,6 +369,14 @@ export function createViewer(root) {
     // view: { showReference, plane, offsets, selected, isolatePart }
     setView(next) { view = { ...view, ...next }; applyView(); },
     onPick(fn) { pickHandler = fn; },
+    // Inspection hook for checks: meshes a ray from `origin` along `dir` passes, nearest first.
+    probe(origin, dir) {
+      const r = new THREE.Raycaster(new THREE.Vector3(...origin), new THREE.Vector3(...dir).normalize());
+      r.camera = camera;   // sprites (labels) need it, though they are filtered out
+      return r.intersectObjects([accepted, overlay].filter(Boolean), true)
+        .filter((h) => h.object.isMesh && !h.object.isSprite)
+        .map((h) => ({ distance: Math.round(h.distance * 1000) / 1000, solid: h.object.userData.solid ?? null, style: h.object.userData.style ?? null, opacity: h.object.material?.opacity ?? null, entity: (() => { for (let x = h.object; x; x = x.parent) if (x.userData?.entity) return x.userData.entity; return null; })() }));
+    },
     resize,
     frame(bounds) { framed = bounds; wholeView(); if (bounds) frameBounds(bounds); },
     whole() { framed = null; wholeView(); },
