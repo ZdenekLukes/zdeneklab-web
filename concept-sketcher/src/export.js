@@ -3,10 +3,10 @@
 // every ID printed here comes from the model. They are total over validated
 // models: VALID must imply exportable (architecture Core V2 §7, F3).
 
-import { featureDefs } from './resolve.js?v=82722beda481';
-import { conceptHash } from './model.js?v=82722beda481';
-import { maturityLine } from './scene.js?v=82722beda481';
-import { projectEntity, projectParams, nominalDiameter } from './schema.js?v=82722beda481';
+import { featureDefs } from './resolve.js?v=cefb80df528e';
+import { conceptHash } from './model.js?v=cefb80df528e';
+import { maturityLine } from './scene.js?v=cefb80df528e';
+import { projectEntity, projectParams, nominalDiameter } from './schema.js?v=cefb80df528e';
 
 const fmtParam = (p) => (p.expr !== undefined ? `= ${p.expr}` : String(p.value));
 const edgeName = (part, edge) => (part.edge_names?.[edge] ? `${edge} (${part.edge_names[edge]})` : edge);

@@ -3,26 +3,26 @@
 // the evaluated proposal as a structured review, and passes the user's
 // ACCEPT/REJECT to the session. Zoom is inspection only.
 
-import { motionControls } from '../src/motion.js?v=82722beda481';
-import { motionPreview } from '../src/motion_preview.js?v=82722beda481';
-import { conceptHash } from '../src/model.js?v=82722beda481';
-import { validate } from '../src/validate.js?v=82722beda481';
-import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js?v=82722beda481';
-import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js?v=82722beda481';
-import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js?v=82722beda481';
-import { reviewProposal } from '../src/proposal.js?v=82722beda481';
-import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js?v=82722beda481';
-import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js?v=82722beda481';
-import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=82722beda481';
-import { createViewer, PART_PALETTE } from '../view/render3d.js?v=82722beda481';
-import { ensureCurrentShell } from './build_version.js?v=82722beda481';
-import { threadWords, valueSources } from '../src/live_context.js?v=82722beda481';
-import { explicitQuestionChoices } from '../src/live_intent.js?v=82722beda481';
-import { solidProgram, solidChanges } from '../src/geometry/solid_program.js?v=82722beda481';
-import { loadManifoldEngine } from '../src/geometry/manifold_engine.js?v=82722beda481';
-import { newThread, loadThread, storeThread, threadMatches, addTurn, updateTurn, recentOf } from './conversation.js?v=82722beda481';
-import { emptyMemory, appendMemory, memoryFromConcept, exportWithMemory, memoryView, memoryEvidenceWords } from '../src/design_memory.js?v=82722beda481';
-import { ACTIVE_PROJECT, NAME_MAX, slug, projectKey, listProducts, readIndex, displayName, cleanName, freeSlot, storeNewProduct, recordProduct, renameProduct, deleteProduct } from './library.js?v=82722beda481';
+import { motionControls } from '../src/motion.js?v=cefb80df528e';
+import { motionPreview } from '../src/motion_preview.js?v=cefb80df528e';
+import { conceptHash } from '../src/model.js?v=cefb80df528e';
+import { validate } from '../src/validate.js?v=cefb80df528e';
+import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js?v=cefb80df528e';
+import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js?v=cefb80df528e';
+import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js?v=cefb80df528e';
+import { reviewProposal } from '../src/proposal.js?v=cefb80df528e';
+import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js?v=cefb80df528e';
+import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js?v=cefb80df528e';
+import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=cefb80df528e';
+import { createViewer, PART_PALETTE } from '../view/render3d.js?v=cefb80df528e';
+import { ensureCurrentShell } from './build_version.js?v=cefb80df528e';
+import { threadWords, valueSources } from '../src/live_context.js?v=cefb80df528e';
+import { explicitQuestionChoices } from '../src/live_intent.js?v=cefb80df528e';
+import { solidProgram, solidChanges } from '../src/geometry/solid_program.js?v=cefb80df528e';
+import { loadManifoldEngine } from '../src/geometry/manifold_engine.js?v=cefb80df528e';
+import { newThread, loadThread, storeThread, threadMatches, addTurn, updateTurn, recentOf, refusalReasons } from './conversation.js?v=cefb80df528e';
+import { emptyMemory, appendMemory, memoryFromConcept, exportWithMemory, memoryView, memoryEvidenceWords } from '../src/design_memory.js?v=cefb80df528e';
+import { ACTIVE_PROJECT, NAME_MAX, slug, projectKey, listProducts, readIndex, displayName, cleanName, freeSlot, storeNewProduct, recordProduct, renameProduct, deleteProduct } from './library.js?v=cefb80df528e';
 
 const LIVE = liveConfig();
 const LEGACY_STORE = LIVE.live ? `concept-sketcher.live.${LIVE.seed || 'blank'}.session` : 'concept-sketcher.s1.session';
@@ -42,6 +42,7 @@ let studioNow = null;
 // Solid geometry engine (src/geometry): loaded lazily; until then the existing primitives are drawn.
 let geometry = { engine: null, error: null, last: null };
 let stage = null;            // what is drawn now: { model, v, candidate, vC, scenes, changed }
+let renderFailure = null;    // message of the last 3D preview failure; the preview is optional, the decision is not
 let activeStore = null;
 let designMemory = emptyMemory(); // per-product; never reset by Accept
 let storageWarning = '';
@@ -161,10 +162,10 @@ function render3d() {
       candidateScene = buildScene(candidate, vC);
       overlay = buildProposalOverlay(acceptedScene, candidateScene);
       pending.targets = zoomTargets(overlay);
-      ps.textContent = '+ PROPOSAL — not accepted'; ps.style.background = '#1f9d55'; ps.style.display = 'block';
+      ps.textContent = isPhone() ? 'Návrh — zatím nepřijatý' : '+ PROPOSAL — not accepted'; ps.style.background = '#1f9d55'; ps.style.display = 'block';
     } else {
       pending.targets = [];
-      ps.textContent = `✕ PROPOSAL ${ev.status} — nothing drawn`; ps.style.background = '#d93025'; ps.style.display = 'block';
+      ps.textContent = isPhone() ? 'Návrh nelze přijmout — nic se nezobrazuje' : `✕ PROPOSAL ${ev.status} — nothing drawn`; ps.style.background = '#d93025'; ps.style.display = 'block';
     }
   }
   // studio style inputs: one palette colour per PRODUCED part (model order), REFERENCE parts, entity lookup
@@ -185,6 +186,7 @@ function render3d() {
   viewer.show(acceptedScene, overlay, studio, { solids });
   applyView();
   if ($('geomTag')) $('geomTag').outerHTML = geometryTag();
+  renderStageNote();
 }
 
 // The physical solids of the accepted model and of a valid proposal, from the
@@ -278,6 +280,7 @@ function select(key) { setView({ selected: key ? (entityOf(key, stage?.model ?? 
 function renderViewTools() {
   const box = $('viewtools');
   const sec = view.section;
+  box.classList.toggle('active', Boolean(sec.on || view.explode || view.isolatePart || tool));
   const r = sec.on ? sectionRange(visibleBounds(), sec.axis) : null;
   box.innerHTML = `
     <div class="row">
@@ -487,6 +490,7 @@ function renderInspect() {
 }
 
 function show3d(on) {
+  if (on && document.activeElement?.matches?.('input, textarea')) document.activeElement.blur();   // the keyboard does not belong to the 3D screen
   document.body.classList.toggle('show3d', on);
   viewer.resize();
   renderStatus();
@@ -534,18 +538,35 @@ function renderStatus() {
     <button type="button" id="exportBtn">Export</button>`;
   const switchButton = `<button type="button" id="toggle3d" aria-label="${is3d ? 'Switch to Chat' : 'Switch to 3D preview'}" aria-controls="${is3d ? 'chat' : 'stage'}">${is3d ? '◂ Chat' : '3D ▸'}</button>`;
   if (phone) {
-    // The primary mobile bar is navigation, never a diagnostics dashboard.
-    // Keep warnings visible; all other technical state moves to More.
+    // The primary mobile bar is navigation only: More on the left, the large Chat/3D
+    // switch on the right. Products open from the product name (chat header, 3D chip).
+    // Warnings stay visible; technical state lives in More → Diagnostics.
     $('status').classList.add('compactStatus');
     $('status').innerHTML = `
-      <button type="button" id="projectBtn" aria-label="Open products, current: ${esc(product)}" title="${esc(product)}"><span class="productBtnIcon" aria-hidden="true">▣</span><span class="productBtnName">Produkty</span><span aria-hidden="true">⌄</span></button>
-      <button type="button" id="moreBtn" aria-label="More controls and diagnostics">···</button>
+      <button type="button" id="moreBtn" aria-label="Další možnosti" title="Další možnosti">···</button>
       ${switchButton}
-      ${storageWarning ? '<span class="mobileWarning" role="status">AUTOSAVE ✕</span>' : ''}
+      ${storageWarning ? `<span class="mobileWarning" role="status" title="${esc(storageWarning)}">AUTOSAVE ✕ — ukládání selhalo, viz zprávu v chatu</span>` : ''}
       ${v.errors.length ? `<span class="mobileWarning" role="status">${v.errors.length} model errors</span>` : ''}`;
-    $('moreContent').innerHTML = `<h3>Model details</h3><div class="statusFacts">${facts}</div>
-      <h3>Tools</h3><div class="statusTools">${tools}</div>`;
+    $('moreContent').innerHTML = `
+      <section><h3>Produkt a historie</h3><div class="statusTools">
+        <button type="button" id="moreProducts">Produkty…</button>
+        <button type="button" id="moreBrief">Požadavky</button>
+        <button type="button" id="histBtn">Historie změn</button></div></section>
+      <section><h3>3D a vlastnosti</h3><div class="statusTools">
+        <button type="button" id="adv3dBtn" aria-pressed="${document.body.classList.contains('adv3d')}">${document.body.classList.contains('adv3d') ? 'Skrýt pokročilý 3D pohled' : 'Pokročilý 3D pohled'}</button>
+        <button type="button" id="propertyBtn" ${view.selected ? '' : 'disabled'} title="Nejdřív ve 3D vyber díl">Přesné hodnoty</button></div></section>
+      <section><h3>Import a export</h3><div class="statusTools">
+        <button type="button" id="moreSave">Uložit .aiconcept</button>
+        <button type="button" id="moreOpen">Otevřít soubor…</button>
+        <button type="button" id="exportBtn">Export</button></div></section>
+      <details class="diag"><summary>Diagnostika</summary><div class="statusFacts">${facts}</div>
+        <p class="muted">${esc($('modeLabel')?.textContent || '')}</p></details>`;
     $('moreBtn').onclick = () => { closeSheets(); $('moreSheet').classList.add('open'); };
+    $('moreProducts').onclick = openProducts;
+    $('moreBrief').onclick = () => { closeSheets(); renderDesignBrief(); $('designBrief').classList.add('open'); };
+    $('adv3dBtn').onclick = () => { closeSheets(); setAdvanced3d(!document.body.classList.contains('adv3d')); };
+    $('moreSave').onclick = saveConceptFile;
+    $('moreOpen').onclick = () => $('openFile').click();
   } else {
     $('status').classList.remove('compactStatus');
     $('status').innerHTML = `
@@ -555,14 +576,39 @@ function renderStatus() {
     $('moreContent').innerHTML = '';
   }
   $('toggle3d').onclick = () => show3d(!document.body.classList.contains('show3d'));
-  $('projectBtn').onclick = openProducts;
+  if ($('projectBtn')) $('projectBtn').onclick = openProducts;
+  // 3D screen (phone): the product stays named, and a partly symbolic preview says so.
+  $('stageProductName').textContent = product;
+  $('stageProduct').onclick = openProducts;
+  renderStageNote();
   $('propertyBtn').onclick = () => { closeSheets(); renderProperties(); $('properties').classList.add('open'); };
   $('histBtn').onclick = () => { closeSheets(); renderHistory(); $('history').classList.add('open'); };
   $('exportBtn').onclick = () => { closeSheets(); renderExports(); $('exports').classList.add('open'); };
 }
 
+// Phone 3D screen: a short note when the preview is not exact solid geometry.
+function renderStageNote() {
+  const note = $('stageNote');
+  if (!note) return;
+  const notes = geometry.last?.notes || [];
+  const text = geometry.error ? '3D náhled je jen schematický (přesná geometrie se nenačetla).'
+    : geometry.engine && notes.length ? `Část náhledu je jen přibližná (${notes.length}). Podrobnosti: Další → Diagnostika.` : '';
+  note.textContent = text;
+  note.title = geometry.error || notes.join('\n');
+  note.hidden = !text;
+}
+// Advanced 3D (phone): the legend, the inspector picker and the view tools. Off by
+// default so the model has the screen; the tools keep their state and behaviour.
+function setAdvanced3d(on) {
+  document.body.classList.toggle('adv3d', on);
+  if (on && !document.body.classList.contains('show3d')) show3d(true);
+  else renderStatus();
+  viewer.resize();
+}
+
 // What the 3D view shows: engine solids (exact material), partly symbolic, or still loading.
 function geometryTag() {
+  if (renderFailure) return `<span class="tag err" id="geomTag" title="${esc(`3D preview failed: ${renderFailure}`)}">3D ERROR</span>`;
   if (geometry.error) return `<span class="tag err" id="geomTag" title="${esc(`Solid geometry unavailable: ${geometry.error}. Openings are shown as symbols.`)}">3D SYMBOLIC</span>`;
   if (!geometry.engine) return '<span class="tag" id="geomTag" title="Loading the solid geometry engine…">3D …</span>';
   const notes = geometry.last?.notes || [];
@@ -584,7 +630,7 @@ function renderDecision() {
       ${valid ? `<button type="button" id="zoomBtn" title="Zoom to change">🔍 ${t ? 'Next' : 'Zoom'}<span class="long"> ${t ? '▸' : 'to change'}</span></button>
       <button type="button" id="wholeBtn" title="Whole model">⤢ <span class="long">Whole model</span><span class="short">All</span></button>` : ''}
       <button type="button" class="primary" id="acceptBtn" ${valid ? '' : 'disabled'}>✓ Přijmout</button>
-      <button type="button" class="danger" id="rejectBtn">✕ ${valid ? 'Zamítnout' : 'Zavřít'}</button>
+      <button type="button" class="danger" id="rejectBtn">✕ ${valid ? 'Odmítnout' : 'Zavřít'}</button>
     </div>`;
   if (valid) { $('zoomBtn').onclick = zoomNext; $('wholeBtn').onclick = wholeModel; }
   $('acceptBtn').onclick = onAccept;
@@ -675,6 +721,11 @@ function renderExports() {
   });
 }
 
+function saveConceptFile() {
+  const files = portableArtifacts();
+  const name = Object.keys(files).find((x) => x.endsWith('.aiconcept'));
+  downloadText(name, files[name]);
+}
 function closeSheets() { document.querySelectorAll('.sheet.open').forEach((x) => x.classList.remove('open')); }
 function downloadText(name, text, type = 'application/json') {
   const blob = new Blob([text], { type });
@@ -725,10 +776,14 @@ function productRow(r, model) {
   const name = displayName(r);
   const rev = cur ? model.meta.revision : r.revision;
   const ui = libraryUi?.key === r.key ? libraryUi.mode : null;
-  return `<div class="product${cur ? ' current' : ''}" data-key="${esc(r.key)}">
-    <div class="pmain"><div class="pname">${esc(name)}${cur ? ' <span class="pill ACCEPTED">Open now</span>' : ''}</div>
-      <div class="muted">REV ${rev ?? '?'} · modified ${esc(when(r.updated))}</div></div>
-    <div class="pactions">${cur ? '' : `<button type="button" data-project="${esc(r.key)}">Open</button>`}<button type="button" data-rename="${esc(r.key)}">Rename</button><button type="button" data-delete="${esc(r.key)}">Delete</button></div>
+  // The row itself opens the product (one tap). Rename and Delete sit in the row's
+  // own actions; on a phone they appear after ⋯, so the list stays a plain list.
+  const label = `<span class="pname">${esc(name)}${cur ? ' <span class="pill ACCEPTED">Open now</span>' : ''}</span>
+      <span class="muted">REV ${rev ?? '?'} · modified ${esc(when(r.updated))}</span>`;
+  return `<div class="product${cur ? ' current' : ''}${ui ? ' menu' : ''}" data-key="${esc(r.key)}">
+    ${cur ? `<div class="pmain">${label}</div>` : `<button type="button" class="pmain" data-project="${esc(r.key)}" aria-label="Open ${esc(name)}">${label}<span class="popen" aria-hidden="true">Open ›</span></button>`}
+    <button type="button" class="pmore" data-pmenu="${esc(r.key)}" aria-expanded="${Boolean(ui)}" aria-label="More actions for ${esc(name)}">⋯</button>
+    <div class="pactions"><button type="button" data-rename="${esc(r.key)}">Rename</button><button type="button" data-delete="${esc(r.key)}">Delete</button></div>
     ${ui === 'rename' ? `<form class="pform" id="renameForm"><label for="renameInput">New name</label><input id="renameInput" maxlength="${NAME_MAX}" required value="${esc(name)}" autocomplete="off"><div class="sheet-actions"><button type="submit" class="primary">Save name</button><button type="button" id="renameCancel">Cancel</button></div></form>` : ''}
     ${ui === 'delete' ? `<div class="pform confirm" role="alertdialog" aria-labelledby="deleteTitle"><b id="deleteTitle">Delete “${esc(name)}”?</b><p>This removes its accepted model (REV ${rev ?? '?'}), its whole revision history, its autosave backup and its AI conversation from this browser. It cannot be undone. Other products are not affected.</p><div class="sheet-actions"><button type="button" id="deleteDownload">Download .aiconcept first</button><button type="button" id="deleteCancel">Cancel</button><button type="button" class="danger" id="deleteConfirm">Delete “${esc(name)}”</button></div></div>` : ''}
   </div>`;
@@ -748,11 +803,7 @@ function renderProjects() {
     <h3>This product: ${esc(currentName())}</h3>
     <div class="sheet-actions"><button type="button" id="projectSave" class="primary">Save .aiconcept</button><button type="button" id="projectOpen">Open file…</button><button type="button" id="projectBrief">Requirements / Brief</button><button type="button" id="projectBackup" ${localStorage.getItem(`${activeStore}.backup`) ? '' : 'disabled'}>Restore autosave backup</button></div>
     <p class="muted">Products are saved in this browser only. Opening a file always adds it as a new product; it never replaces one.</p>`;
-  $('projectSave').onclick = () => {
-    const files = portableArtifacts();
-    const name = Object.keys(files).find((x) => x.endsWith('.aiconcept'));
-    downloadText(name, files[name]);
-  };
+  $('projectSave').onclick = saveConceptFile;
   $('projectOpen').onclick = () => $('openFile').click();
   $('projectBrief').onclick = () => { renderDesignBrief(); $('projects').classList.remove('open'); $('designBrief').classList.add('open'); };
   if ($('projectUnreadable')) $('projectUnreadable').onclick = () => downloadText('unreadable-concept-sketcher-save.json', unreadable.raw);
@@ -791,6 +842,7 @@ function renderProjects() {
       sys(`Project was not opened: ${e.message}`);
     }
   }; });
+  $('projectList').querySelectorAll('[data-pmenu]').forEach((b) => { b.onclick = () => { libraryUi = libraryUi?.key === b.dataset.pmenu ? null : { key: b.dataset.pmenu, mode: 'menu' }; renderProjects(); }; });
   $('projectList').querySelectorAll('[data-rename]').forEach((b) => { b.onclick = () => { libraryUi = { key: b.dataset.rename, mode: 'rename' }; renderProjects(); $('renameInput')?.focus(); }; });
   $('projectList').querySelectorAll('[data-delete]').forEach((b) => { b.onclick = () => { libraryUi = { key: b.dataset.delete, mode: 'delete' }; renderProjects(); $('deleteCancel')?.focus(); }; });
   if ($('renameForm')) {
@@ -941,10 +993,18 @@ function reveal(el) {
 const user = (t) => addEl(esc(t), 'msg user');
 const sys = (t) => addEl(esc(t), 'msg sys');
 
+const PHONE_STATE = {
+  ACCEPTED: ['✓ PŘIJATO', 'Změna je přijatá a uložená jako nová verze.'],
+  REJECTED: ['✕ ODMÍTNUTO', 'Odmítnuto — nic se nezměnilo.'],
+  SUPERSEDED: ['NEPOUŽITO', 'Nahrazeno novější zprávou — nic se nezměnilo.'],
+};
 function setCardState(card, cls, text) {
   const pill = card.querySelector('.pill');
   pill.className = `pill ${cls}`;
-  pill.textContent = text;
+  pill.textContent = isPhone() && PHONE_STATE[cls] ? PHONE_STATE[cls][0] : text;
+  const h = card.querySelector('.hstate');
+  if (h && PHONE_STATE[cls]) { h.textContent = PHONE_STATE[cls][1]; h.classList.add('done'); }
+  card.querySelector('.show3dBtn')?.remove();
 }
 
 function supersede() {
@@ -994,7 +1054,7 @@ function liveIntentCard(ev, intentText, { active = true } = {}) {
       <div class="top"><span class="pill CLARIFY">QUESTION</span></div>
       <div class="question"><span class="vh">Question: </span>${esc(ev.question)}</div>
       ${choices.length ? `<div class="choices${active ? '' : ' obsolete'}" role="group" aria-label="Suggested answers">${choices.map((c, k) => `<button type="button" data-choice="${k}" ${active ? '' : 'disabled'}>${esc(c.label)}</button>`).join('')}<button type="button" class="other" data-other ${active ? '' : 'disabled'}>Jiná odpověď…</button></div>` : ''}
-      ${intentText ? `<details><summary>Advanced: raw intent JSON</summary><pre>${esc(JSON.stringify(JSON.parse(intentText), null, 2))}</pre></details>` : ''}`, 'card ask');
+      ${intentText ? `<details><summary>${isPhone() ? 'Technické podrobnosti' : 'Advanced: raw intent JSON'}</summary><pre>${esc(JSON.stringify(JSON.parse(intentText), null, 2))}</pre></details>` : ''}`, 'card ask');
     card.querySelectorAll('[data-choice]').forEach((b) => { b.onclick = () => choose(card, b, choices[Number(b.dataset.choice)].label); });   // exactly the words shown
     card.querySelector('[data-other]')?.addEventListener('click', () => { $('input').placeholder = 'Napiš vlastní odpověď…'; $('input').focus(); });
     return card;
@@ -1007,10 +1067,14 @@ function liveIntentCard(ev, intentText, { active = true } = {}) {
   // which of the user's messages each checked number comes from (a later message may have replaced it)
   const sources = ev.proposal ? valueSources(acceptedModel(session), ev.proposal.ops, ev.proposal.utterance) : [];
   const shown = (v) => (typeof v === 'string' ? v : JSON.stringify(v));
+  const phone = isPhone();
+  const pillText = phone ? ({ VALID: 'NÁVRH', INVALID: 'NEPLATNÝ NÁVRH', STALE: 'ZASTARALÝ NÁVRH' }[ev.status] ?? ev.status) : ev.status === 'VALID' ? '+ PROPOSED' : ev.status;
   const html = `
-    <div class="top"><span class="pill ${ev.status}">${ev.status === 'VALID' ? '+ PROPOSED' : ev.status}</span><span class="muted">Live Intent</span></div>
-    ${i ? `<div><b>AI proposes:</b> ${esc(i.summary)}</div>` : ''}
-    ${scope.length || changed.length ? `<details class="technicalDiff"><summary>Change details (${changed.length} model paths)</summary>
+    <div class="top"><span class="pill ${ev.status}">${pillText}</span><span class="muted">Live Intent</span></div>
+    ${i ? `<div>${phone ? '' : '<b>AI proposes:</b> '}${esc(i.summary)}</div>` : ''}
+    ${phone && ev.status === 'VALID' ? '<div class="hstate">Zatím nepřijato. Prohlédni si návrh ve 3D a pak dole zvol Přijmout, nebo Odmítnout.</div><button type="button" class="show3dBtn">Zobrazit ve 3D</button>' : ''}
+    ${phone && ev.status !== 'VALID' ? '<div class="hstate bad">Tento návrh nelze přijmout. Nic se nezměnilo.</div>' : ''}
+    ${scope.length || changed.length ? `<details class="technicalDiff"><summary>${isPhone() ? 'Co přesně se v modelu mění' : `Change details (${changed.length} model paths)`}</summary>
       ${scope.length ? `<div class="box"><b>May change (derived from the edits):</b> ${scope.map(esc).join(' · ')}<br><span class="muted">Every other model path is checked to stay byte-identical.</span>${affects.length ? `<br><b>Refers to / depends on (not changed):</b> ${affects.map(esc).join(' · ')}` : ''}</div>` : ''}
       ${changed.length ? `<div class="box"><b>Actual diff:</b> ${changed.map(esc).join(' · ')}</div>` : ''}
     </details>` : ''}
@@ -1019,8 +1083,10 @@ function liveIntentCard(ev, intentText, { active = true } = {}) {
     ${answers.length ? `<div class="box"><b>Resolved:</b> ${answers.map((a) => `${esc(a.id)} = ${esc(a.answer)}`).join(' · ')}</div>` : ''}
     ${unknowns.length ? `<div class="box"><span class="pill OPEN">? OPEN</span> ${unknowns.map((u) => esc(u.question)).join(' · ')}</div>` : ''}
     ${errs}
-    ${i ? `<details><summary>Advanced: raw intent JSON</summary><pre>${esc(JSON.stringify(JSON.parse(intentText), null, 2))}</pre></details>` : ''}`;
-  return addEl(html, 'card');
+    ${i ? `<details><summary>${phone ? 'Technické podrobnosti' : 'Advanced: raw intent JSON'}</summary><pre>${esc(JSON.stringify(JSON.parse(intentText), null, 2))}</pre></details>` : ''}`;
+  const card = addEl(html, 'card');
+  card.querySelector('.show3dBtn')?.addEventListener('click', () => { show3d(true); if (pending?.card === card) zoomNext(); });
+  return card;
 }
 
 // One tap per question: the chosen answer is marked, the others are disabled,
@@ -1077,6 +1143,7 @@ function onAccept() {
     pending = null;
     save();
     viewer.whole();
+    if (isPhone()) sys('Hotovo — změna je přijatá. Můžeš pokračovat dalším požadavkem.');
   } catch (e) {
     sys(`Not accepted: ${e.message}`);
   }
@@ -1090,6 +1157,7 @@ function onReject() {
   setCardState(pending.card, 'REJECTED', '✕ REJECTED — nothing changed');
   pending = null;
   viewer.whole();
+  if (isPhone()) sys('Návrh je odmítnutý. Nic se nezměnilo.');
   refresh();
 }
 
@@ -1162,7 +1230,7 @@ async function send(text, { via = 'typed' } = {}) {
         progress.remove();
         if (e.code === 'AI_INTENT_INVALID') {
           remember({ role: 'user', text, via });
-          remember({ role: 'assistant', kind: 'refused' });
+          remember({ role: 'assistant', kind: 'refused', reasons: refusalReasons(e.details) });   // told to the AI next turn
           aiReplyRejectedCard(text, e);
           return;
         }
@@ -1198,7 +1266,8 @@ function rememberReply(ev, intentText, said) {
   if (ev.status === 'CLARIFY') return remember({ role: 'assistant', kind: 'question', text: ev.question, ...(ev.choices?.length ? { choices: ev.choices } : {}) });
   const summary = ev.intent?.summary || 'a change';
   if (ev.status === 'VALID') return remember({ role: 'assistant', kind: 'proposal', text: summary, outcome: 'pending', intent: intentText, said });
-  return remember({ role: 'assistant', kind: 'proposal', text: summary, outcome: ev.status === 'STALE' ? 'stale' : 'refused' });
+  return remember({ role: 'assistant', kind: 'proposal', text: summary, outcome: ev.status === 'STALE' ? 'stale' : 'refused',
+    ...(ev.status === 'STALE' ? {} : { reasons: refusalReasons(ev.errors) }) });
 }
 
 // Show this project's thread again after a reload, a project switch or a
@@ -1208,7 +1277,7 @@ function replayThread() {
   if (!LIVE.live || !session) return;
   const turns = thread().turns;
   if (!turns.length) return;
-  sys('Continuing this conversation. Nothing in it is part of the concept until you accept a proposal.');
+  if (!isPhone()) sys('Continuing this conversation. Nothing in it is part of the concept until you accept a proposal.');
   turns.forEach((t, i) => {
     const last = i === turns.length - 1;
     if (t.role === 'user') user(t.text);
@@ -1217,14 +1286,33 @@ function replayThread() {
       const ev = evaluateLive(session, t.intent, t.said);
       const card = liveIntentCard(ev, t.intent);
       if (ev.status === 'VALID') pending = { kind: 'live', text: t.intent, said: t.said, evaluation: ev, card, targets: [], zoomIndex: -1, turn: t.id };
-      else amendTurn(t.id, { outcome: ev.status === 'STALE' ? 'stale' : 'refused', intent: undefined, said: undefined });
+      else amendTurn(t.id, { outcome: ev.status === 'STALE' ? 'stale' : 'refused', intent: undefined, said: undefined, ...(ev.status === 'STALE' ? {} : { reasons: refusalReasons(ev.errors) }) });
     } else if (t.kind === 'proposal') {
-      sys(`Earlier proposal: ${t.text} — ${t.outcome === 'rejected' ? 'rejected' : 'not applied'}.`);
-    } else if (t.kind === 'refused') sys('An earlier AI reply could not be used; nothing was changed.');
+      sys(isPhone() ? `Dřívější návrh: ${t.text} — ${t.outcome === 'rejected' ? 'odmítnutý' : 'nepoužitý'}.` : `Earlier proposal: ${t.text} — ${t.outcome === 'rejected' ? 'rejected' : 'not applied'}.`);
+    } else if (t.kind === 'refused') sys(isPhone() ? 'Dřívější odpověď AI nešla použít; nic se nezměnilo.' : 'An earlier AI reply could not be used; nothing was changed.');
   });
 }
 
-function refresh() { renderStatus(); render3d(); renderDecision(); }
+// The 3D preview must never decide whether a product can be opened or a proposal
+// reviewed: a render failure is shown, the accepted model and the decision bar stay.
+function refresh() {
+  renderStatus();
+  try { render3d(); renderFailure = null; }
+  catch (e) { previewFailed(e); }
+  renderDecision();
+}
+function previewFailed(e) {
+  renderFailure = e?.message || String(e);
+  console.error('3D preview failed', e);
+  try { const model = acceptedModel(session); stage = { model, v: validate(model), candidate: null, vC: null, scenes: [], changed: [] }; } catch { stage = null; }
+  try { viewer.show({ primitives: [], arrows: [], markers: [] }, null, studioNow, {}); } catch { /* the old drawing stays under the notice */ }
+  const ps = $('pstate');
+  if (ps) {
+    ps.textContent = `⚠ 3D preview failed (${renderFailure}). The ${pending ? 'proposal can still be accepted or rejected' : 'concept is unchanged'}; details and history still work.`;
+    ps.style.background = '#b26a00'; ps.style.display = 'block';
+  }
+  if ($('geomTag')) $('geomTag').outerHTML = geometryTag();
+}
 const baseOf = (model) => ({ revision: model.meta.revision, hash: conceptHash(model) });
 
 async function startSession(fresh = false) {
@@ -1268,6 +1356,29 @@ async function startSession(fresh = false) {
   return s;
 }
 
+// iOS Safari does not shrink the layout viewport (nor 100dvh) for the on-screen
+// keyboard; it scrolls the page instead, which moves the header away and can leave
+// a blank band after the keyboard closes. While the keyboard is up (a text field has
+// focus and the visible area is clearly shorter than the window), size the app to
+// the visible area, keep the page unscrolled and hide the footer (body.typing);
+// otherwise 100dvh and the footer. Desktop and keyboard-less states are untouched.
+function fitToKeyboard() {
+  const vv = window.visualViewport;
+  if (!vv) return;
+  const apply = () => {
+    const focused = isPhone() && document.activeElement?.matches?.('input, textarea');
+    const keyboard = focused && window.innerHeight - vv.height > 80;
+    document.body.classList.toggle('typing', keyboard);
+    if (keyboard) {
+      document.documentElement.style.setProperty('--app-h', `${Math.round(vv.height)}px`);
+      if (window.scrollY) window.scrollTo(0, 0);
+    } else document.documentElement.style.removeProperty('--app-h');
+  };
+  vv.addEventListener('resize', apply);
+  vv.addEventListener('scroll', apply);
+  document.addEventListener('focusout', () => setTimeout(apply, 50));
+}
+
 function unavailableViewer(message) {
   $('view').innerHTML = `<div style="padding:24px;color:#e9eef5"><h2>3D preview unavailable</h2><p>${esc(message)}</p><p>The concept, validation, properties and exports remain available.</p></div>`;
   const noop = () => {};
@@ -1282,6 +1393,7 @@ async function main() {
   loadManifoldEngine().then((engine) => { geometry.engine = engine; if (session) refresh(); })
     .catch((e) => { geometry.error = e.message; if (session) renderStatus(); });
   $('legendRef').onclick = () => setView({ showReference: !view.showReference });
+  $('adv3dExit').onclick = () => setAdvanced3d(false);
   session = await startSession();
   if ($('modeLabel')) $('modeLabel').dataset.boot = 'ready';   // release smoke test: the module graph loaded and the app initialised
   if ($('modeLabel')) $('modeLabel').textContent = LIVE.live ? `LIVE · ${LIVE.transport === 'github' ? 'GitHub POC' : 'HTTP'}${LIVE.seed ? ` · ${LIVE.seed}` : ''}` : 'S1 · demo interpreter (no AI connected)';
@@ -1289,6 +1401,10 @@ async function main() {
   $('chips').querySelectorAll('button').forEach((b) => { b.onclick = () => { document.body.classList.remove('showchips'); send(b.textContent); }; });
   $('examplesBtn').style.display = LIVE.live ? 'none' : '';
   $('examplesBtn').onclick = () => document.body.classList.toggle('showchips');
+  // Sending keeps the field focused (the keyboard stays up, like a messenger), so the
+  // layout does not move under the finger between the tap and the send.
+  $('form').querySelector('button[type=submit]').addEventListener('pointerdown', (e) => { if (document.activeElement === $('input')) e.preventDefault(); });
+  fitToKeyboard();
   $('form').onsubmit = (e) => { e.preventDefault(); const t = $('input').value; $('input').value = ''; void send(t); };
   $('closeMore').onclick = () => $('moreSheet').classList.remove('open');
   $('closeHist').onclick = () => $('history').classList.remove('open');
@@ -1315,7 +1431,12 @@ async function main() {
   };
   legacyNote(session);
   if (unreadable) sys(`Saved project was NOT restored: ${unreadable.error}. Its exact text is kept in this browser (Products → Unreadable saved projects → Download). A new start concept is shown instead.`);
-  sys(LIVE.live
+  if (isPhone()) {
+    // Phone: one short Czech line, only when this product's conversation is empty.
+    if (!(LIVE.live && thread().turns.length)) sys(acceptedModel(session).parts.length
+      ? 'Napiš, co chceš na produktu změnit. Navrhnu úpravu a nic se nezmění, dokud ji nepřijmeš.'
+      : 'Popiš, co chceš vyrobit — například „krabička 100 × 60 × 40 mm se stěnami 2 mm“. Navrhnu model a nic se neuloží, dokud návrh nepřijmeš.');
+  } else sys(LIVE.live
     ? `Live Concept: REV ${acceptedModel(session).meta.revision} · transport ${LIVE.transport}. Describe the concept or a local change. AI only proposes; scoped validation and Accept control every mutation.`
     : `Accepted concept: REV ${acceptedModel(session).meta.revision} — ${acceptedModel(session).meta.title}. Tell me what to change. I only propose; nothing changes until you accept.`);
   replayThread();

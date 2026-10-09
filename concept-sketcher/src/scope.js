@@ -15,7 +15,7 @@
 // hidden as "the parts array changed". Runtime-only freeze state is ignored:
 // every accepted mechanical edit intentionally returns the concept to DRAFT.
 
-import { parseExpr, exprNames } from './model.js?v=82722beda481';
+import { parseExpr, exprNames } from './model.js?v=cefb80df528e';
 
 const IGNORED_ROOTS = new Set(['freeze', 'resolved', 'history']);
 

@@ -21,28 +21,62 @@ const TOPICS = {
 const topicOf = (s) => Object.entries(TOPICS).filter(([, re]) => has(s, re)).map(([key]) => key);
 const isAnswer = (s) => /^(ano|ne|yes|no|jo|jasn|samozřej|ok|dobře|vlevo|vpravo|nahoře|dole|uprostřed|pev|voln|integrovan|odnímat|nevyjímat)/i.test(s);
 const fmt = (v) => Number(v.toFixed(6));
+export const EVIDENCE_BUDGET = 7000;   // characters of evidence lines per AI request
+// a stated quantity: a number with a length/angle/mass/volume unit, or a × dimension
+const QUANTITY = /\d\s*(?:mm|cm|m\b|milimetr|°|stup|deg|%|g\b|kg|ml|l\b|litr)|\d\s*[×xX*]\s*\d/iu;
+
+// Typed claims are a convenience index over the literal journal, so they are
+// extracted only from unambiguous wording. A number counts for a key only when it
+// sits next to that key's own words in the same clause, and never from a clause
+// about another component (a hole, a lid, a base, an arm …). Everything else stays
+// as literal evidence: no claim is better than a wrong "user stated" value
+// (e.g. "otvor v delší stěně (80 mm)" is not a wall thickness).
+const NUM = '(-?\\d+(?:[.,]\\d+)?)';
+const BOX_WORDS = /krabic|krabič|box|pouzd|enclosure|skříň|skrin/;
+const OTHER_PART = /vík|viko|lid|cover|podstav|základn|zakladn|ramen|opěr|oper|desk|vlož|vloz|plášť|plast|čep|cep\b|tyč|tyc|mušl|musl|čepel|rukoj|hlav|nádob|nadob|tělo|telo|body|base|arm|plate|knob|otvor|díra|dír|hole|výřez|vyrez|kabel|šroub|sroub|screw|průměr|prumer|ø/;
+const WALL_WORDS = /stěn|sten|wall/;
+const THICK_WORDS = /tloušť|tloust|thick|siln/;
+const HEIGHT_WORDS = /výšk|vysk|vysok|height/;
+const clauses = (t) => t.split(/[.;:!?]\s+|,\s+|\n+/u).map((c) => c.trim()).filter(Boolean);
+const sentences = (t) => t.split(/[.;!?]\s+|\n+/u).map((c) => c.trim()).filter(Boolean);
+const numbers = (t) => [...t.matchAll(new RegExp(`${NUM}\\s*(?:mm|milimetr\\w*)?`, 'giu'))].map((m) => fmt(asNumber(m[1])));
+// the first number after a key word in the clause ("stěny mají 2,5 mm, ne 2 mm" -> 2.5)
+const after = (c, re) => { const m = new RegExp(`(?:${re.source})\\S*[^\\d]{0,24}?${NUM}\\s*(?:mm|milimetr\\w*)`, 'iu').exec(c); return m ? fmt(asNumber(m[1])) : null; };
+const before = (c, re) => { const m = new RegExp(`${NUM}\\s*(?:mm|milimetr\\w*)\\s*(?:${re.source})`, 'iu').exec(c); return m ? fmt(asNumber(m[1])) : null; };
+// a reply that is only a quantity ("2 mm", "2,5") answers the question it follows
+const quantityOnly = (t) => /^\s*(?:je to|asi|cca|zhruba)?\s*-?\d+(?:[.,]\d+)?\s*(?:mm|milimetr\w*)?\s*\.?\s*$/iu.test(t);
+const DIM_FILLER = /\b(?:to|je|jsou|na|tobě|tobe|ok|ano|vnější|vnejsi|vnitřní|rozměr\w*|rozmer\w*|outer|dimensions?|mm|celkem|cca|asi)\b/giu;
 
 function extractClaims(text, question, seq) {
   const src = text.toLowerCase();
   const context = (question || '').toLowerCase();
   const claims = [];
-  const triple = /(-?\d+(?:[.,]\d+)?)\s*(?:mm)?\s*[×xX*]\s*(-?\d+(?:[.,]\d+)?)\s*(?:mm)?\s*[×xX*]\s*(-?\d+(?:[.,]\d+)?)\s*(?:mm)?/u.exec(text);
-  if (triple && !/vík|viko|lid|cover/.test(src + ' ' + context)) {
-    claims.push({ key: 'box.outer_dimensions_mm', value: triple.slice(1, 4).map((x) => fmt(asNumber(x))), seq });
-  }
-  // A single width/depth/height may be stated after a specific clarifying
-  // question. Preserve it as a sourced claim, not an inferred other dimension.
-  const mm = /(-?\d+(?:[.,]\d+)?)\s*(?:mm|milimetr|milimetrů)\b/iu.exec(text);
-  const numeral = mm || (/^\s*(-?\d+(?:[.,]\d+)?)\s*$/u.exec(text));
-  if (numeral) {
-    const val = fmt(asNumber(numeral[1]));
-    const w = src + ' ' + context;
-    if (/stěn|sten|tloušť|tloust|wall|thick/.test(w) && !/vík|viko|lid/.test(src)) {
-      claims.push({ key: 'box.wall_mm', value: val, seq });
-    } else if (/vík|viko|lid/.test(w) && /výšk|vysk|height|vysok/.test(w)) {
-      claims.push({ key: 'lid.height_mm', value: val, seq });
+  const triples = [...text.matchAll(/(-?\d+(?:[.,]\d+)?)\s*(?:mm)?\s*[×xX*]\s*(-?\d+(?:[.,]\d+)?)\s*(?:mm)?\s*[×xX*]\s*(-?\d+(?:[.,]\d+)?)\s*(?:mm)?/gu)];
+  if (triples.length === 1 && !OTHER_PART.test(src)) {
+    const rest = text.replace(triples[0][0], ' ').replace(/[^\p{L}]+/gu, ' ').replace(DIM_FILLER, ' ').trim();
+    if (BOX_WORDS.test(src) || (BOX_WORDS.test(context) && !OTHER_PART.test(context)) || !rest) {
+      claims.push({ key: 'box.outer_dimensions_mm', value: triples[0].slice(1, 4).map((x) => fmt(asNumber(x))), seq });
     }
   }
+  let wall = null;
+  for (const c of clauses(src)) {
+    if (OTHER_PART.test(c)) continue;
+    const v = after(c, WALL_WORDS) ?? (WALL_WORDS.test(context) && THICK_WORDS.test(c) ? after(c, THICK_WORDS) : null);
+    if (v !== null) { wall = v; break; }
+  }
+  if (wall === null && quantityOnly(text) && WALL_WORDS.test(context) && !OTHER_PART.test(context)) wall = numbers(text)[0];
+  if (wall !== null && wall !== undefined) claims.push({ key: 'box.wall_mm', value: wall, seq });
+  let lid = null;
+  for (const sn of sentences(src)) {
+    if (!/vík|viko|lid/.test(sn)) continue;
+    for (const c of clauses(sn)) {
+      if (/celkov|total|overall|včetn|vcetn|s vík|s vik|with (?:the )?lid/.test(c)) continue;   // height of the whole, not of the lid
+      lid = after(c, HEIGHT_WORDS) ?? before(c, HEIGHT_WORDS); if (lid !== null) break;
+    }
+    if (lid !== null) break;
+  }
+  if (lid === null && quantityOnly(text) && /vík|viko|lid/.test(context) && HEIGHT_WORDS.test(context)) lid = numbers(text)[0];
+  if (lid !== null && lid !== undefined) claims.push({ key: 'lid.height_mm', value: lid, seq });
   const hinge = src + ' ' + context;
   if (/pant|hinge|čep|cep|pin/.test(hinge)) {
     if (/nevyjímateln|nevyjimateln|neodnímateln|neodnimateln|nevyndateln|non.removable|fixed pin/.test(src))
@@ -121,45 +155,40 @@ export function memoryView(memory, utterance = '', accepted = null, lastQuestion
     if (box && k === 'box.wall_mm') acceptedInModel = box.wall === f.value;
     return { ...f, status: acceptedInModel ? 'accepted_in_model' : 'user_stated_not_accepted' };
   });
-  // Relevant user statements from across the entire journal, selected from
-  // typed topics plus exact word overlap; all eight topic groups get a limited
-  // amount of coverage so a hinge/lid decision remains visible after 300 turns.
+  // Evidence the AI receives: a fixed budget filled in priority order, never the
+  // whole journal. 1 the first request and the source of every latest claim;
+  // 2 statements lexically relevant to the current message; 3 every stated
+  // quantity (dimensions, angles, counts with units), newest first, so a requirement
+  // stated long ago and before several Accepts stays retrievable; 4 the latest
+  // turns; 5 a little coverage per typed topic. A statement repeated word for word
+  // is sent once (its newest occurrence).
   const query = clean(utterance + ' ' + lastQuestion);
   const qTopics = topicOf(query);
-  const chosen = new Map();
-  const pick = (e) => chosen.set(e.seq, e);
-  pick(entries[0]);
-  for (const topic of Object.keys(TOPICS)) {
-    const matches = entries.filter((e) => e.topics.includes(topic));
-    const weight = qTopics.includes(topic) ? 5 : 2;
-    matches.slice(-weight).forEach(pick);
-  }
-  // Lexical retrieval across the complete, untruncated journal supports
-  // arbitrary part/feature names beyond the finite typed categories.
+  const newestByText = new Map();
+  for (const e of entries) newestByText.set(e.text, e.seq);
+  const live = entries.filter((e) => newestByText.get(e.text) === e.seq);
+  const bySeq = new Map(entries.map((e) => [e.seq, e]));
+  const tiers = [];
+  tiers.push([entries[0], ...facts.map((f) => bySeq.get(f.seq)).filter(Boolean)]);
   const terms = [...new Set((query.toLowerCase().match(/[a-zá-ž0-9_]{4,}/gu) || []))]
     .filter((t) => !/^(kter|jake|jaké|nebo|prosi|prosím|tento|that|with|have|should|bude|mají|jsou|jste|tuhle|dalsi|další)$/.test(t));
-  if (terms.length) entries.map((e) => ({
+  tiers.push(terms.length ? live.map((e) => ({
     e, score: terms.reduce((score, word) => score + (e.text.toLowerCase().includes(word) ? 2 : 0)
       + ((e.question || '').toLowerCase().includes(word) ? 1 : 0), 0),
-  })).filter((x) => x.score > 0).sort((a, b) => b.score - a.score || b.e.seq - a.e.seq)
-    .slice(0, 12).forEach((x) => pick(x.e));
-  entries.slice(-10).forEach(pick);
-  for (const f of facts) { const e = entries.find((x) => x.seq === f.seq); if (e) pick(e); }
-  const ranked = [...chosen.values()].sort((a, b) => a.seq - b.seq);
-  // Budget is fixed, not proportional to the journal size. Pin source of the
-  // first statement and latest claims; prioritize latest/relevant evidence.
-  const latestSeq = new Set(facts.map((f) => f.seq));
-  const mandatory = new Set([entries[0].seq, ...latestSeq]);
-  const output = []; let used = 0;
+  })).filter((x) => x.score > 0).sort((a, b) => b.score - a.score || b.e.seq - a.e.seq).slice(0, 12).map((x) => x.e) : []);
+  tiers.push(live.filter((e) => QUANTITY.test(e.text)).reverse());
+  tiers.push(live.slice(-10).reverse());
+  tiers.push(Object.keys(TOPICS).flatMap((topic) => live.filter((e) => e.topics.includes(topic)).slice(-(qTopics.includes(topic) ? 5 : 2))).reverse());
+  const output = []; const taken = new Set(); let used = 0;
   const add = (e) => {
+    if (!e || taken.has(e.seq)) return;
     const line = { seq: e.seq, text: e.text.slice(0, 950),
       ...(e.question ? { answered_question: e.question.slice(0, 350) } : {}),
       ...(e.revision != null ? { revision_when_stated: e.revision } : {}) };
     const size = JSON.stringify(line).length;
-    if (used + size <= 7000 || !output.length) { output.push(line); used += size; }
+    if (used + size <= EVIDENCE_BUDGET || !output.length) { output.push(line); used += size; taken.add(e.seq); }
   };
-  ranked.filter((e) => mandatory.has(e.seq)).forEach(add);
-  ranked.filter((e) => !mandatory.has(e.seq)).sort((a, b) => b.seq - a.seq).forEach(add);
+  for (const tier of tiers) tier.forEach(add);
   output.sort((a, b) => a.seq - b.seq);
   return { entries: entries.length, facts, evidence: output };
 }

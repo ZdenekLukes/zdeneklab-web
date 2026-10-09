@@ -15,7 +15,7 @@
 // `skipped`. Annotations (interfaces, axes, limits, volumes, fasteners) are not
 // material and are never part of a solid.
 
-import { featureDefs, AXES } from '../resolve.js?v=82722beda481';
+import { featureDefs, AXES, axisAligned } from '../resolve.js?v=cefb80df528e';
 
 export const SOLID_PROGRAM = 'AI_CONCEPT_SOLIDS';
 export const COVERED_FEATURES = ['TAB', 'PIN', 'HOLE'];
@@ -41,7 +41,7 @@ function body(inst, localOpen) {
   if (inst.d !== undefined) return { adds: [cylinder(origin, inst.axis[1], inst.d, size[0])], cuts: [] };
   // World-axis-aligned bodies use world sizes. Free Euler bodies retain local
   // dimensions and transform every additive AND subtractive primitive.
-  const free = !inst.axes.x;
+  const free = !axisAligned(inst.axes);
   const ws = free ? size : worldSize(inst.axes, size);
   const basis = free ? r6([inst.basis.x, inst.basis.y, inst.basis.z]) : null;
   const place = (c) => free
@@ -105,7 +105,7 @@ export function solidProgram(model, v) {
     if (inst.d !== undefined && !inst.axis) { out.skipped.push({ instance: inst.id, reason: 'arbitrarily rotated round part is not supported by the solid adapter' }); continue; }
     const other = [...new Set(inst.features.map((f) => f.type).filter((t) => !COVERED_FEATURES.includes(t)))];
     if (other.length) { out.skipped.push({ instance: inst.id, reason: `${other.join(', ')} not in the solid engine yet: drawn with the existing primitives` }); continue; }
-    if (!inst.axes.x && inst.features.length) { out.skipped.push({ instance: inst.id, reason: 'rotated part with features' }); continue; }
+    if (!axisAligned(inst.axes) && inst.features.length) { out.skipped.push({ instance: inst.id, reason: 'rotated part with features' }); continue; }
     const { adds, cuts } = body(inst, localOpenByPart.get(inst.part));
     for (const f of inst.features) {
       const r = feature(inst, f, defs);

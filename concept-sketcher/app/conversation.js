@@ -12,7 +12,7 @@
 // here is applied to the model; proposals still go through the evaluator and
 // an explicit Accept. No credentials are ever written here.
 
-import { boundRecent } from '../src/live_context.js?v=82722beda481';
+import { boundRecent, CONTEXT_LIMITS } from '../src/live_context.js?v=cefb80df528e';
 
 export const MAX_STORED_TURNS = 80;
 
@@ -50,6 +50,30 @@ export function updateTurn(thread, id, patch) {
   return { ...thread, turns: thread.turns.map((t) => (t.id === id ? { ...t, ...patch } : t)) };
 }
 
+// Why the checks refused an AI reply, as the AI will read it in the next turn: the
+// evaluator's schema/validation messages, sanitized (no control characters, long
+// quotes of user text shortened, one line per distinct problem, bounded) so the
+// model can correct its next reply. Context only; never a fact or a change.
+export const REASON_LIMITS = Object.freeze({ count: 4, chars: 300 });
+export function refusalReasons(details, limits = REASON_LIMITS) {
+  if (!Array.isArray(details)) return [];
+  const seen = new Set(), out = [];
+  let used = 0;
+  for (const d of details) {
+    if (typeof d !== 'string') continue;
+    let r = d.replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim()
+      .replace(/"([^"]{40,})"/g, (_, q) => `"${q.slice(0, 32)}…"`);
+    // "part BODY: a CYLINDER is round…" and "part LID: a CYLINDER is round…" are one problem
+    const problem = r.replace(/^(?:op \d+ \([A-Z_]+\): )*(?:part|feature|joint|question|interface)\s+[\w.]+:\s*/i, '');
+    if (!r || seen.has(problem)) continue;
+    if (r.length > 120) r = `${r.slice(0, 117)}…`;
+    if (out.length === limits.count || used + r.length > limits.chars) break;
+    seen.add(problem); out.push(r); used += r.length;
+  }
+  return out;
+}
+const reasonText = (t) => (Array.isArray(t.reasons) && t.reasons.length ? ` Reasons: ${t.reasons.join(' | ')}` : '');
+
 const OUTCOME = {
   pending: 'waiting for the user to accept or reject; not applied',
   rejected: 'rejected by the user; not applied',
@@ -65,8 +89,15 @@ function toRecent(t) {
     const options = Array.isArray(t.choices) && t.choices.length ? ` Options offered: ${t.choices.map((c) => c.label).join(' | ')}` : '';
     return { role: 'assistant', text: `Asked: ${t.text}${options}` };
   }
-  if (t.kind === 'proposal') return { role: 'assistant', text: `Proposed: ${t.text} (${OUTCOME[t.outcome] || 'not applied'})` };
-  if (t.kind === 'refused') return { role: 'assistant', text: 'My reply could not be used (refused by the checks); nothing was changed.' };
+  if (t.kind === 'proposal') {
+    // the reasons go last, so a long summary is shortened to keep them inside the per-turn limit
+    const reasons = t.outcome === 'refused' ? reasonText(t) : '';
+    const tail = ` (${OUTCOME[t.outcome] || 'not applied'})${reasons}`;
+    let head = `Proposed: ${t.text}`;
+    if (reasons && head.length + tail.length > CONTEXT_LIMITS.turnChars) head = `${head.slice(0, Math.max(20, CONTEXT_LIMITS.turnChars - tail.length - 1))}…`;
+    return { role: 'assistant', text: `${head}${tail}` };
+  }
+  if (t.kind === 'refused') return { role: 'assistant', text: `My reply could not be used (refused by the checks); nothing was changed.${reasonText(t)}` };
   return null;
 }
 

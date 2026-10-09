@@ -20,7 +20,8 @@
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); font: 15px/1.45 -apple-system, system-ui, sans-serif; }
-  body { display: grid; grid-template-rows: minmax(0, 1fr) auto auto; height: 100dvh; overflow: hidden; }
+  body { display: grid; grid-template-rows: minmax(0, 1fr) auto auto; height: var(--app-h, 100dvh); overflow: hidden; }
+  html { height: var(--app-h, 100%); }
   main { display: grid; grid-template-columns: minmax(0, 42%) minmax(0, 1fr); min-height: 0; min-width: 0; }
   #chat { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; grid-template-columns: minmax(0, 1fr); min-height: 0; min-width: 0; overflow: hidden; border-right: 1px solid var(--line); background: var(--panel); }
   #chat header { padding: 10px 16px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 8px; }
@@ -331,6 +332,55 @@
     }
     #status.compactStatus button:focus-visible { outline: 3px solid #6faaf2; outline-offset: 2px; }
   }
+
+  /* Mobile UX simplification: one product header, More + Chat/3D in the footer,
+     a quiet 3D screen with advanced tools on request (More → Pokročilý 3D pohled). */
+  #stageTop { display: none; }
+  .product .pmain { all: unset; box-sizing: border-box; display: flex; flex-direction: column; gap: 2px; min-width: 0; cursor: pointer; border-radius: 8px; padding: 2px 4px; }
+  .product button.pmain:hover { background: var(--bg); }
+  .product button.pmain:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .product .popen { color: var(--accent); font-size: 13px; font-weight: 600; }
+  .product .pmore { display: none; }
+  .product { grid-template-columns: minmax(0, 1fr) auto auto; }
+  #moreContent section + section { margin-top: 4px; }
+  #moreContent details.diag { margin-top: 14px; font-size: 14px; }
+  #moreContent details.diag summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 600; }
+  @media (max-width: 760px) {
+    #status.compactStatus { grid-template-columns: 52px minmax(0, 1fr) 112px; }
+    #status.compactStatus #moreBtn { grid-column: 1; min-width: 48px; }
+    #status.compactStatus #toggle3d { grid-column: 3; }
+    #status.compactStatus .mobileWarning { grid-column: 1 / -1; }
+    body.typing #status { display: none; }
+    #activeProductLink { min-height: 44px; }
+    .sheet header button { min-height: 44px; }
+    /* the 3D screen: the model first */
+    #stageTop { display: flex; position: absolute; top: 8px; left: 8px; right: 8px; gap: 6px; flex-wrap: wrap; align-items: flex-start; pointer-events: none; z-index: 1; }
+    #stageTop > * { pointer-events: auto; }
+    #stageProduct { min-height: 44px; max-width: 70%; display: flex; gap: 6px; align-items: center; background: var(--s-panel); color: var(--s-fg); border: 1px solid var(--s-line); border-radius: 22px; padding: 6px 14px; font-weight: 700; }
+    #stageProductName { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #adv3dExit { display: none; min-height: 44px; margin-left: auto; background: var(--s-panel); color: var(--s-fg); border: 1px solid var(--s-line); border-radius: 22px; padding: 6px 12px; }
+    body.adv3d #adv3dExit { display: block; }
+    #stageNote { flex-basis: 100%; background: #5a3a0c; color: #ffe2b0; border: 1px solid #b07a20; border-radius: 10px; padding: 6px 10px; font-size: 13px; }
+    body:not(.adv3d) #legend { display: none; }
+    body:not(.adv3d) #inspect.empty { display: none; }
+    body:not(.adv3d) #viewtools:not(.active) { display: none; }
+    #legend { top: 60px; }
+    #inspect { top: 60px; }
+    body.adv3d #inspect { top: 92px; }
+    /* proposal review in chat */
+    #log .card .hstate { margin-top: 6px; font-size: 14px; color: var(--fg); font-weight: 600; }
+    #log .card .hstate.bad { color: var(--bad); }
+    #log .card .hstate.done { font-weight: 500; color: var(--muted); }
+    #log .card .show3dBtn { margin-top: 8px; min-height: 44px; border-radius: 22px; padding: 6px 16px; background: transparent; border: 1px solid #2f71c9; color: #2f71c9; font-weight: 600; }
+    #log .card .pill.VALID { background: #b26a00; }
+    /* product list: tap a row to open it; Rename / Delete after ⋯ */
+    .product { grid-template-columns: minmax(0, 1fr) 44px; }
+    .product .pmain { min-height: 44px; justify-content: center; }
+    .product .popen { display: none; }
+    .product .pmore { display: block; width: 44px; min-height: 44px; padding: 0; font-size: 20px; border-radius: 10px; }
+    .product .pactions { display: none; grid-column: 1 / -1; }
+    .product.menu .pactions { display: flex; }
+  }
   @media (max-width: 760px) and (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --chat-canvas: #111922; --chat-incoming: #212d3a; --chat-outgoing: #205347;
@@ -344,7 +394,7 @@
     #composer form button[type="submit"] { color: #fff; }
   }
 </style>
-<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.min.js?v=82722beda481" } }</script>
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.min.js?v=cefb80df528e" } }</script>
 </head>
 <body>
 <main>
@@ -358,6 +408,11 @@
   </section>
   <section id="stage" aria-label="3D preview">
     <div id="view"></div>
+    <div id="stageTop">
+      <button type="button" id="stageProduct" aria-label="Produkty — otevřený produkt"><span id="stageProductName">…</span><span aria-hidden="true">⌄</span></button>
+      <button type="button" id="adv3dExit" aria-label="Skrýt pokročilý 3D pohled">Skrýt nástroje ✕</button>
+      <div id="stageNote" role="status" hidden></div>
+    </div>
     <div id="legend">
       <button type="button" id="legendRef" aria-pressed="true" title="Hide or show REFERENCE geometry"><i style="background:rgba(127,159,189,.22);border:1px dashed #c6d9ea"></i>REFERENCE</button>
       <span title="Proposed change"><i style="background:#1f9d55"></i>+ PROPOSED</span>
@@ -380,6 +435,6 @@
 <aside id="projects" class="sheet" aria-label="Products"><header><h2>Products</h2><button id="closeProjects" type="button">Close</button></header><div class="body" id="projectList"></div></aside>
 <aside id="properties" class="sheet" aria-label="Exact properties"><header><h2>Exact properties</h2><button id="closeProperties" type="button">Close</button></header><div class="body" id="propertyList"></div></aside>
 <input id="openFile" type="file" accept=".aiconcept,application/json" hidden>
-<script type="module" src="app.js?v=82722beda481"></script>
+<script type="module" src="app.js?v=cefb80df528e"></script>
 </body>
 </html>

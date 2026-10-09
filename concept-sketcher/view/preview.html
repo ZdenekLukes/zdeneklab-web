@@ -19,7 +19,7 @@
   .legend span { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 4px 0 10px; vertical-align: -1px; }
   #err { position: fixed; top: 50%; left: 16px; right: 16px; text-align: center; color: var(--open); }
 </style>
-<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.min.js?v=82722beda481" } }</script>
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.min.js?v=cefb80df528e" } }</script>
 </head>
 <body>
 <div id="banner">loading…</div>
@@ -27,7 +27,7 @@
 <div id="panel"></div>
 <div id="err"></div>
 <script type="module">
-import { createViewer } from './render3d.js?v=82722beda481';
+import { createViewer } from './render3d.js?v=cefb80df528e';
 
 const params = new URLSearchParams(location.search);
 const url = params.get('scene') || '../out/box_organizer/scene.json';

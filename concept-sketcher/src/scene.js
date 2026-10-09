@@ -2,8 +2,8 @@
 // No geometry decisions happen in the viewer; it only draws what is listed here.
 // Elements named by an OPEN question are drawn in the UNRESOLVED style.
 
-import { AXES, add, sub, mul, dot, cross, len, roundDeep } from './resolve.js?v=82722beda481';
-import { nominalDiameter } from './schema.js?v=82722beda481';
+import { AXES, add, sub, mul, dot, cross, len, roundDeep, axisAligned } from './resolve.js?v=cefb80df528e';
+import { nominalDiameter } from './schema.js?v=cefb80df528e';
 
 const axisVector = (axes, basis, k) => AXES[axes?.[k]] || basis?.[k];
 const rotLocal = (axes, v, basis = null) => ['x', 'y', 'z'].reduce((acc, k, i) => add(acc, mul(axisVector(axes, basis, k), v[i])), [0, 0, 0]);
@@ -28,7 +28,7 @@ export function buildScene(model, v) {
     const base = { part: inst.part, instance: inst.id, style: st, unresolved: inst.unresolved || [] };
     const [L, W, T] = inst.size;
     if (model.schema === 2 && (inst.kind === 'SHELL' || inst.d !== undefined)) {
-      prims.push(...roundOrShell(inst, base));
+      prims.push(...roundOrShell(inst, base, model.parts.find((p) => p.id === inst.part)));
       for (const f of inst.features) prims.push(...featurePrims(inst, f, style));
       continue;
     }
@@ -47,7 +47,7 @@ export function buildScene(model, v) {
           const cc = [...c], ss = [...s]; ss[run] = rigid; cc[run] = sign * (gap + rigid) / 2;
           prims.push({ id: `${inst.id}#${sub_}:${sign}`, shape: 'box', ...base, center: add(inst.origin, rotLocal(inst.axes, cc, inst.basis)), size: worldSize(inst.axes, ss) });
         }
-      } else if (inst.axes.x) prims.push({ id: `${inst.id}#${sub_}`, shape: 'box', ...base, center: add(inst.origin, rotLocal(inst.axes, c)), size: worldSize(inst.axes, s) });
+      } else if (axisAligned(inst.axes)) prims.push({ id: `${inst.id}#${sub_}`, shape: 'box', ...base, center: add(inst.origin, rotLocal(inst.axes, c)), size: worldSize(inst.axes, s) });
       else prims.push({ id: `${inst.id}#${sub_}`, shape: 'box', ...base, center: add(inst.origin, rotLocal(inst.axes, c, inst.basis)), size: s, basis: inst.basis });
     }
     for (const f of inst.features) {
@@ -108,8 +108,21 @@ const letter = (dir) => dir[1];
 const mid = (a, b) => a.map((x, i) => (x + b[i]) / 2);
 
 // Round parts are drawn round; a SHELL as its walls (the open side is missing).
-function roundOrShell(inst, base) {
-  if (inst.d !== undefined) return [{ id: `${inst.id}#body`, shape: 'cylinder', ...base, center: inst.origin, axis: letter(inst.axis), d: inst.d, length: inst.size[0] }];
+function roundOrShell(inst, base, def) {
+  if (inst.d !== undefined) {
+    // a round part tilted off the world axes runs along its own local x (the basis)
+    const along = inst.axis ? { axis: letter(inst.axis) } : { axis: null, dir: inst.basis.x };
+    return [{ id: `${inst.id}#body`, shape: 'cylinder', ...base, center: inst.origin, ...along, d: inst.d, length: inst.size[0] }];
+  }
+  if (!axisAligned(inst.axes)) {
+    // freely rotated SHELL: walls built in the part's own frame, drawn with its basis
+    const s = inst.size;
+    return Object.entries(AXES).filter(([k]) => k !== def?.open).map(([k, d]) => {
+      const A = d.findIndex((x) => x !== 0);
+      const size = [...s]; size[A] = inst.wall;
+      return { id: `${inst.id}#wall${k}`, shape: 'box', ...base, center: add(inst.origin, rotLocal(inst.axes, mul(d, s[A] / 2 - inst.wall / 2), inst.basis)), size, basis: inst.basis };
+    });
+  }
   const ws = worldSize(inst.axes, inst.size);
   return Object.entries(AXES).filter(([k]) => k !== inst.open).map(([k, d]) => {
     const A = d.findIndex((x) => x !== 0);

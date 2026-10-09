@@ -3,9 +3,9 @@
 // -> placement (root parts by `place`, attached parts by translating along the
 // first joint link; further links are only checked).
 
-import { evalParams, num } from './model.js?v=82722beda481';
-import { localInterfaces, localHoles, worldHole, worldInterface, placeMotionJoint, resolveFasteners, resolveVolumes, splitRef, DIRS } from './mechanics.js?v=82722beda481';
-import { ROUND_KINDS } from './schema.js?v=82722beda481';
+import { evalParams, num } from './model.js?v=cefb80df528e';
+import { localInterfaces, localHoles, worldHole, worldInterface, placeMotionJoint, resolveFasteners, resolveVolumes, splitRef, DIRS } from './mechanics.js?v=cefb80df528e';
+import { ROUND_KINDS } from './schema.js?v=cefb80df528e';
 
 export const AXES = {
   '+X': [1, 0, 0], '-X': [-1, 0, 0], '+Y': [0, 1, 0], '-Y': [0, -1, 0], '+Z': [0, 0, 1], '-Z': [0, 0, -1],
@@ -28,6 +28,11 @@ export function axisName(v) {
   for (const [k, a] of Object.entries(AXES)) if (len(sub(a, v)) < EPS) return k;
   return null;
 }
+// True only when every local axis lands on a world axis. An Euler rotation about
+// one axis (e.g. [-20, 0, 0]) keeps that axis named but not the other two, so a
+// single named axis does not make an instance axis-aligned.
+export const axisAligned = (axes) => Boolean(axes?.x && axes?.y && axes?.z);
+
 // Unsigned axis letter: "X" | "Y" | "Z".
 export const axisLetter = (v) => { const n = axisName(v); return n ? n[1] : null; };
 
@@ -433,7 +438,7 @@ function resolveMechanicsV2(model, c) {
 
 function cleanInstance(inst) {
   const o = { id: inst.id, part: inst.part, kind: inst.kind, role: inst.role, origin: inst.origin, axes: inst.axes, size: inst.size };
-  if (!inst.axes.x) o.basis = inst.basis;
+  if (!axisAligned(inst.axes)) o.basis = inst.basis;
   if (inst.bar !== null) o.bar = inst.bar;
   if (inst.extra) Object.assign(o, inst.extra);
   if (inst.index !== null) o.index = inst.index;

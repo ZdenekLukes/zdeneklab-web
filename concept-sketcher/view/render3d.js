@@ -3,7 +3,7 @@
 // proposal overlay. No geometry decisions happen here.
 
 import * as THREE from 'three';
-import { OrbitControls } from '../vendor/three/OrbitControls.js?v=82722beda481';
+import { OrbitControls } from '../vendor/three/OrbitControls.js?v=cefb80df528e';
 
 export const STYLE_COLORS = { produced: 0x6f8fb8, reference: 0x9aa3b2, unresolved: 0xe8730c, proposed: 0x1f9d55, removed: 0xd93025 };
 const OPACITY = { produced: 1, reference: 0.08, unresolved: 0.55, proposed: 0.6, removed: 0.18 };
@@ -105,7 +105,7 @@ function buildGroup(data, S = null, skip = null) {
     } else if (p.shape === 'cylinder') {
       const mat = p.role === 'fastener' && (p.style === 'produced' || (S && p.style === 'unresolved')) ? new THREE.MeshLambertMaterial({ color: S ? STUDIO_ROLE.fastener : ROLE_COLORS.fastener }) : fill(p, () => material(p.style));
       mesh = new THREE.Mesh(new THREE.CylinderGeometry(p.d / 2, p.d / 2, p.length, 32), mat);
-      mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(...AX[p.axis]));
+      mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(...(p.dir || AX[p.axis])));
       mesh.position.set(...p.center);
       outline(mesh, p, p.style === 'proposed' && (p.unresolved || []).length > 0);
     } else if (p.shape === 'polyline') {
