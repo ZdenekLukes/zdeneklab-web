@@ -9,10 +9,10 @@
 // the session, the model object or any mutation path; interpretTurn() alone decides what
 // happens to that text (parse → proposal → evaluateProposal → review → the user's ACCEPT).
 
-import { acceptedModel, evaluate } from '../session.js?v=13cdbd7449da';
-import { reviewProposal } from '../proposal.js?v=13cdbd7449da';
-import { buildInput } from './input.js?v=13cdbd7449da';
-import { parseResponse } from './protocol.js?v=13cdbd7449da';
+import { acceptedModel, evaluate } from '../session.js?v=82722beda481';
+import { reviewProposal } from '../proposal.js?v=82722beda481';
+import { buildInput } from './input.js?v=82722beda481';
+import { parseResponse } from './protocol.js?v=82722beda481';
 
 export async function callProvider(provider, input) {
   if (!provider || typeof provider.id !== 'string' || typeof provider.interpret !== 'function') throw new Error('not an InterpreterProvider');

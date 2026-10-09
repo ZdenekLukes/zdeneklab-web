@@ -3,26 +3,26 @@
 // the evaluated proposal as a structured review, and passes the user's
 // ACCEPT/REJECT to the session. Zoom is inspection only.
 
-import { motionControls } from '../src/motion.js?v=13cdbd7449da';
-import { motionPreview } from '../src/motion_preview.js?v=13cdbd7449da';
-import { conceptHash } from '../src/model.js?v=13cdbd7449da';
-import { validate } from '../src/validate.js?v=13cdbd7449da';
-import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js?v=13cdbd7449da';
-import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js?v=13cdbd7449da';
-import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js?v=13cdbd7449da';
-import { reviewProposal } from '../src/proposal.js?v=13cdbd7449da';
-import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js?v=13cdbd7449da';
-import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js?v=13cdbd7449da';
-import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=13cdbd7449da';
-import { createViewer, PART_PALETTE } from '../view/render3d.js?v=13cdbd7449da';
-import { ensureCurrentShell } from './build_version.js?v=13cdbd7449da';
-import { threadWords, valueSources } from '../src/live_context.js?v=13cdbd7449da';
-import { explicitQuestionChoices } from '../src/live_intent.js?v=13cdbd7449da';
-import { solidProgram, solidChanges } from '../src/geometry/solid_program.js?v=13cdbd7449da';
-import { loadManifoldEngine } from '../src/geometry/manifold_engine.js?v=13cdbd7449da';
-import { newThread, loadThread, storeThread, threadMatches, addTurn, updateTurn, recentOf } from './conversation.js?v=13cdbd7449da';
-import { emptyMemory, appendMemory, memoryFromConcept, exportWithMemory, memoryView, memoryEvidenceWords } from '../src/design_memory.js?v=13cdbd7449da';
-import { ACTIVE_PROJECT, NAME_MAX, slug, projectKey, listProducts, readIndex, displayName, cleanName, freeSlot, storeNewProduct, recordProduct, renameProduct, deleteProduct } from './library.js?v=13cdbd7449da';
+import { motionControls } from '../src/motion.js?v=82722beda481';
+import { motionPreview } from '../src/motion_preview.js?v=82722beda481';
+import { conceptHash } from '../src/model.js?v=82722beda481';
+import { validate } from '../src/validate.js?v=82722beda481';
+import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js?v=82722beda481';
+import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js?v=82722beda481';
+import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js?v=82722beda481';
+import { reviewProposal } from '../src/proposal.js?v=82722beda481';
+import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js?v=82722beda481';
+import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js?v=82722beda481';
+import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=82722beda481';
+import { createViewer, PART_PALETTE } from '../view/render3d.js?v=82722beda481';
+import { ensureCurrentShell } from './build_version.js?v=82722beda481';
+import { threadWords, valueSources } from '../src/live_context.js?v=82722beda481';
+import { explicitQuestionChoices } from '../src/live_intent.js?v=82722beda481';
+import { solidProgram, solidChanges } from '../src/geometry/solid_program.js?v=82722beda481';
+import { loadManifoldEngine } from '../src/geometry/manifold_engine.js?v=82722beda481';
+import { newThread, loadThread, storeThread, threadMatches, addTurn, updateTurn, recentOf } from './conversation.js?v=82722beda481';
+import { emptyMemory, appendMemory, memoryFromConcept, exportWithMemory, memoryView, memoryEvidenceWords } from '../src/design_memory.js?v=82722beda481';
+import { ACTIVE_PROJECT, NAME_MAX, slug, projectKey, listProducts, readIndex, displayName, cleanName, freeSlot, storeNewProduct, recordProduct, renameProduct, deleteProduct } from './library.js?v=82722beda481';
 
 const LIVE = liveConfig();
 const LEGACY_STORE = LIVE.live ? `concept-sketcher.live.${LIVE.seed || 'blank'}.session` : 'concept-sketcher.s1.session';
@@ -538,7 +538,7 @@ function renderStatus() {
     // Keep warnings visible; all other technical state moves to More.
     $('status').classList.add('compactStatus');
     $('status').innerHTML = `
-      <button type="button" id="projectBtn" aria-label="Open products, current: ${esc(product)}" title="${esc(product)}"><span class="productBtnIcon" aria-hidden="true">▣</span><span class="productBtnName">${esc(product)}</span><span aria-hidden="true">⌄</span></button>
+      <button type="button" id="projectBtn" aria-label="Open products, current: ${esc(product)}" title="${esc(product)}"><span class="productBtnIcon" aria-hidden="true">▣</span><span class="productBtnName">Produkty</span><span aria-hidden="true">⌄</span></button>
       <button type="button" id="moreBtn" aria-label="More controls and diagnostics">···</button>
       ${switchButton}
       ${storageWarning ? '<span class="mobileWarning" role="status">AUTOSAVE ✕</span>' : ''}
@@ -579,12 +579,12 @@ function renderDecision() {
   const n = pending.targets?.length ?? 0;
   d.className = `show ${valid ? '' : 'bad'}`;
   d.innerHTML = `
-    <div class="dtext">${valid ? `+ Proposal — not accepted yet${t ? ` · 🔍 ${esc(t.label)} (${pending.zoomIndex + 1}/${n})` : ''}` : `✕ Proposal ${esc(ev.status)} — cannot be accepted`}</div>
+    <div class="dtext">${valid ? `Návrh čeká na potvrzení${t ? ` · 🔍 ${esc(t.label)} (${pending.zoomIndex + 1}/${n})` : ''}` : `Návrh není platný (${esc(ev.status)})`}</div>
     <div class="dbtns">
       ${valid ? `<button type="button" id="zoomBtn" title="Zoom to change">🔍 ${t ? 'Next' : 'Zoom'}<span class="long"> ${t ? '▸' : 'to change'}</span></button>
       <button type="button" id="wholeBtn" title="Whole model">⤢ <span class="long">Whole model</span><span class="short">All</span></button>` : ''}
-      <button type="button" class="primary" id="acceptBtn" ${valid ? '' : 'disabled'}>✓ Accept</button>
-      <button type="button" class="danger" id="rejectBtn">✕ ${valid ? 'Reject' : 'Dismiss'}</button>
+      <button type="button" class="primary" id="acceptBtn" ${valid ? '' : 'disabled'}>✓ Přijmout</button>
+      <button type="button" class="danger" id="rejectBtn">✕ ${valid ? 'Zamítnout' : 'Zavřít'}</button>
     </div>`;
   if (valid) { $('zoomBtn').onclick = zoomNext; $('wholeBtn').onclick = wholeModel; }
   $('acceptBtn').onclick = onAccept;
@@ -993,10 +993,10 @@ function liveIntentCard(ev, intentText, { active = true } = {}) {
     const card = addEl(`
       <div class="top"><span class="pill CLARIFY">QUESTION</span></div>
       <div class="question"><span class="vh">Question: </span>${esc(ev.question)}</div>
-      ${choices.length ? `<div class="choices${active ? '' : ' obsolete'}" role="group" aria-label="Suggested answers">${choices.map((c, k) => `<button type="button" data-choice="${k}" ${active ? '' : 'disabled'}>${esc(c.label)}</button>`).join('')}<button type="button" class="other" data-other ${active ? '' : 'disabled'}>Something else…</button></div>` : ''}
+      ${choices.length ? `<div class="choices${active ? '' : ' obsolete'}" role="group" aria-label="Suggested answers">${choices.map((c, k) => `<button type="button" data-choice="${k}" ${active ? '' : 'disabled'}>${esc(c.label)}</button>`).join('')}<button type="button" class="other" data-other ${active ? '' : 'disabled'}>Jiná odpověď…</button></div>` : ''}
       ${intentText ? `<details><summary>Advanced: raw intent JSON</summary><pre>${esc(JSON.stringify(JSON.parse(intentText), null, 2))}</pre></details>` : ''}`, 'card ask');
     card.querySelectorAll('[data-choice]').forEach((b) => { b.onclick = () => choose(card, b, choices[Number(b.dataset.choice)].label); });   // exactly the words shown
-    card.querySelector('[data-other]')?.addEventListener('click', () => { $('input').placeholder = 'Type your own answer…'; $('input').focus(); });
+    card.querySelector('[data-other]')?.addEventListener('click', () => { $('input').placeholder = 'Napiš vlastní odpověď…'; $('input').focus(); });
     return card;
   }
   const scope = ev.scope?.allow || [];
@@ -1014,7 +1014,8 @@ function liveIntentCard(ev, intentText, { active = true } = {}) {
       ${scope.length ? `<div class="box"><b>May change (derived from the edits):</b> ${scope.map(esc).join(' · ')}<br><span class="muted">Every other model path is checked to stay byte-identical.</span>${affects.length ? `<br><b>Refers to / depends on (not changed):</b> ${affects.map(esc).join(' · ')}` : ''}</div>` : ''}
       ${changed.length ? `<div class="box"><b>Actual diff:</b> ${changed.map(esc).join(' · ')}</div>` : ''}
     </details>` : ''}
-    ${sources.length ? `<div class="box"><b>Values from your messages:</b>${sources.map((x) => `<div class="src">${esc(x.what)} = <span class="new">${esc(shown(x.value))}</span> — from “${esc(x.from)}”${x.latest ? '' : `<div class="warn">⚠ This comes from an earlier message. Your latest message was “${esc(x.last)}”. Check it is still what you want before accepting.</div>`}</div>`).join('')}</div>` : ''}
+    ${sources.some((x) => !x.latest) ? `<div class="warn" role="alert">Pozor: návrh obsahuje starší hodnotu. Zkontroluj ji před přijetím.</div>` : ''}
+    ${sources.length ? `<details class="sourceDetails"><summary>Odkud jsou hodnoty?</summary><div class="box"><b>Values from your messages:</b>${sources.map((x) => `<div class="src">${esc(x.what)} = <span class="new">${esc(shown(x.value))}</span> — from “${esc(x.from)}”${x.latest ? '' : `<div class="warn">⚠ This comes from an earlier message. Your latest message was “${esc(x.last)}”. Check it is still what you want before accepting.</div>`}</div>`).join('')}</div></details>` : ''}
     ${answers.length ? `<div class="box"><b>Resolved:</b> ${answers.map((a) => `${esc(a.id)} = ${esc(a.answer)}`).join(' · ')}</div>` : ''}
     ${unknowns.length ? `<div class="box"><span class="pill OPEN">? OPEN</span> ${unknowns.map((u) => esc(u.question)).join(' · ')}</div>` : ''}
     ${errs}
@@ -1044,7 +1045,7 @@ function retireChoices() {
     box.classList.add('obsolete');
     box.querySelectorAll('button').forEach((b) => { b.disabled = true; });
   });
-  $('input').placeholder = 'Describe the change in your own words…';
+  $('input').placeholder = 'Popiš změnu…';
 }
 
 // A reply that cannot be used, or a transport failure: say that nothing changed
@@ -1127,7 +1128,7 @@ async function send(text, { via = 'typed' } = {}) {
     const olderEvidence = memoryEvidenceWords({ evidence: memory.evidence.filter((e) => !recentUserWords.has(e.text)) });
     const said = { utterance: [olderEvidence, threadWords(recent, text)].filter(Boolean).join('\n'),
       base: baseOf(model), source: 'live-intent' };
-    const progress = addEl(LIVE.transport === 'github' ? 'GitHub POC: preparing…' : 'AI is thinking…', 'msg sys thinking');
+    const progress = addEl('Přemýšlím…', 'msg sys thinking');
     const mine = { text, progress };
     liveRequest = mine;
     const abandoned = () => liveRequest !== mine;

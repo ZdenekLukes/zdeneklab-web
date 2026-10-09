@@ -216,8 +216,135 @@
     .card.ask .top { margin-bottom: 4px; }
     .choices { gap: 7px; }
   }
+
+  /* Messenger-like mobile chat: visual treatment only. No changes to the CAD,
+     validated proposals, click-to-send semantics or product persistence. */
+  @media (max-width: 760px) {
+    :root { --chat-canvas: #edf1f5; --chat-incoming: #ffffff; --chat-outgoing: #d8f5e5; --chat-edge: #d5dce3; }
+    #chat { background: var(--chat-canvas); border: 0; }
+    #chat header {
+      background: var(--panel); border-bottom: 1px solid var(--line);
+      min-height: 62px; padding: 7px 16px 7px 16px; box-shadow: 0 1px 3px #0000000b;
+    }
+    #chat header .chatIdentity { flex-direction: column-reverse; gap: 0; }
+    #chat header h1 { color: var(--muted); font-size: 11px; line-height: 1.2; font-weight: 500; }
+    #chat header #modeLabel { position: absolute; top: 0; left: 0; width: 1px; height: 1px; opacity: 0; overflow: hidden; pointer-events: none; }
+    #activeProductLink {
+      color: var(--fg); font-size: 18px; font-weight: 700; line-height: 1.3;
+      min-height: 31px; max-width: 100%; padding: 0; margin: 0; gap: 5px;
+    }
+    #activeProductLink > span:last-child { font-size: 13px; color: var(--muted); }
+    #log {
+      background: var(--chat-canvas); padding: 14px 12px 18px; gap: 9px;
+      scrollbar-width: thin; overscroll-behavior: contain;
+    }
+    #log .msg {
+      max-width: 85%; border: 0; box-shadow: 0 1px 2px #00000012;
+      padding: 9px 12px; font-size: 15px; line-height: 1.43;
+    }
+    #log .msg.user {
+      border-radius: 17px 17px 5px 17px;
+      background: var(--chat-outgoing); color: var(--fg); align-self: flex-end;
+    }
+    #log .msg.sys {
+      border-radius: 15px 15px 15px 5px; background: var(--chat-incoming);
+      color: var(--muted); font-size: 12px; max-width: 85%; align-self: flex-start;
+    }
+    #log .msg.sys.thinking { width: fit-content; color: var(--muted); }
+    #log .card {
+      align-self: flex-start; max-width: min(94%, 390px); width: fit-content;
+      min-width: 0; padding: 10px 12px; border: 0; box-shadow: 0 1px 2px #00000012;
+      border-radius: 17px 17px 17px 5px; background: var(--chat-incoming);
+      color: var(--fg); font-size: 15px; line-height: 1.45;
+    }
+    #log .card .top { margin-bottom: 4px; gap: 4px; }
+    #log .card.ask .top { display: none; }
+    #log .card .top .muted { display: none; }
+    #log .card .pill { font-size: 10px; padding: 1px 7px; letter-spacing: 0; }
+    #log .card .question { font-size: 15px; font-weight: 500; line-height: 1.48; }
+    #log .card .choices {
+      display: flex; flex-wrap: wrap; align-items: flex-start; gap: 7px; margin-top: 11px;
+    }
+    #log .card .choices button {
+      flex: 0 1 auto; max-width: 100%; min-height: 44px; padding: 9px 12px;
+      border-radius: 20px; font-size: 13px; font-weight: 600; line-height: 1.3;
+      background: #eaf1ff; border: 1px solid #abc6ef; color: #173e7d;
+    }
+    #log .card .choices button.other {
+      color: var(--muted); background: transparent; border-color: var(--chat-edge); font-weight: 400;
+    }
+    #log .card .choices button.chosen,
+    #log .card .choices button.chosen:disabled {
+      background: #265eb2; border-color: #265eb2; color: #fff;
+    }
+    #log .card .choices button:disabled:not(.chosen) {
+      background: transparent; color: var(--muted); border-color: var(--chat-edge); opacity: .65;
+    }
+    #log .card details { font-size: 12px; color: var(--muted); margin-top: 8px; }
+    #log .card details summary { cursor: pointer; font-size: 12px; width: fit-content; }
+    #log .card .technicalDiff, #log .card .sourceDetails { border-top: 1px solid var(--chat-edge); padding-top: 5px; }
+    #log .card .box { font-size: 12px; overflow-wrap: anywhere; }
+    #log .card .warn {
+      font-size: 12px; padding: 6px 8px; border-radius: 9px; margin-top: 6px;
+    }
+    #composer {
+      background: var(--chat-canvas); border-top: 0; padding: 7px 10px 8px;
+    }
+    #composer form { gap: 7px; align-items: center; }
+    #composer #input {
+      min-height: 48px; border: 1px solid var(--chat-edge); border-radius: 26px;
+      padding: 10px 17px; background: var(--chat-incoming); box-shadow: 0 1px 2px #0000000d;
+      outline-offset: -2px;
+    }
+    #composer #input:focus { outline: 2px solid #86afe5; border-color: transparent; }
+    #composer form button[type="submit"] {
+      border-radius: 50%; width: 48px; height: 48px; min-width: 48px;
+      padding: 0; background: #2f71c9; border-color: #2f71c9; font-size: 23px;
+      display: flex; justify-content: center; align-items: center; line-height: 1;
+    }
+    #decision { background: var(--panel); border-top: 1px solid var(--line); padding: 8px 10px; }
+    #decision .dtext { display: none; }
+    #decision .dbtns { width: 100%; gap: 10px; }
+    #decision .dbtns #zoomBtn, #decision .dbtns #wholeBtn { display: none; }
+    #decision .dbtns #acceptBtn, #decision .dbtns #rejectBtn {
+      min-height: 46px; flex: 1 1 0; border-radius: 22px; font-size: 14px; padding: 6px 10px;
+    }
+    #decision .dbtns #acceptBtn { background: #218451; border-color: #218451; }
+    #decision .dbtns #rejectBtn { color: var(--fg); background: transparent; border: 1px solid var(--line); }
+    #status.compactStatus {
+      grid-template-columns: minmax(0, 1fr) 46px 112px; gap: 8px;
+      background: var(--panel); border-top: 1px solid var(--line);
+      padding: 7px 10px calc(7px + env(safe-area-inset-bottom));
+    }
+    #status.compactStatus #projectBtn {
+      background: transparent; border: 0; border-radius: 11px; color: var(--fg);
+      min-height: 48px; padding: 5px 7px; font-size: 14px; font-weight: 600;
+    }
+    #status.compactStatus .productBtnIcon { color: #397ed0; font-size: 19px; }
+    #status.compactStatus #moreBtn {
+      background: transparent; border: 0; border-radius: 10px; min-height: 48px;
+      font-size: 24px; color: var(--muted);
+    }
+    #status.compactStatus #toggle3d {
+      min-height: 58px !important; min-width: 110px; background: #285db5 !important;
+      border: 0 !important; border-radius: 14px; font-size: 17px;
+    }
+    #status.compactStatus button:focus-visible { outline: 3px solid #6faaf2; outline-offset: 2px; }
+  }
+  @media (max-width: 760px) and (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --chat-canvas: #111922; --chat-incoming: #212d3a; --chat-outgoing: #205347;
+      --chat-edge: #3a4a5a;
+    }
+    #log .card .choices button {
+      background: #233e61; border-color: #476da0; color: #e5f1ff;
+    }
+    #log .card .choices button.chosen,
+    #log .card .choices button.chosen:disabled { background: #2f71c9; border-color: #2f71c9; }
+    #composer form button[type="submit"] { color: #fff; }
+  }
 </style>
-<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.min.js?v=13cdbd7449da" } }</script>
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.min.js?v=82722beda481" } }</script>
 </head>
 <body>
 <main>
@@ -226,7 +353,7 @@
     <div id="log" aria-live="polite"></div>
     <div id="composer">
       <div id="chips"></div>
-      <form id="form"><button type="button" id="examplesBtn" title="Example sentences">＋</button><input id="input" autocomplete="off" placeholder="Describe the change in your own words…" aria-label="Message"><button class="primary" type="submit">Send</button></form>
+      <form id="form"><button type="button" id="examplesBtn" title="Example sentences">＋</button><input id="input" autocomplete="off" placeholder="Popiš změnu…" aria-label="Message"><button class="primary" type="submit" aria-label="Odeslat zprávu" title="Odeslat zprávu">➤</button></form>
     </div>
   </section>
   <section id="stage" aria-label="3D preview">
@@ -253,6 +380,6 @@
 <aside id="projects" class="sheet" aria-label="Products"><header><h2>Products</h2><button id="closeProjects" type="button">Close</button></header><div class="body" id="projectList"></div></aside>
 <aside id="properties" class="sheet" aria-label="Exact properties"><header><h2>Exact properties</h2><button id="closeProperties" type="button">Close</button></header><div class="body" id="propertyList"></div></aside>
 <input id="openFile" type="file" accept=".aiconcept,application/json" hidden>
-<script type="module" src="app.js?v=13cdbd7449da"></script>
+<script type="module" src="app.js?v=82722beda481"></script>
 </body>
 </html>

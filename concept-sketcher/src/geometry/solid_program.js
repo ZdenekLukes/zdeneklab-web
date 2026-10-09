@@ -15,7 +15,7 @@
 // `skipped`. Annotations (interfaces, axes, limits, volumes, fasteners) are not
 // material and are never part of a solid.
 
-import { featureDefs, AXES } from '../resolve.js?v=13cdbd7449da';
+import { featureDefs, AXES } from '../resolve.js?v=82722beda481';
 
 export const SOLID_PROGRAM = 'AI_CONCEPT_SOLIDS';
 export const COVERED_FEATURES = ['TAB', 'PIN', 'HOLE'];

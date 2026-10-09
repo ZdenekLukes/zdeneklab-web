@@ -3,7 +3,7 @@
 // proposal overlay. No geometry decisions happen here.
 
 import * as THREE from 'three';
-import { OrbitControls } from '../vendor/three/OrbitControls.js?v=13cdbd7449da';
+import { OrbitControls } from '../vendor/three/OrbitControls.js?v=82722beda481';
 
 export const STYLE_COLORS = { produced: 0x6f8fb8, reference: 0x9aa3b2, unresolved: 0xe8730c, proposed: 0x1f9d55, removed: 0xd93025 };
 const OPACITY = { produced: 1, reference: 0.08, unresolved: 0.55, proposed: 0.6, removed: 0.18 };

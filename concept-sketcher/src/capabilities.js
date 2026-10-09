@@ -7,8 +7,8 @@
 //     the words that announce it and how to record it (STATED).
 // test/s2_manifest.test.js keeps both in lock-step with those sources.
 
-import { entitySpec, fieldSpec, FASTENER_SIZE } from './schema.js?v=13cdbd7449da';
-import { OPS } from './ops.js?v=13cdbd7449da';
+import { entitySpec, fieldSpec, FASTENER_SIZE } from './schema.js?v=82722beda481';
+import { OPS } from './ops.js?v=82722beda481';
 
 // Gate V2 SUPPORTED rows → the schema constructs that carry them ("collection[:variant].field[.sub]").
 export const SUPPORTED = [

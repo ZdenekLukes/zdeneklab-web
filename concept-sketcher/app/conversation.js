@@ -12,7 +12,7 @@
 // here is applied to the model; proposals still go through the evaluator and
 // an explicit Accept. No credentials are ever written here.
 
-import { boundRecent } from '../src/live_context.js?v=13cdbd7449da';
+import { boundRecent } from '../src/live_context.js?v=82722beda481';
 
 export const MAX_STORED_TURNS = 80;
 

@@ -12,10 +12,10 @@
 //     evaluator checks facts against. Only user turns count. Assistant turns
 //     (questions, proposals) are context for the AI and never evidence.
 
-import { concreteFacts } from './proposal.js?v=13cdbd7449da';
-import { applyOps } from './ops.js?v=13cdbd7449da';
-import { factNumbers } from './schema.js?v=13cdbd7449da';
-import { numbersIn as statedNumbers } from './interpret/normalize.js?v=13cdbd7449da';
+import { concreteFacts } from './proposal.js?v=82722beda481';
+import { applyOps } from './ops.js?v=82722beda481';
+import { factNumbers } from './schema.js?v=82722beda481';
+import { numbersIn as statedNumbers } from './interpret/normalize.js?v=82722beda481';
 
 // Keep a practical mobile dialogue plus earlier explicit user requirements.
 // The original request and older numeric corrections are pinned, while recent
