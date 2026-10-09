@@ -5,8 +5,8 @@
 // It knows a handful of intents (English and Czech trigger phrases); anything
 // else gets a clarification reply, never a guess.
 
-import { conceptHash } from '../model.js?v=88a79953eb30';
-import { normalizeText } from '../proposal.js?v=88a79953eb30';
+import { conceptHash } from '../model.js?v=3e2243632c73';
+import { normalizeText } from '../proposal.js?v=3e2243632c73';
 
 const INTENTS = [
   { id: 'dont-know', triggers: ["i don't know", 'i dont know', 'not sure yet', 'zatim nevim', 'nevim'] },

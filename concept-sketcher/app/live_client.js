@@ -102,12 +102,12 @@ async function githubRequest(url, init, fetchImpl = fetch) {
   }
 }
 
-export async function requestHttpIntent(endpoint, { utterance, model, recent = [] }, fetchImpl = fetch) {
+export async function requestHttpIntent(endpoint, { utterance, model, recent = [], memory = null }, fetchImpl = fetch) {
   if (!endpoint) throw new Error('Live AI backend is not configured yet.');
   const res = await fetchImpl(endpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ utterance, model, recent }),
+    body: JSON.stringify({ utterance, model, recent, memory }),
   });
   const body = await responseJson(res);
   if (!res.ok) {
@@ -156,7 +156,10 @@ export async function requestGitHubIntent(config, input, options = {}) {
   const payloadText = JSON.stringify({
     utterance: input.utterance,
     model: input.model,
-    recent: Array.isArray(input.recent) ? input.recent.slice(-12) : [],
+    // boundRecent() already enforces the context budget and pins original
+    // requirements. Slicing again here silently discards those older anchors.
+    recent: Array.isArray(input.recent) ? input.recent : [],
+    memory: input.memory || null,
   });
   const payload = utf8ToBase64(payloadText);
   if (payload.length > 60000) throw new Error('Concept is too large for the GitHub Actions POC transport.');

@@ -178,7 +178,7 @@
     .product .pactions button { flex: 1 1 0; }
   }
 </style>
-<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.min.js?v=88a79953eb30" } }</script>
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.min.js?v=3e2243632c73" } }</script>
 </head>
 <body>
 <main>
@@ -207,11 +207,12 @@
 </main>
 <div id="decision" role="region" aria-label="Pending proposal"></div>
 <footer id="status" aria-label="Accepted concept state"></footer>
+<aside id="designBrief" class="sheet" aria-label="Product design requirements"><header><h2>Product requirements</h2><button id="closeBrief" type="button">Close</button></header><div class="body" id="briefList"></div></aside>
 <aside id="history" class="sheet" aria-label="Accepted revisions"><header><h2>Accepted revisions</h2><button id="closeHist" type="button">Close</button></header><div class="body" id="revs"></div></aside>
 <aside id="exports" class="sheet" aria-label="Export"><header><h2>Export accepted concept</h2><button id="closeExp" type="button">Close</button></header><div class="body" id="expList"></div></aside>
 <aside id="projects" class="sheet" aria-label="Products"><header><h2>Products</h2><button id="closeProjects" type="button">Close</button></header><div class="body" id="projectList"></div></aside>
 <aside id="properties" class="sheet" aria-label="Exact properties"><header><h2>Exact properties</h2><button id="closeProperties" type="button">Close</button></header><div class="body" id="propertyList"></div></aside>
 <input id="openFile" type="file" accept=".aiconcept,application/json" hidden>
-<script type="module" src="app.js?v=88a79953eb30"></script>
+<script type="module" src="app.js?v=3e2243632c73"></script>
 </body>
 </html>

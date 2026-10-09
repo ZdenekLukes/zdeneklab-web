@@ -12,9 +12,9 @@
 //   for. When the accepted model has moved on, the result is STALE.
 // opts.scope: an optional narrower caller/UI scope (both must hold).
 
-import { conceptHash } from './model.js?v=88a79953eb30';
-import { evaluateProposal, attachUtteranceEvidence, PROPOSAL_FORMAT } from './proposal.js?v=88a79953eb30';
-import { compileLiveIntent } from './live_intent.js?v=88a79953eb30';
+import { conceptHash } from './model.js?v=3e2243632c73';
+import { evaluateProposal, attachUtteranceEvidence, PROPOSAL_FORMAT } from './proposal.js?v=3e2243632c73';
+import { compileLiveIntent } from './live_intent.js?v=3e2243632c73';
 
 // Compile an intent to the proposal text the common evaluator receives.
 export function liveIntentProposal(accepted, text, opts = {}) {

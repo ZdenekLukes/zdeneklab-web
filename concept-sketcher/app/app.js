@@ -3,24 +3,25 @@
 // the evaluated proposal as a structured review, and passes the user's
 // ACCEPT/REJECT to the session. Zoom is inspection only.
 
-import { motionControls } from '../src/motion.js?v=88a79953eb30';
-import { motionPreview } from '../src/motion_preview.js?v=88a79953eb30';
-import { conceptHash } from '../src/model.js?v=88a79953eb30';
-import { validate } from '../src/validate.js?v=88a79953eb30';
-import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js?v=88a79953eb30';
-import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js?v=88a79953eb30';
-import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js?v=88a79953eb30';
-import { reviewProposal } from '../src/proposal.js?v=88a79953eb30';
-import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js?v=88a79953eb30';
-import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js?v=88a79953eb30';
-import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=88a79953eb30';
-import { createViewer, PART_PALETTE } from '../view/render3d.js?v=88a79953eb30';
-import { ensureCurrentShell } from './build_version.js?v=88a79953eb30';
-import { threadWords, valueSources } from '../src/live_context.js?v=88a79953eb30';
-import { solidProgram, solidChanges } from '../src/geometry/solid_program.js?v=88a79953eb30';
-import { loadManifoldEngine } from '../src/geometry/manifold_engine.js?v=88a79953eb30';
-import { newThread, loadThread, storeThread, threadMatches, addTurn, updateTurn, recentOf } from './conversation.js?v=88a79953eb30';
-import { ACTIVE_PROJECT, NAME_MAX, slug, projectKey, listProducts, readIndex, displayName, cleanName, freeSlot, storeNewProduct, recordProduct, renameProduct, deleteProduct } from './library.js?v=88a79953eb30';
+import { motionControls } from '../src/motion.js?v=3e2243632c73';
+import { motionPreview } from '../src/motion_preview.js?v=3e2243632c73';
+import { conceptHash } from '../src/model.js?v=3e2243632c73';
+import { validate } from '../src/validate.js?v=3e2243632c73';
+import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js?v=3e2243632c73';
+import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js?v=3e2243632c73';
+import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js?v=3e2243632c73';
+import { reviewProposal } from '../src/proposal.js?v=3e2243632c73';
+import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js?v=3e2243632c73';
+import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js?v=3e2243632c73';
+import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=3e2243632c73';
+import { createViewer, PART_PALETTE } from '../view/render3d.js?v=3e2243632c73';
+import { ensureCurrentShell } from './build_version.js?v=3e2243632c73';
+import { threadWords, valueSources } from '../src/live_context.js?v=3e2243632c73';
+import { solidProgram, solidChanges } from '../src/geometry/solid_program.js?v=3e2243632c73';
+import { loadManifoldEngine } from '../src/geometry/manifold_engine.js?v=3e2243632c73';
+import { newThread, loadThread, storeThread, threadMatches, addTurn, updateTurn, recentOf } from './conversation.js?v=3e2243632c73';
+import { emptyMemory, appendMemory, memoryFromConcept, exportWithMemory, memoryView, memoryEvidenceWords } from '../src/design_memory.js?v=3e2243632c73';
+import { ACTIVE_PROJECT, NAME_MAX, slug, projectKey, listProducts, readIndex, displayName, cleanName, freeSlot, storeNewProduct, recordProduct, renameProduct, deleteProduct } from './library.js?v=3e2243632c73';
 
 const LIVE = liveConfig();
 const LEGACY_STORE = LIVE.live ? `concept-sketcher.live.${LIVE.seed || 'blank'}.session` : 'concept-sketcher.s1.session';
@@ -41,6 +42,7 @@ let studioNow = null;
 let geometry = { engine: null, error: null, last: null };
 let stage = null;            // what is drawn now: { model, v, candidate, vC, scenes, changed }
 let activeStore = null;
+let designMemory = emptyMemory(); // per-product; never reset by Accept
 let storageWarning = '';
 // A saved project that failed validation on restore or open is never discarded:
 // its raw text is first copied byte-for-byte to a quarantine key (listed in
@@ -84,8 +86,13 @@ function save() {
       storageWarning = `Autosave paused: the saved project in this slot could not be validated and could not be copied aside, so it is kept untouched (${unreadable.error})`;
       return;
     }
-    const text = exportSession(session);
+    const acceptedExport = exportSession(session);
     const previous = localStorage.getItem(activeStore);
+    // Opening an older, unchanged .aiconcept must not migrate or rewrite it
+    // merely because a new optional memory field exists. Add the journal only
+    // once the user actually states a new requirement or changes the concept.
+    const text = previous && designMemory.entries.length === 0 && previous === acceptedExport
+      ? previous : exportWithMemory(acceptedExport, designMemory);
     const changed = previous !== text;
     if (changed) {
       if (previous) localStorage.setItem(`${activeStore}.backup`, previous);
@@ -576,26 +583,66 @@ function renderHistory() {
   $('freezeBtn').onclick = () => {
     try { supersede(); session = freeze(session, new Date().toISOString()); save(); sys(`CONCEPT FROZEN as REV ${session.head}.`); refresh(); renderHistory(); } catch (e) { sys(e.message); }
   };
-  $('resetBtn').onclick = async () => { supersede(); session = await startSession(true); sys('Started over from the S1 start revision.'); refresh(); renderHistory(); };
+  $('resetBtn').onclick = async () => { supersede(); session = await startSession(true); designMemory = emptyMemory(); sys('Started over from the S1 start revision.'); refresh(); renderHistory(); };
 }
 
+function renderDesignBrief() {
+  const model = acceptedModel(session);
+  const memo = memoryView(designMemory, '', model);
+  const prior = new Map();
+  for (const entry of designMemory.entries) for (const claim of entry.claims) {
+    prior.set(claim.key, (prior.get(claim.key) || 0) + 1);
+  }
+  const human = { 'box.outer_dimensions_mm': 'Box outer dimensions', 'box.wall_mm': 'Wall thickness',
+    'lid.height_mm': 'Lid height', 'hinge.pin_removable': 'Removable hinge pin',
+    'hinge.integrated': 'Integrated hinge', 'hinge.edge': 'Hinge edge' };
+  const finalTurn = thread().turns.at(-1);
+  const currentQuestion = finalTurn?.role === 'assistant' && finalTurn?.kind === 'question' ? finalTurn.text : '';
+  $('briefList').innerHTML =
+    `<p class="muted">User requirements are saved with this product, independent of Accept, and included in .aiconcept exports. They do not change the accepted 3D geometry by themselves. ${memo.entries} user statements recorded.</p>
+    <h3>Known</h3>` +
+    (memo.facts.length ? memo.facts.map((f) => {
+      const numeric = typeof f.value === 'number' || Array.isArray(f.value);
+      const value = Array.isArray(f.value) ? f.value.join(' × ') :
+        typeof f.value === 'boolean' ? (f.value ? 'Yes' : 'No') : String(f.value);
+      return `<div class="rev"><div><b>${esc(human[f.key] || f.key)}:</b> ${esc(value)}${numeric ? ' mm' : ''}
+        <div class="muted">${f.status === 'accepted_in_model' ? 'Verified in accepted model' : 'User-stated · compare with accepted model'} · source #${f.seq}</div>
+        <div class="muted">“${esc(f.text)}”</div></div></div>`;
+    }).join('') : '<p class="muted">No typed requirements yet. Other decisions remain in the original user statements below.</p>') +
+    `<h3>Open</h3><p>${esc(currentQuestion || 'No current clarification question. See the OPEN count above for model-level unresolved questions.')}</p>
+    <h3>Changed</h3>` +
+    ([...prior].filter(([, n]) => n > 1).map(([k, n]) => `<p>${esc(human[k] || k)}: ${n} user statements; latest stated value displayed above.</p>`).join('')
+      || '<p class="muted">No revised numerical requirements recorded yet.</p>') +
+    `<details><summary>Full source journal (${memo.entries} user statements)</summary>
+    <p class="muted">Each entry is the exact user wording; assistant questions are context only. Correct mistakes by describing the correction in Chat.</p>` +
+    designMemory.entries.map((e) => `<p><b>#${e.seq}</b> · ${esc(e.text)}${e.question ? `<span class="muted"> (answered: ${esc(e.question)})</span>` : ''}</p>`).join('') +
+    '</details>';
+}
+
+function portableArtifacts() {
+  const files = acceptedArtifacts(session);
+  for (const [name, text] of Object.entries(files)) {
+    if (name.endsWith('.aiconcept')) files[name] = exportWithMemory(text, designMemory);
+  }
+  return files;
+}
 const DESCRIBE = {
-  '.aiconcept': 'Concept Model — the source of truth, with its accepted revision history',
+  '.aiconcept': 'Accepted concept and revision history, plus separately labeled user-stated requirements (not accepted geometry)',
   '.concept_contract.md': 'Concept Contract — human-readable description',
   '.coder_prompt.md': 'Coder Prompt — for a coding agent',
   '.skeleton_spec.json': 'Skeleton Spec — resolved frames, features and parameters',
 };
 function renderExports() {
-  const files = acceptedArtifacts(session);
+  const files = portableArtifacts();
   const model = acceptedModel(session);
-  $('expList').innerHTML = `<p class="muted">Everything below is generated from the <b>accepted REV ${model.meta.revision}</b> only.${pending ? ' The pending proposal is <b>not</b> included.' : ''}</p>`
+  $('expList').innerHTML = `<p class="muted">Geometry and derived outputs come from <b>accepted REV ${model.meta.revision}</b> only. The .aiconcept file additionally preserves the separate user requirements journal; its unaccepted statements do not alter geometry.${pending ? ' The pending geometry proposal is <b>not</b> included.' : ''}</p>`
     + Object.keys(files).map((name) => {
       const kind = Object.keys(DESCRIBE).find((k) => name.endsWith(k));
       return `<div class="exp"><div><div>${esc(DESCRIBE[kind])}</div><div class="muted">${esc(name)}</div></div><button type="button" data-f="${esc(name)}">Download</button></div>`;
     }).join('');
   $('expList').querySelectorAll('button[data-f]').forEach((b) => {
     b.onclick = () => {
-      const current = acceptedArtifacts(session);          // regenerate at click time: always the accepted model
+      const current = portableArtifacts();          // regenerate at click time: always the accepted model
       const name = b.dataset.f;
       const blob = new Blob([current[name]], { type: name.endsWith('.md') ? 'text/markdown' : 'application/json' });
       const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: name });
@@ -624,7 +671,7 @@ function legacyNote(s) {
   const n = historyView(s).filter((r) => r.legacy).length;
   if (n) sys(`${n} earlier revision${n > 1 ? 's were' : ' was'} accepted under the rules before 2026-10-03 and ${n > 1 ? 'are' : 'is'} kept as accepted then (marked in History). New changes use the current rules.`);
 }
-function switchSession(next, key, message) {
+function switchSession(next, key, message, nextMemory = emptyMemory()) {
   retireChoices();                          // a question of the previous project must not answer into this one
   if (liveRequest) {                        // its reply belongs to the previous project: drop it when it comes
     liveRequest.progress.remove();
@@ -634,6 +681,7 @@ function switchSession(next, key, message) {
   supersede();
   session = next;
   activeStore = key;
+  designMemory = nextMemory;
   view = defaultViewState();
   save();
   closeSheets();
@@ -674,21 +722,22 @@ function renderProjects() {
     ${listError ? `<p class="err">The product list could not be read: ${esc(listError)}</p>` : ''}
     <div id="productRows">${rows.map((r) => productRow(r, model)).join('')}</div>
     <h3>This product: ${esc(currentName())}</h3>
-    <div class="sheet-actions"><button type="button" id="projectSave" class="primary">Save .aiconcept</button><button type="button" id="projectOpen">Open file…</button><button type="button" id="projectBackup" ${localStorage.getItem(`${activeStore}.backup`) ? '' : 'disabled'}>Restore autosave backup</button></div>
+    <div class="sheet-actions"><button type="button" id="projectSave" class="primary">Save .aiconcept</button><button type="button" id="projectOpen">Open file…</button><button type="button" id="projectBrief">Requirements / Brief</button><button type="button" id="projectBackup" ${localStorage.getItem(`${activeStore}.backup`) ? '' : 'disabled'}>Restore autosave backup</button></div>
     <p class="muted">Products are saved in this browser only. Opening a file always adds it as a new product; it never replaces one.</p>`;
   $('projectSave').onclick = () => {
-    const files = acceptedArtifacts(session);
+    const files = portableArtifacts();
     const name = Object.keys(files).find((x) => x.endsWith('.aiconcept'));
     downloadText(name, files[name]);
   };
   $('projectOpen').onclick = () => $('openFile').click();
+  $('projectBrief').onclick = () => { renderDesignBrief(); $('projects').classList.remove('open'); $('designBrief').classList.add('open'); };
   if ($('projectUnreadable')) $('projectUnreadable').onclick = () => downloadText('unreadable-concept-sketcher-save.json', unreadable.raw);
   $('projectList').querySelectorAll('[data-unreadable]').forEach((b) => { b.onclick = () => downloadText(`unreadable-concept-sketcher-save-${b.dataset.unreadable.slice(UNREADABLE_PREFIX.length)}.json`, localStorage.getItem(b.dataset.unreadable) || ''); });
   $('projectBackup').onclick = () => {
     try {
       const raw = localStorage.getItem(`${activeStore}.backup`);
       if (!raw) throw new Error('No backup is available.');
-      switchSession(importSession(raw), activeStore, 'Restored the previous autosaved revision history.');
+      switchSession(importSession(raw), activeStore, 'Restored the previous autosaved revision history.', memoryFromConcept(raw));
     } catch (e) { sys(`Backup was not restored: ${e.message}`); }
   };
   $('newProject').onsubmit = (e) => {
@@ -697,7 +746,7 @@ function renderProjects() {
       const name = cleanName($('newTitle').value);
       const { id, key } = freeSlot(localStorage, name);           // a slot no product uses: never overwrites
       const next = createSession(JSON.stringify(blankModel(id, name)), { summary: 'New blank project', source: 'Products' });
-      storeNewProduct(localStorage, key, exportSession(next));    // stored completely, or not at all
+      storeNewProduct(localStorage, key, exportWithMemory(exportSession(next), emptyMemory()));    // stored completely, or not at all
       libraryUi = null;
       switchSession(next, key, `Created product “${name}”.`);
     } catch (err) { sys(`Product was not created: ${err.message}. Nothing was changed.`); }
@@ -711,7 +760,7 @@ function renderProjects() {
       const next = importSession(raw);
       const row = rows.find((r) => r.key === key);
       libraryUi = null;
-      switchSession(next, key, `Opened “${displayName(row || acceptedModel(next).meta)}”.`);
+      switchSession(next, key, `Opened “${displayName(row || acceptedModel(next).meta)}”.`, memoryFromConcept(raw));
     } catch (e) {
       // keep its exact text (quarantine copy, or protect its slot) and offer it for download
       if (raw) { quarantine(key, raw, e.message); renderProjects(); }
@@ -741,7 +790,7 @@ function renderProjects() {
     $('deleteDownload').onclick = () => {
       if (key === activeStore) {
         const m = acceptedModel(session);
-        downloadText(`${slug(m.meta.id)}-rev${m.meta.revision}.aiconcept`, exportSession(session));
+        downloadText(`${slug(m.meta.id)}-rev${m.meta.revision}.aiconcept`, exportWithMemory(exportSession(session), designMemory));
         return;
       }
       const raw = localStorage.getItem(key);
@@ -1038,10 +1087,19 @@ async function send(text, { via = 'typed' } = {}) {
   const model = acceptedModel(session);
 
   if (LIVE.live) {
-    // context: this project's thread since the accepted model last changed;
-    // evidence: the user's own words of that thread (never assistant turns)
-    const recent = recentOf(thread());
-    const said = { utterance: threadWords(recent, text), base: baseOf(model), source: 'live-intent' };
+    // Persistent per-product evidence: only literal user statements count.
+    // The short conversation window is used for immediate question context.
+    const currentThread = thread();
+    const finalTurn = currentThread.turns.at(-1);
+    const lastQuestion = finalTurn?.role === 'assistant' && finalTurn?.kind === 'question' ? finalTurn.text : '';
+    designMemory = appendMemory(designMemory, text, { question: lastQuestion, revision: model.meta.revision });
+    save();
+    const memory = memoryView(designMemory, text, model, lastQuestion);
+    const recent = recentOf(currentThread);
+    const recentUserWords = new Set([...recent.filter((r) => r.role === 'user').map((r) => r.text), text]);
+    const olderEvidence = memoryEvidenceWords({ evidence: memory.evidence.filter((e) => !recentUserWords.has(e.text)) });
+    const said = { utterance: [olderEvidence, threadWords(recent, text)].filter(Boolean).join('\n'),
+      base: baseOf(model), source: 'live-intent' };
     const progress = addEl(LIVE.transport === 'github' ? 'GitHub POC: preparing…' : 'AI is thinking…', 'msg sys thinking');
     const mine = { text, progress };
     liveRequest = mine;
@@ -1064,12 +1122,12 @@ async function send(text, { via = 'typed' } = {}) {
           return;
         }
         try {
-          intentText = await requestLiveIntent(LIVE, { utterance: text, model, recent }, { onProgress });
+          intentText = await requestLiveIntent(LIVE, { utterance: text, model, recent, memory }, { onProgress });
         } catch (e) {
           if (LIVE.transport !== 'github' || !['GITHUB_TOKEN_REQUIRED', 'GITHUB_AUTH_FAILED'].includes(e.code)) throw e;
           clearGitHubToken();
           if (!askGitHubToken()) throw e;
-          intentText = await requestLiveIntent(LIVE, { utterance: text, model, recent }, { onProgress });
+          intentText = await requestLiveIntent(LIVE, { utterance: text, model, recent, memory }, { onProgress });
         }
       } catch (e) {
         if (abandoned()) return;
@@ -1156,6 +1214,7 @@ async function startSession(fresh = false) {
     if (raw) {
       try {
         const restored = importSession(raw);
+        designMemory = memoryFromConcept(raw);
         activeStore = key === LEGACY_STORE ? freeSlot(localStorage, acceptedModel(restored).meta.id).key : key;
         return restored;
       } catch (e) {
@@ -1204,6 +1263,7 @@ async function main() {
   $('examplesBtn').onclick = () => document.body.classList.toggle('showchips');
   $('form').onsubmit = (e) => { e.preventDefault(); const t = $('input').value; $('input').value = ''; void send(t); };
   $('closeHist').onclick = () => $('history').classList.remove('open');
+  $('closeBrief').onclick = () => $('designBrief').classList.remove('open');
   $('closeExp').onclick = () => $('exports').classList.remove('open');
   $('closeProjects').onclick = () => $('projects').classList.remove('open');
   $('closeProperties').onclick = () => $('properties').classList.remove('open');
@@ -1220,8 +1280,8 @@ async function main() {
       // Always a new product in a free slot: a file never replaces a product, even with the same ID.
       const same = listProducts(localStorage).some((r) => r.id === m.meta.id);
       const { key } = freeSlot(localStorage, m.meta.id);
-      storeNewProduct(localStorage, key, exportSession(next));
-      switchSession(next, key, `Opened and validated “${m.meta.title}” from ${file.name}${same ? ' as a new product (a product with the same ID is already here and was not changed)' : ''}.`);
+      storeNewProduct(localStorage, key, exportWithMemory(exportSession(next), memoryFromConcept(raw)));
+      switchSession(next, key, `Opened and validated “${m.meta.title}” from ${file.name}${same ? ' as a new product (a product with the same ID is already here and was not changed)' : ''}.`, memoryFromConcept(raw));
     } catch (err) { sys(`File was not opened: ${err.message}`); }
   };
   legacyNote(session);
@@ -1237,7 +1297,7 @@ async function main() {
     acceptedCanonical: () => JSON.stringify(acceptedModel(session)),
     head: () => session.head,
     pending: () => pending?.evaluation.status ?? null,
-    artifacts: () => acceptedArtifacts(session),
+    artifacts: () => portableArtifacts(),
     zoom: () => (pending?.targets?.[pending.zoomIndex] ?? null),
     view: () => structuredClone(view),
     setView: (patch) => setView(patch),
@@ -1245,6 +1305,7 @@ async function main() {
     inspection: () => (stage && view.selected ? (stage.candidate ? inspectChange(stage.model, stage.v, stage.candidate, stage.vC, view.selected) : inspect(stage.model, stage.v, view.selected)) : null),
     changed: () => stage?.changed ?? [],
     conversation: () => structuredClone(thread()),
+    designMemory: () => structuredClone(designMemory),
     geometry: () => ({ engine: geometry.engine?.name ?? null, loadMs: geometry.engine?.loadMs ?? null, error: geometry.error, ...structuredClone(geometry.last ?? {}) }),
     probe: (origin, dir) => viewer.probe?.(origin, dir) ?? [],
     camera: (name) => viewer.view(name),
