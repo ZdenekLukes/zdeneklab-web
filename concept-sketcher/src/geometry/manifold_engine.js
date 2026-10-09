@@ -12,7 +12,7 @@ let loading = null;
 export function loadManifoldEngine() {
   return (loading ||= (async () => {
     const t0 = performance.now();
-    const { default: Module } = await import('../../vendor/manifold-3.5.3/manifold.js?v=68431d732f1e');
+    const { default: Module } = await import('../../vendor/manifold-3.5.3/manifold.js?v=88a79953eb30');
     const wasm = await Module();
     wasm.setup();
     return createManifoldEngine(wasm, performance.now() - t0);

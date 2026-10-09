@@ -3,24 +3,24 @@
 // the evaluated proposal as a structured review, and passes the user's
 // ACCEPT/REJECT to the session. Zoom is inspection only.
 
-import { motionControls } from '../src/motion.js?v=68431d732f1e';
-import { motionPreview } from '../src/motion_preview.js?v=68431d732f1e';
-import { conceptHash } from '../src/model.js?v=68431d732f1e';
-import { validate } from '../src/validate.js?v=68431d732f1e';
-import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js?v=68431d732f1e';
-import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js?v=68431d732f1e';
-import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js?v=68431d732f1e';
-import { reviewProposal } from '../src/proposal.js?v=68431d732f1e';
-import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js?v=68431d732f1e';
-import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js?v=68431d732f1e';
-import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=68431d732f1e';
-import { createViewer, PART_PALETTE } from '../view/render3d.js?v=68431d732f1e';
-import { ensureCurrentShell } from './build_version.js?v=68431d732f1e';
-import { threadWords, valueSources } from '../src/live_context.js?v=68431d732f1e';
-import { solidProgram, solidChanges } from '../src/geometry/solid_program.js?v=68431d732f1e';
-import { loadManifoldEngine } from '../src/geometry/manifold_engine.js?v=68431d732f1e';
-import { newThread, loadThread, storeThread, threadMatches, addTurn, updateTurn, recentOf } from './conversation.js?v=68431d732f1e';
-import { ACTIVE_PROJECT, NAME_MAX, slug, projectKey, listProducts, readIndex, displayName, cleanName, freeSlot, storeNewProduct, recordProduct, renameProduct, deleteProduct } from './library.js?v=68431d732f1e';
+import { motionControls } from '../src/motion.js?v=88a79953eb30';
+import { motionPreview } from '../src/motion_preview.js?v=88a79953eb30';
+import { conceptHash } from '../src/model.js?v=88a79953eb30';
+import { validate } from '../src/validate.js?v=88a79953eb30';
+import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js?v=88a79953eb30';
+import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js?v=88a79953eb30';
+import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js?v=88a79953eb30';
+import { reviewProposal } from '../src/proposal.js?v=88a79953eb30';
+import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js?v=88a79953eb30';
+import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js?v=88a79953eb30';
+import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=88a79953eb30';
+import { createViewer, PART_PALETTE } from '../view/render3d.js?v=88a79953eb30';
+import { ensureCurrentShell } from './build_version.js?v=88a79953eb30';
+import { threadWords, valueSources } from '../src/live_context.js?v=88a79953eb30';
+import { solidProgram, solidChanges } from '../src/geometry/solid_program.js?v=88a79953eb30';
+import { loadManifoldEngine } from '../src/geometry/manifold_engine.js?v=88a79953eb30';
+import { newThread, loadThread, storeThread, threadMatches, addTurn, updateTurn, recentOf } from './conversation.js?v=88a79953eb30';
+import { ACTIVE_PROJECT, NAME_MAX, slug, projectKey, listProducts, readIndex, displayName, cleanName, freeSlot, storeNewProduct, recordProduct, renameProduct, deleteProduct } from './library.js?v=88a79953eb30';
 
 const LIVE = liveConfig();
 const LEGACY_STORE = LIVE.live ? `concept-sketcher.live.${LIVE.seed || 'blank'}.session` : 'concept-sketcher.s1.session';
@@ -504,21 +504,25 @@ function renderStatus() {
   const model = acceptedModel(session);
   const v = validate(model);
   const p = pending?.evaluation;
+  const is3d = document.body.classList.contains('show3d');
   $('status').innerHTML = `
-    <span>REV <b>${model.meta.revision}</b></span>
-    <span title="${esc(conceptHash(model))}">#${conceptHash(model).slice(7, 15)}</span>
-    <span>${esc(v.state.replace('_', ' '))}</span>
-    <span class="tag ${v.errors.length ? 'err' : 'ok'}">${v.errors.length ? '✕' : '✓'} ERR ${v.errors.length}</span>
-    <span class="tag ${v.open.length ? 'open' : 'ok'}">${v.open.length ? '?' : '✓'} OPEN ${v.open.length}${v.open.length ? ` (${v.open.join(', ')})` : ''}</span>
-    <span class="tag prop">PROPOSAL ${p ? p.status : '—'}</span>
-    ${storageWarning ? `<span class="tag err" title="${esc(storageWarning)}">AUTOSAVE ✕</span>` : ''}
-    ${geometryTag()}
-    <span class="sp"></span>
-    <button type="button" id="toggle3d">${document.body.classList.contains('show3d') ? '◂ Chat' : '3D ▸'}</button>
-    <button type="button" id="projectBtn">Products</button>
-    <button type="button" id="propertyBtn" ${view.selected ? '' : 'disabled'}>Properties</button>
-    <button type="button" id="histBtn">History</button>
-    <button type="button" id="exportBtn">Export</button>`;
+    <div class="statusFacts">
+      <span>REV <b>${model.meta.revision}</b></span>
+      <span title="${esc(conceptHash(model))}">#${conceptHash(model).slice(7, 15)}</span>
+      <span>${esc(v.state.replace('_', ' '))}</span>
+      <span class="tag ${v.errors.length ? 'err' : 'ok'}">${v.errors.length ? '✕' : '✓'} ERR ${v.errors.length}</span>
+      <span class="tag ${v.open.length ? 'open' : 'ok'}">${v.open.length ? '?' : '✓'} OPEN ${v.open.length}${v.open.length ? ` (${v.open.join(', ')})` : ''}</span>
+      <span class="tag prop">PROPOSAL ${p ? p.status : '—'}</span>
+      ${storageWarning ? `<span class="tag err" title="${esc(storageWarning)}">AUTOSAVE ✕</span>` : ''}
+      ${geometryTag()}
+    </div>
+    <div class="statusTools">
+      <button type="button" id="projectBtn">Products</button>
+      <button type="button" id="propertyBtn" ${view.selected ? '' : 'disabled'}>Properties</button>
+      <button type="button" id="histBtn">History</button>
+      <button type="button" id="exportBtn">Export</button>
+    </div>
+    <button type="button" id="toggle3d" aria-label="${is3d ? 'Switch to Chat' : 'Switch to 3D preview'}" aria-controls="${is3d ? 'chat' : 'stage'}">${is3d ? '◂ Chat' : '3D ▸'}</button>`;
   $('toggle3d').onclick = () => show3d(!document.body.classList.contains('show3d'));
   $('projectBtn').onclick = () => { renderProjects(); $('projects').classList.add('open'); };
   $('propertyBtn').onclick = () => { renderProperties(); $('properties').classList.add('open'); };

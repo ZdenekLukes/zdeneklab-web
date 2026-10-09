@@ -4,7 +4,7 @@
 // words that are only sometimes mechanical ("right", "back", "up" alone) are not listed,
 // so a false alarm cannot block ordinary talk; the gold evaluation covers the rest.
 
-import { fold, quantities, nominals } from './normalize.js?v=68431d732f1e';
+import { fold, quantities, nominals } from './normalize.js?v=88a79953eb30';
 
 const STEMS = [
   // parts and features

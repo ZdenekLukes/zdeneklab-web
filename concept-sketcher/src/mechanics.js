@@ -4,8 +4,8 @@
 // axis-aligned (90° orientations only). There is no solver: a joint translates
 // its child so that link 1 coincides; further links are only checked.
 
-import { num } from './model.js?v=68431d732f1e';
-import { ROUND_KINDS, nominalDiameter, IFACE_REF } from './schema.js?v=68431d732f1e';
+import { num } from './model.js?v=88a79953eb30';
+import { ROUND_KINDS, nominalDiameter, IFACE_REF } from './schema.js?v=88a79953eb30';
 
 export const DIRS = { '+X': [1, 0, 0], '-X': [-1, 0, 0], '+Y': [0, 1, 0], '-Y': [0, -1, 0], '+Z': [0, 0, 1], '-Z': [0, 0, -1] };
 const EPS = 1e-6;

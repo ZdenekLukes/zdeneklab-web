@@ -115,7 +115,9 @@
   #decision .dtext { flex: 1 1 200px; min-width: 0; font-weight: 600; }
   #decision .dbtns { display: flex; gap: 6px; flex-wrap: wrap; }
   #status { background: var(--bar); color: var(--bar-fg); display: flex; gap: 6px 12px; align-items: center; padding: 6px 12px calc(6px + env(safe-area-inset-bottom)); font-size: 13px; flex-wrap: wrap; }
-  #status b { font-weight: 700; } #status .sp { flex: 1; }
+  #status b { font-weight: 700; }
+  #status .statusFacts { display: flex; gap: 6px 12px; align-items: center; flex-wrap: wrap; }
+  #status .statusTools { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-left: auto; }
   #status button { background: transparent; color: var(--bar-fg); border-color: #555d6b; min-height: 36px; padding: 3px 10px; }
   .tag { padding: 1px 6px; border-radius: 6px; white-space: nowrap; }
   .tag.err { background: var(--bad); } .tag.open { background: var(--open); } .tag.ok { background: #2f6b46; } .tag.prop { background: #3b4352; }
@@ -151,8 +153,19 @@
     #legend { flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; font-size: 10.5px; pointer-events: auto; scrollbar-width: none; gap: 4px; }
     #legend::-webkit-scrollbar { display: none; }
     #legend > * { flex: 0 0 auto; white-space: nowrap; }
-    #toggle3d { display: inline-block; }
-    #status { font-size: 12px; } #status .sp { display: none; }
+    /* Dedicated bottom-right navigation target, physically separated from
+       Accept/Reject and from the smaller secondary actions. */
+    #status { display: grid; grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas: "facts facts" "tools switch";
+      gap: 10px 14px; padding: 7px 10px calc(10px + env(safe-area-inset-bottom)); font-size: 12px; }
+    #status .statusFacts { grid-area: facts; gap: 5px 10px; }
+    #status .statusTools { grid-area: tools; margin-left: 0; align-self: center; gap: 6px; }
+    #toggle3d { display: flex; grid-area: switch; align-self: end; justify-self: end;
+      align-items: center; justify-content: center; min-height: 58px !important; min-width: 110px;
+      padding: 10px 16px !important; font-size: 17px; font-weight: 750;
+      border-radius: 12px; background: #285db5 !important; color: #fff !important;
+      border: 2px solid #84b7ff !important; touch-action: manipulation; white-space: nowrap; }
+    #toggle3d:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
     #decision { padding: 4px 8px; gap: 4px; }
     #decision .dtext { flex-basis: 100%; font-size: 13px; }
     #decision .dbtns { flex-wrap: nowrap; width: 100%; }
@@ -165,7 +178,7 @@
     .product .pactions button { flex: 1 1 0; }
   }
 </style>
-<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.min.js?v=68431d732f1e" } }</script>
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.min.js?v=88a79953eb30" } }</script>
 </head>
 <body>
 <main>
@@ -199,6 +212,6 @@
 <aside id="projects" class="sheet" aria-label="Products"><header><h2>Products</h2><button id="closeProjects" type="button">Close</button></header><div class="body" id="projectList"></div></aside>
 <aside id="properties" class="sheet" aria-label="Exact properties"><header><h2>Exact properties</h2><button id="closeProperties" type="button">Close</button></header><div class="body" id="propertyList"></div></aside>
 <input id="openFile" type="file" accept=".aiconcept,application/json" hidden>
-<script type="module" src="app.js?v=68431d732f1e"></script>
+<script type="module" src="app.js?v=88a79953eb30"></script>
 </body>
 </html>

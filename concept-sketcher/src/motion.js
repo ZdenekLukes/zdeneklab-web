@@ -1,6 +1,6 @@
 // Generic motion declarations live on literal parameters in .aiconcept.
 // This module owns validation and deterministic rigid poses, with no renderer dependency.
-import { evalParams, num } from './model.js?v=68431d732f1e';
+import { evalParams, num } from './model.js?v=88a79953eb30';
 
 export function motionControls(model) {
   const { values } = evalParams(model.params);

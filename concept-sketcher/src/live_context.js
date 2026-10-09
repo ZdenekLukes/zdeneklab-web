@@ -12,12 +12,15 @@
 //     evaluator checks facts against. Only user turns count. Assistant turns
 //     (questions, proposals) are context for the AI and never evidence.
 
-import { concreteFacts } from './proposal.js?v=68431d732f1e';
-import { applyOps } from './ops.js?v=68431d732f1e';
-import { factNumbers } from './schema.js?v=68431d732f1e';
-import { numbersIn as statedNumbers } from './interpret/normalize.js?v=68431d732f1e';
+import { concreteFacts } from './proposal.js?v=88a79953eb30';
+import { applyOps } from './ops.js?v=88a79953eb30';
+import { factNumbers } from './schema.js?v=88a79953eb30';
+import { numbersIn as statedNumbers } from './interpret/normalize.js?v=88a79953eb30';
 
-export const CONTEXT_LIMITS = Object.freeze({ turns: 10, turnChars: 400, totalChars: 2400 });
+// Keep a practical mobile dialogue plus earlier explicit user requirements.
+// The original request and older numeric corrections are pinned, while recent
+// turns continue to provide the current clarification context.
+export const CONTEXT_LIMITS = Object.freeze({ turns: 32, turnChars: 400, totalChars: 9500, olderNumericTurns: 6 });
 
 const clean = (s) => String(s).replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, ' ').trim();
 
@@ -32,9 +35,27 @@ export function boundRecent(recent, limits = CONTEXT_LIMITS) {
     const text = clean(t.text).slice(0, limits.turnChars);
     if (text) out.push({ role: t.role, text });
   }
-  const kept = out.slice(-limits.turns);
+  // A raw last-N window forgets the box dimensions after N/2 clarification
+  // exchanges. Preserve the user's first request plus their newest earlier
+  // numeric statements (including corrections) WITHOUT inventing a summary.
+  // Assistant messages are never promoted to user facts.
+  const olderEnd = Math.max(0, out.length - limits.turns);
+  const firstUser = out.findIndex((t) => t.role === 'user');
+  const olderNumeric = out.slice(0, olderEnd).flatMap((t, i) =>
+    t.role === 'user' && /\d/.test(t.text) ? [i] : []).slice(-(limits.olderNumericTurns ?? 0));
+  const anchors = [...new Set([...(firstUser >= 0 && firstUser < olderEnd ? [firstUser] : []), ...olderNumeric])]
+    .sort((a, b) => a - b);
+  const tailStart = Math.max(0, out.length - Math.max(1, limits.turns - anchors.length));
+  const kept = [
+    ...anchors.filter((i) => i < tailStart).map((i) => out[i]),
+    ...out.slice(tailStart),
+  ];
   let total = kept.reduce((n, t) => n + t.text.length, 0);
-  while (kept.length && total > limits.totalChars) total -= kept.shift().text.length;
+  // The very first user request is the anchor; trim intervening turns first.
+  while (kept.length > 1 && total > limits.totalChars) {
+    const drop = firstUser >= 0 && kept[0] === out[firstUser] && kept.length > 2 ? 1 : 0;
+    total -= kept.splice(drop, 1)[0].text.length;
+  }
   return kept;
 }
 

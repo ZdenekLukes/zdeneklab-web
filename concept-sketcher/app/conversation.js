@@ -12,9 +12,9 @@
 // here is applied to the model; proposals still go through the evaluator and
 // an explicit Accept. No credentials are ever written here.
 
-import { boundRecent } from '../src/live_context.js?v=68431d732f1e';
+import { boundRecent } from '../src/live_context.js?v=88a79953eb30';
 
-export const MAX_STORED_TURNS = 20;
+export const MAX_STORED_TURNS = 80;
 
 const sameBase = (a, b) => Boolean(a && b && a.head === b.head && a.hash === b.hash);
 
@@ -37,7 +37,13 @@ export function threadMatches(thread, base) { return sameBase(thread?.base, base
 // Append a turn; returns { thread, id }. The stored thread keeps the newest MAX_STORED_TURNS.
 export function addTurn(thread, turn) {
   const id = `t${thread.seq + 1}`;
-  return { id, thread: { ...thread, seq: thread.seq + 1, turns: [...thread.turns, { id, ...turn }].slice(-MAX_STORED_TURNS) } };
+  const all = [...thread.turns, { id, ...turn }];
+  let turns = all.slice(-MAX_STORED_TURNS);
+  if (all.length > MAX_STORED_TURNS) {
+    const first = all.find((t) => t.role === 'user');
+    if (first && !turns.some((t) => t.id === first.id)) turns = [first, ...all.slice(-(MAX_STORED_TURNS - 1))];
+  }
+  return { id, thread: { ...thread, seq: thread.seq + 1, turns } };
 }
 
 export function updateTurn(thread, id, patch) {
