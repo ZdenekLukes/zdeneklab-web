@@ -3,25 +3,26 @@
 // the evaluated proposal as a structured review, and passes the user's
 // ACCEPT/REJECT to the session. Zoom is inspection only.
 
-import { motionControls } from '../src/motion.js?v=3e2243632c73';
-import { motionPreview } from '../src/motion_preview.js?v=3e2243632c73';
-import { conceptHash } from '../src/model.js?v=3e2243632c73';
-import { validate } from '../src/validate.js?v=3e2243632c73';
-import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js?v=3e2243632c73';
-import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js?v=3e2243632c73';
-import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js?v=3e2243632c73';
-import { reviewProposal } from '../src/proposal.js?v=3e2243632c73';
-import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js?v=3e2243632c73';
-import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js?v=3e2243632c73';
-import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=3e2243632c73';
-import { createViewer, PART_PALETTE } from '../view/render3d.js?v=3e2243632c73';
-import { ensureCurrentShell } from './build_version.js?v=3e2243632c73';
-import { threadWords, valueSources } from '../src/live_context.js?v=3e2243632c73';
-import { solidProgram, solidChanges } from '../src/geometry/solid_program.js?v=3e2243632c73';
-import { loadManifoldEngine } from '../src/geometry/manifold_engine.js?v=3e2243632c73';
-import { newThread, loadThread, storeThread, threadMatches, addTurn, updateTurn, recentOf } from './conversation.js?v=3e2243632c73';
-import { emptyMemory, appendMemory, memoryFromConcept, exportWithMemory, memoryView, memoryEvidenceWords } from '../src/design_memory.js?v=3e2243632c73';
-import { ACTIVE_PROJECT, NAME_MAX, slug, projectKey, listProducts, readIndex, displayName, cleanName, freeSlot, storeNewProduct, recordProduct, renameProduct, deleteProduct } from './library.js?v=3e2243632c73';
+import { motionControls } from '../src/motion.js?v=13cdbd7449da';
+import { motionPreview } from '../src/motion_preview.js?v=13cdbd7449da';
+import { conceptHash } from '../src/model.js?v=13cdbd7449da';
+import { validate } from '../src/validate.js?v=13cdbd7449da';
+import { buildScene, buildProposalOverlay, zoomTargets, boundsOf } from '../src/scene.js?v=13cdbd7449da';
+import { inspect, inspectChange, changedEntities, entities, entityOf, referenceParts } from '../src/inspect.js?v=13cdbd7449da';
+import { defaultViewState, sectionPlane, sectionRange, explodeOffsets, instanceOfItem, updateView, SECTION_AXES } from '../src/view_state.js?v=13cdbd7449da';
+import { reviewProposal } from '../src/proposal.js?v=13cdbd7449da';
+import { createSession, acceptedModel, evaluate, accept, evaluateLive, acceptLive, reject, checkout, freeze, historyView, exportSession, importSession, acceptedArtifacts } from '../src/session.js?v=13cdbd7449da';
+import { interpret, DEMO_SENTENCES } from '../src/interpret/fixture_interpreter.js?v=13cdbd7449da';
+import { liveConfig, requestLiveIntent, storedGitHubToken, storeGitHubToken, clearGitHubToken } from './live_client.js?v=13cdbd7449da';
+import { createViewer, PART_PALETTE } from '../view/render3d.js?v=13cdbd7449da';
+import { ensureCurrentShell } from './build_version.js?v=13cdbd7449da';
+import { threadWords, valueSources } from '../src/live_context.js?v=13cdbd7449da';
+import { explicitQuestionChoices } from '../src/live_intent.js?v=13cdbd7449da';
+import { solidProgram, solidChanges } from '../src/geometry/solid_program.js?v=13cdbd7449da';
+import { loadManifoldEngine } from '../src/geometry/manifold_engine.js?v=13cdbd7449da';
+import { newThread, loadThread, storeThread, threadMatches, addTurn, updateTurn, recentOf } from './conversation.js?v=13cdbd7449da';
+import { emptyMemory, appendMemory, memoryFromConcept, exportWithMemory, memoryView, memoryEvidenceWords } from '../src/design_memory.js?v=13cdbd7449da';
+import { ACTIVE_PROJECT, NAME_MAX, slug, projectKey, listProducts, readIndex, displayName, cleanName, freeSlot, storeNewProduct, recordProduct, renameProduct, deleteProduct } from './library.js?v=13cdbd7449da';
 
 const LIVE = liveConfig();
 const LEGACY_STORE = LIVE.live ? `concept-sketcher.live.${LIVE.seed || 'blank'}.session` : 'concept-sketcher.s1.session';
@@ -512,29 +513,52 @@ function renderStatus() {
   const v = validate(model);
   const p = pending?.evaluation;
   const is3d = document.body.classList.contains('show3d');
-  $('status').innerHTML = `
-    <div class="statusFacts">
-      <span>REV <b>${model.meta.revision}</b></span>
-      <span title="${esc(conceptHash(model))}">#${conceptHash(model).slice(7, 15)}</span>
-      <span>${esc(v.state.replace('_', ' '))}</span>
-      <span class="tag ${v.errors.length ? 'err' : 'ok'}">${v.errors.length ? '✕' : '✓'} ERR ${v.errors.length}</span>
-      <span class="tag ${v.open.length ? 'open' : 'ok'}">${v.open.length ? '?' : '✓'} OPEN ${v.open.length}${v.open.length ? ` (${v.open.join(', ')})` : ''}</span>
-      <span class="tag prop">PROPOSAL ${p ? p.status : '—'}</span>
-      ${storageWarning ? `<span class="tag err" title="${esc(storageWarning)}">AUTOSAVE ✕</span>` : ''}
-      ${geometryTag()}
-    </div>
-    <div class="statusTools">
-      <button type="button" id="projectBtn">Products</button>
-      <button type="button" id="propertyBtn" ${view.selected ? '' : 'disabled'}>Properties</button>
-      <button type="button" id="histBtn">History</button>
-      <button type="button" id="exportBtn">Export</button>
-    </div>
-    <button type="button" id="toggle3d" aria-label="${is3d ? 'Switch to Chat' : 'Switch to 3D preview'}" aria-controls="${is3d ? 'chat' : 'stage'}">${is3d ? '◂ Chat' : '3D ▸'}</button>`;
+  const phone = isPhone();
+  const product = currentName();
+  $('activeProductName').textContent = product;
+  $('activeProductName').title = product;
+  const openProducts = () => { closeSheets(); renderProjects(); $('projects').classList.add('open'); };
+  $('activeProductLink').onclick = openProducts;
+  const facts = `
+    <span>REV <b>${model.meta.revision}</b></span>
+    <span title="${esc(conceptHash(model))}">#${conceptHash(model).slice(7, 15)}</span>
+    <span>${esc(v.state.replace('_', ' '))}</span>
+    <span class="tag ${v.errors.length ? 'err' : 'ok'}">${v.errors.length ? '✕' : '✓'} ERR ${v.errors.length}</span>
+    <span class="tag ${v.open.length ? 'open' : 'ok'}">${v.open.length ? '?' : '✓'} OPEN ${v.open.length}${v.open.length ? ` (${v.open.join(', ')})` : ''}</span>
+    <span class="tag prop">PROPOSAL ${p ? p.status : '—'}</span>
+    ${storageWarning ? `<span class="tag err" title="${esc(storageWarning)}">AUTOSAVE ✕</span>` : ''}
+    ${geometryTag()}`;
+  const tools = `
+    <button type="button" id="propertyBtn" ${view.selected ? '' : 'disabled'}>Properties</button>
+    <button type="button" id="histBtn">History</button>
+    <button type="button" id="exportBtn">Export</button>`;
+  const switchButton = `<button type="button" id="toggle3d" aria-label="${is3d ? 'Switch to Chat' : 'Switch to 3D preview'}" aria-controls="${is3d ? 'chat' : 'stage'}">${is3d ? '◂ Chat' : '3D ▸'}</button>`;
+  if (phone) {
+    // The primary mobile bar is navigation, never a diagnostics dashboard.
+    // Keep warnings visible; all other technical state moves to More.
+    $('status').classList.add('compactStatus');
+    $('status').innerHTML = `
+      <button type="button" id="projectBtn" aria-label="Open products, current: ${esc(product)}" title="${esc(product)}"><span class="productBtnIcon" aria-hidden="true">▣</span><span class="productBtnName">${esc(product)}</span><span aria-hidden="true">⌄</span></button>
+      <button type="button" id="moreBtn" aria-label="More controls and diagnostics">···</button>
+      ${switchButton}
+      ${storageWarning ? '<span class="mobileWarning" role="status">AUTOSAVE ✕</span>' : ''}
+      ${v.errors.length ? `<span class="mobileWarning" role="status">${v.errors.length} model errors</span>` : ''}`;
+    $('moreContent').innerHTML = `<h3>Model details</h3><div class="statusFacts">${facts}</div>
+      <h3>Tools</h3><div class="statusTools">${tools}</div>`;
+    $('moreBtn').onclick = () => { closeSheets(); $('moreSheet').classList.add('open'); };
+  } else {
+    $('status').classList.remove('compactStatus');
+    $('status').innerHTML = `
+      <div class="statusFacts">${facts}</div>
+      <div class="statusTools"><button type="button" id="projectBtn">Products</button>${tools}</div>
+      ${switchButton}`;
+    $('moreContent').innerHTML = '';
+  }
   $('toggle3d').onclick = () => show3d(!document.body.classList.contains('show3d'));
-  $('projectBtn').onclick = () => { renderProjects(); $('projects').classList.add('open'); };
-  $('propertyBtn').onclick = () => { renderProperties(); $('properties').classList.add('open'); };
-  $('histBtn').onclick = () => { renderHistory(); $('history').classList.add('open'); };
-  $('exportBtn').onclick = () => { renderExports(); $('exports').classList.add('open'); };
+  $('projectBtn').onclick = openProducts;
+  $('propertyBtn').onclick = () => { closeSheets(); renderProperties(); $('properties').classList.add('open'); };
+  $('histBtn').onclick = () => { closeSheets(); renderHistory(); $('history').classList.add('open'); };
+  $('exportBtn').onclick = () => { closeSheets(); renderExports(); $('exports').classList.add('open'); };
 }
 
 // What the 3D view shows: engine solids (exact material), partly symbolic, or still loading.
@@ -778,6 +802,7 @@ function renderProjects() {
         const name = renameProduct(localStorage, key, $('renameInput').value);
         libraryUi = null;
         sys(`Renamed to “${name}”. Only the library name changed; the accepted model and its history are unchanged.`);
+        renderStatus();
         renderProjects();
       } catch (err) { sys(`Not renamed: ${err.message}. Nothing was changed.`); }
     };
@@ -964,9 +989,9 @@ function liveIntentCard(ev, intentText, { active = true } = {}) {
   const i = ev.intent;
   const errs = ev.errors.length ? `<ul class="err">${ev.errors.map((e) => `<li>${esc(e)}</li>`).join('')}</ul>` : '';
   if (ev.status === 'CLARIFY') {
-    const choices = Array.isArray(ev.choices) ? ev.choices : [];
+    const choices = Array.isArray(ev.choices) && ev.choices.length ? ev.choices : explicitQuestionChoices(ev.question);
     const card = addEl(`
-      <div class="top"><span class="pill CLARIFY">QUESTION</span><span class="muted">Nothing changes until you accept a proposal</span></div>
+      <div class="top"><span class="pill CLARIFY">QUESTION</span></div>
       <div class="question"><span class="vh">Question: </span>${esc(ev.question)}</div>
       ${choices.length ? `<div class="choices${active ? '' : ' obsolete'}" role="group" aria-label="Suggested answers">${choices.map((c, k) => `<button type="button" data-choice="${k}" ${active ? '' : 'disabled'}>${esc(c.label)}</button>`).join('')}<button type="button" class="other" data-other ${active ? '' : 'disabled'}>Something else…</button></div>` : ''}
       ${intentText ? `<details><summary>Advanced: raw intent JSON</summary><pre>${esc(JSON.stringify(JSON.parse(intentText), null, 2))}</pre></details>` : ''}`, 'card ask');
@@ -985,8 +1010,10 @@ function liveIntentCard(ev, intentText, { active = true } = {}) {
   const html = `
     <div class="top"><span class="pill ${ev.status}">${ev.status === 'VALID' ? '+ PROPOSED' : ev.status}</span><span class="muted">Live Intent</span></div>
     ${i ? `<div><b>AI proposes:</b> ${esc(i.summary)}</div>` : ''}
-    ${scope.length ? `<div class="box"><b>May change (derived from the edits):</b> ${scope.map(esc).join(' · ')}<br><span class="muted">Every other model path is checked to stay byte-identical.</span>${affects.length ? `<br><b>Refers to / depends on (not changed):</b> ${affects.map(esc).join(' · ')}` : ''}</div>` : ''}
-    ${changed.length ? `<div class="box"><b>Actual diff:</b> ${changed.map(esc).join(' · ')}</div>` : ''}
+    ${scope.length || changed.length ? `<details class="technicalDiff"><summary>Change details (${changed.length} model paths)</summary>
+      ${scope.length ? `<div class="box"><b>May change (derived from the edits):</b> ${scope.map(esc).join(' · ')}<br><span class="muted">Every other model path is checked to stay byte-identical.</span>${affects.length ? `<br><b>Refers to / depends on (not changed):</b> ${affects.map(esc).join(' · ')}` : ''}</div>` : ''}
+      ${changed.length ? `<div class="box"><b>Actual diff:</b> ${changed.map(esc).join(' · ')}</div>` : ''}
+    </details>` : ''}
     ${sources.length ? `<div class="box"><b>Values from your messages:</b>${sources.map((x) => `<div class="src">${esc(x.what)} = <span class="new">${esc(shown(x.value))}</span> — from “${esc(x.from)}”${x.latest ? '' : `<div class="warn">⚠ This comes from an earlier message. Your latest message was “${esc(x.last)}”. Check it is still what you want before accepting.</div>`}</div>`).join('')}</div>` : ''}
     ${answers.length ? `<div class="box"><b>Resolved:</b> ${answers.map((a) => `${esc(a.id)} = ${esc(a.answer)}`).join(' · ')}</div>` : ''}
     ${unknowns.length ? `<div class="box"><span class="pill OPEN">? OPEN</span> ${unknowns.map((u) => esc(u.question)).join(' · ')}</div>` : ''}
@@ -1262,6 +1289,7 @@ async function main() {
   $('examplesBtn').style.display = LIVE.live ? 'none' : '';
   $('examplesBtn').onclick = () => document.body.classList.toggle('showchips');
   $('form').onsubmit = (e) => { e.preventDefault(); const t = $('input').value; $('input').value = ''; void send(t); };
+  $('closeMore').onclick = () => $('moreSheet').classList.remove('open');
   $('closeHist').onclick = () => $('history').classList.remove('open');
   $('closeBrief').onclick = () => $('designBrief').classList.remove('open');
   $('closeExp').onclick = () => $('exports').classList.remove('open');

@@ -177,13 +177,52 @@
     .product { grid-template-columns: minmax(0, 1fr); }
     .product .pactions button { flex: 1 1 0; }
   }
+
+  /* Active product, visible inside chat independently of the footer. */
+  #chat header .chatIdentity { min-width: 0; flex: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 1px; }
+  #activeProductLink { display: flex; gap: 6px; align-items: center; max-width: 100%; min-height: 30px;
+    padding: 1px 7px; margin-left: -7px; color: var(--accent); background: transparent;
+    border: 1px solid transparent; font-size: 14px; font-weight: 700; }
+  #activeProductLink:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  #activeProductName { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+  #moreContent .statusFacts { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; line-height: 1.8; }
+  #moreContent .statusTools { display: flex; flex-wrap: wrap; gap: 10px; }
+  #moreContent .statusTools button { min-height: 46px; }
+  #moreContent h3 { margin: 12px 0 9px; }
+
+  @media (max-width: 760px) {
+    #chat header { padding: 6px 12px; gap: 4px; }
+    #chat header h1 { font-size: 13px; }
+    #chat header #modeLabel { flex: none; font-size: 10px; max-width: 100px; overflow: hidden;
+      text-overflow: ellipsis; white-space: nowrap; }
+    #activeProductLink { font-size: 15px; min-height: 30px; }
+    /* One row: current product, secondary More, large view toggle. */
+    #status.compactStatus { display: grid; grid-template-columns: minmax(0, 1fr) 46px 112px;
+      grid-template-areas: none; align-items: center; gap: 8px;
+      padding: 8px 10px calc(8px + env(safe-area-inset-bottom)); }
+    #status.compactStatus > button { margin: 0; }
+    #status.compactStatus #projectBtn { min-width: 0; min-height: 52px; padding: 7px 10px;
+      display: flex; align-items: center; gap: 8px; border-radius: 12px;
+      background: #202938; border: 1px solid #526274; text-align: left; font-weight: 700; }
+    #status.compactStatus .productBtnName { min-width: 0; flex: 1; overflow: hidden; white-space: nowrap;
+      text-overflow: ellipsis; }
+    #status.compactStatus .productBtnIcon { color: #a4c9ff; }
+    #status.compactStatus #moreBtn { min-height: 52px; padding: 4px;
+      border-radius: 12px; font-size: 22px; border: 1px solid #526274; }
+    #status.compactStatus #toggle3d { display: flex; grid-area: auto; min-width: 110px;
+      min-height: 58px !important; font-size: 17px; }
+    #status.compactStatus .mobileWarning { grid-column: 1 / -1; color: #ffd0cd; font-size: 12px; font-weight: 700; }
+    .card.ask .question { font-size: 16px; }
+    .card.ask .top { margin-bottom: 4px; }
+    .choices { gap: 7px; }
+  }
 </style>
-<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.min.js?v=3e2243632c73" } }</script>
+<script type="importmap">{ "imports": { "three": "../vendor/three/three.module.min.js?v=13cdbd7449da" } }</script>
 </head>
 <body>
 <main>
   <section id="chat" aria-label="Conversation">
-    <header><h1>Concept Sketcher</h1><span class="muted" id="modeLabel" data-boot="static">Starting…</span></header>
+    <header><div class="chatIdentity"><h1>Concept Sketcher</h1><button type="button" id="activeProductLink" title="Open Products" aria-label="Open current product in Products"><span id="activeProductName">Loading product…</span><span aria-hidden="true">⌄</span></button></div><span class="muted" id="modeLabel" data-boot="static">Starting…</span></header>
     <div id="log" aria-live="polite"></div>
     <div id="composer">
       <div id="chips"></div>
@@ -208,11 +247,12 @@
 <div id="decision" role="region" aria-label="Pending proposal"></div>
 <footer id="status" aria-label="Accepted concept state"></footer>
 <aside id="designBrief" class="sheet" aria-label="Product design requirements"><header><h2>Product requirements</h2><button id="closeBrief" type="button">Close</button></header><div class="body" id="briefList"></div></aside>
+<aside id="moreSheet" class="sheet" role="dialog" aria-label="More tools and diagnostics"><header><h2>More</h2><button type="button" id="closeMore">Close</button></header><div class="body" id="moreContent"></div></aside>
 <aside id="history" class="sheet" aria-label="Accepted revisions"><header><h2>Accepted revisions</h2><button id="closeHist" type="button">Close</button></header><div class="body" id="revs"></div></aside>
 <aside id="exports" class="sheet" aria-label="Export"><header><h2>Export accepted concept</h2><button id="closeExp" type="button">Close</button></header><div class="body" id="expList"></div></aside>
 <aside id="projects" class="sheet" aria-label="Products"><header><h2>Products</h2><button id="closeProjects" type="button">Close</button></header><div class="body" id="projectList"></div></aside>
 <aside id="properties" class="sheet" aria-label="Exact properties"><header><h2>Exact properties</h2><button id="closeProperties" type="button">Close</button></header><div class="body" id="propertyList"></div></aside>
 <input id="openFile" type="file" accept=".aiconcept,application/json" hidden>
-<script type="module" src="app.js?v=3e2243632c73"></script>
+<script type="module" src="app.js?v=13cdbd7449da"></script>
 </body>
 </html>

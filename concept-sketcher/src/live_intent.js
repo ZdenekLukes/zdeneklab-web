@@ -11,7 +11,7 @@
 //   utterance -> evaluateProposal (evidence, OPEN, answer, placeholder rules,
 //   derived scope + protected remainder, validate, export) -> review -> ACCEPT
 
-import { OPS, parsePath } from './ops.js?v=3e2243632c73';
+import { OPS, parsePath } from './ops.js?v=13cdbd7449da';
 
 export const LIVE_INTENT_FORMAT = 'AI_CONCEPT_INTENT';
 export const LIVE_INTENT_SCHEMA = 1;
@@ -80,11 +80,39 @@ function nextQuestionIds(model, count) {
 //     and proposes nothing else becomes a plain CLARIFY, which never changes the model.
 // Every other shape, including a CLARIFY with edits, creates, deletes, mirrors or
 // answers, is returned for the evaluator to judge.
+// Suggest choices only from alternatives explicitly printed in an AI question.
+// Never invent numerical measurements, never choose for the user, and never
+// touch the mechanical model. Numeric/compound questions still allow typing.
+export function explicitQuestionChoices(question) {
+  if (typeof question !== 'string' || question.length > 1200) return [];
+  const categorical = /jak|kter|which|what|variant|možnosti|typ|řešen|řešit|má být|should|choose|prefer/iu.test(question);
+  if (!categorical) return [];
+  for (const m of question.matchAll(/\(([^()]{6,220})\)/gu)) {
+    const text = m[1].trim();
+    if (!text.includes(',') || !/(?:,\s*(?:nebo|or)\s+|\s+(?:nebo|or)\s+)/iu.test(text)) continue;
+    const options = text.replace(/,?\s+(?:nebo|or)\s+/giu, ', ')
+      .split(/\s*,\s*/u).map((x) => x.trim()).filter(Boolean);
+    if (options.length < 2 || options.length > CHOICE_LIMITS.count ||
+      options.some((x) => x.length < 3 || x.length > CHOICE_LIMITS.label ||
+        /\d|[×=]|\b(?:mm|cm|kg|gram)\b/iu.test(x))) continue;
+    const names = [...new Set(options.map((x) => x.toLocaleLowerCase('cs-CZ')))];
+    if (names.length !== options.length) continue;
+    return options.map((x, n) => ({ id: `explicit_${n + 1}`, label: x[0].toLocaleUpperCase('cs-CZ') + x.slice(1) }));
+  }
+  return [];
+}
+
 export function normalizeLiveIntent(x) {
   if (!obj(x) || Object.keys(x).some((k) => !INTENT_KEYS.includes(k))) return { intent: x, notes: [] };
   const tidy = tidyChoices(x);
   const repaired = repairClarify(tidy.intent);
-  return { intent: repaired.intent, notes: [...tidy.notes, ...repaired.notes] };
+  const clean = repaired.intent;
+  const choices = clean.action === 'CLARIFY' && (!Array.isArray(clean.choices) || clean.choices.length === 0)
+    ? explicitQuestionChoices(clean.question) : [];
+  return {
+    intent: choices.length ? { ...clean, choices } : clean,
+    notes: [...tidy.notes, ...repaired.notes, ...(choices.length ? ['suggested buttons from explicit question alternatives'] : [])],
+  };
 }
 
 function tidyChoices(x) {

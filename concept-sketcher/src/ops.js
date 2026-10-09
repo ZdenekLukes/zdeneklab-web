@@ -5,7 +5,7 @@
 // For `schema: 2` models every added entity and every SET is checked against
 // the closed schema table (src/schema.js): an undeclared key never enters.
 
-import { checkEntity, settable as settableV2 } from './schema.js?v=3e2243632c73';
+import { checkEntity, settable as settableV2 } from './schema.js?v=13cdbd7449da';
 
 export const OPS = ['ADD_PARAM', 'ADD_PART', 'ADD_FEATURE', 'ADD_JOINT', 'ADD_RULE', 'ADD_QUESTION',
   'SET', 'UNSET', 'DELETE', 'ANSWER_QUESTION', 'ADD_INTERFACE', 'ADD_FASTENER', 'ADD_VOLUME'];

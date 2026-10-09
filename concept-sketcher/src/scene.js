@@ -2,8 +2,8 @@
 // No geometry decisions happen in the viewer; it only draws what is listed here.
 // Elements named by an OPEN question are drawn in the UNRESOLVED style.
 
-import { AXES, add, sub, mul, dot, cross, len, roundDeep } from './resolve.js?v=3e2243632c73';
-import { nominalDiameter } from './schema.js?v=3e2243632c73';
+import { AXES, add, sub, mul, dot, cross, len, roundDeep } from './resolve.js?v=13cdbd7449da';
+import { nominalDiameter } from './schema.js?v=13cdbd7449da';
 
 const axisVector = (axes, basis, k) => AXES[axes?.[k]] || basis?.[k];
 const rotLocal = (axes, v, basis = null) => ['x', 'y', 'z'].reduce((acc, k, i) => add(acc, mul(axisVector(axes, basis, k), v[i])), [0, 0, 0]);

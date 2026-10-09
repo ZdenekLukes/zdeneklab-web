@@ -1,5 +1,5 @@
 # Generated deployment artifact — do not edit
 
 This directory is overwritten on every deploy by `tools/build_site.js` in
-https://github.com/ZdenekLukes/concept-sketcher (branch `main`, commit `3e2243632c73f6090f49e48eb6a7c27dd171c296`).
+https://github.com/ZdenekLukes/concept-sketcher (branch `main`, commit `13cdbd7449daf9972f36a910de7dd3f0eed688af`).
 Edit the source there, never here.
