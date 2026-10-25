@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090c0f">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>AI HEAD — WOW Demo Status</title>
+<meta name="description" content="AI HEAD development status — concise progress toward the WOW assembly.">
+<style>
+:root{
+  --bg:#080b0e;--fg:#eef3f6;--muted:#8b98a3;--line:#23303a;
+  --cyan:#62d8ff;--green:#65e3a4;--amber:#ffc365;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--fg)}
+body{
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at 18% 0%,rgba(98,216,255,.11),transparent 32%),
+    radial-gradient(circle at 88% 0%,rgba(101,227,164,.07),transparent 29%),
+    #080b0e;
+}
+.wrap{width:min(900px,calc(100% - 36px));margin:0 auto;padding:30px 0 60px}
+.top{display:flex;justify-content:space-between;gap:18px;align-items:center;margin-bottom:48px}
+.back{
+  display:inline-block;text-decoration:none;color:var(--fg);border:1px solid var(--line);
+  padding:9px 12px;border-radius:10px;font-size:12px;font-weight:700;letter-spacing:.04em
+}
+.meta{text-align:right;color:var(--muted);font-size:11px;line-height:1.45}
+.eyebrow{color:var(--cyan);font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase}
+h1{font-size:clamp(40px,8vw,82px);line-height:.9;letter-spacing:-.055em;margin:12px 0 10px}
+.subtitle{color:var(--muted);font-size:14px;margin:0 0 44px}
+.overall{margin:0 0 42px}
+.overall-line{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:12px}
+.overall .name{font-size:17px;font-weight:800}
+.overall .pct{font-size:54px;font-weight:850;line-height:.8;letter-spacing:-.05em}
+.overall .pct small{font-size:16px;color:var(--muted);letter-spacing:0}
+.bar{height:12px;background:#182128;border-radius:999px;overflow:hidden;border:1px solid #202d35}
+.bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--cyan),var(--green))}
+.bars{display:grid;gap:24px}
+.item{padding-top:20px;border-top:1px solid var(--line)}
+.item-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:9px}
+.item-name{font-size:14px;font-weight:800}
+.item-pct{font-size:17px;font-weight:800;color:#c9d3d9}
+.foot{display:flex;justify-content:space-between;gap:14px;margin-top:42px;padding-top:18px;border-top:1px solid var(--line);color:#6f7d87;font-size:10px}
+.live{color:var(--green)}
+@media(max-width:600px){
+  .wrap{width:min(100% - 28px,900px);padding-top:20px}
+  .top{align-items:flex-start;margin-bottom:38px}
+  .meta{max-width:160px}
+  .overall .pct{font-size:46px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="back" href="/">← ZDENEK LAB</a>
+    <div class="meta"><span class="live">● LIVE</span><br><span id="sha">AI_HEAD main</span></div>
+  </div>
+
+  <div class="eyebrow">AI HEAD / DEVELOPMENT STATUS</div>
+  <h1>ROAD TO WOW</h1>
+  <p class="subtitle">Cíl: funkční WOW demonstrace lokální AI hlavy — ne ještě dokonale dokončený produkt. Engineering release gates zůstávají v AI_HEAD / Mechanical Studio.</p>
+
+  <section class="overall">
+    <div class="overall-line">
+      <div class="name">WOW demo readiness</div>
+      <div class="pct"><span id="overallPct">70</span><small>%</small></div>
+    </div>
+    <div class="bar"><i id="overallBar" style="width:70%"></i></div>
+  </section>
+
+  <section class="bars">
+    <div class="item">
+      <div class="item-head"><div class="item-name">Hardware & mechanika</div><div class="item-pct"><span id="hardwarePct">75</span>%</div></div>
+      <div class="bar"><i id="hardwareBar" style="width:75%"></i></div>
+    </div>
+
+    <div class="item">
+      <div class="item-head"><div class="item-name">Periferie & optika</div><div class="item-pct"><span id="opticsPct">60</span>%</div></div>
+      <div class="bar"><i id="opticsBar" style="width:60%"></i></div>
+    </div>
+
+    <div class="item">
+      <div class="item-head"><div class="item-name">Motion & control</div><div class="item-pct"><span id="motionPct">85</span>%</div></div>
+      <div class="bar"><i id="motionBar" style="width:85%"></i></div>
+    </div>
+
+    <div class="item">
+      <div class="item-head"><div class="item-name">AI & software</div><div class="item-pct"><span id="softwarePct">65</span>%</div></div>
+      <div class="bar"><i id="softwareBar" style="width:65%"></i></div>
+    </div>
+  </section>
+
+  <div class="foot">
+    <span>Observer only — not a source of truth.</span>
+    <span id="stamp">Updated 25. 10. 2026</span>
+  </div>
+</div>
+
+<script>
+(async function(){
+  try{
+    const r=await fetch('https://api.github.com/repos/ZdenekLukes/AI_HEAD/commits/main',{cache:'no-store',headers:{Accept:'application/vnd.github+json'}});
+    if(!r.ok)return;
+    const j=await r.json();
+    const sha=(j.sha||'').slice(0,7);
+    const dt=j.commit&&j.commit.committer&&j.commit.committer.date;
+    document.getElementById('sha').textContent='AI_HEAD main '+sha;
+    if(dt) document.getElementById('stamp').textContent='main '+new Date(dt).toLocaleDateString('cs-CZ');
+  }catch(_){}
+})();
+</script>
+</body>
+</html>
