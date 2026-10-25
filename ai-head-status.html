@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a0d10">
+<title>AI HEAD — Development Status</title>
+<meta name="description" content="Live development status of AI HEAD: hardware, mechanics, software and the remaining path to the WOW demo.">
+<style>
+:root{
+  --bg:#090c0f;--panel:#10151a;--panel2:#0d1115;--fg:#edf2f5;--muted:#8d99a5;
+  --line:#26313a;--line2:#1b242b;--cyan:#65d8ff;--green:#63e6a3;--amber:#ffc266;
+  --red:#ff7a7a;--blue:#7da8ff;--local:#bf93ff;
+}
+*{box-sizing:border-box}
+html{background:var(--bg);color-scheme:dark}
+body{margin:0;background:
+radial-gradient(circle at 12% -5%,rgba(101,216,255,.10),transparent 30%),
+radial-gradient(circle at 95% 0%,rgba(125,168,255,.08),transparent 30%),var(--bg);
+color:var(--fg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+a{color:inherit}
+.wrap{max-width:1220px;margin:0 auto;padding:28px 22px 70px}
+.top{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:26px}
+.eyebrow{font-size:12px;letter-spacing:.18em;color:var(--cyan);font-weight:800}
+h1{font-size:clamp(34px,6vw,70px);line-height:.95;margin:10px 0 13px;letter-spacing:-.045em}
+.sub{max-width:760px;color:#a9b3bc;font-size:15px;line-height:1.55}
+.source{min-width:260px;border:1px solid var(--line);background:rgba(16,21,26,.85);padding:14px 15px;border-radius:14px;font-size:12px;color:var(--muted);line-height:1.5}
+.source b{color:var(--fg)}
+.source .ok{color:var(--green)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.card{border:1px solid var(--line);background:linear-gradient(180deg,rgba(17,23,28,.97),rgba(12,16,20,.97));border-radius:16px;padding:18px}
+.hero{grid-column:span 12;display:grid;grid-template-columns:1.1fr .9fr;gap:20px}
+.kpi{font-size:68px;font-weight:850;letter-spacing:-.06em;line-height:.9;margin:8px 0}
+.kpi small{font-size:22px;color:var(--muted);letter-spacing:-.02em}
+.label{font-size:11px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;font-weight:800}
+.note{font-size:12px;color:var(--muted);line-height:1.5}
+.progress{height:9px;border-radius:99px;background:#1b2329;overflow:hidden;margin:10px 0 7px}
+.progress>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--cyan),var(--green))}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.metric{border-left:2px solid var(--line);padding-left:12px}
+.metric strong{font-size:25px;display:block;margin:2px 0}
+.hw,.sw{grid-column:span 6}
+h2{font-size:20px;margin:0 0 4px}
+h3{font-size:15px;margin:0}
+.sectionintro{color:var(--muted);font-size:12px;margin:0 0 16px;line-height:1.5}
+.rows{display:flex;flex-direction:column;gap:8px}
+.row{display:grid;grid-template-columns:18px 1fr auto;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line2)}
+.row:first-child{border-top:0}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--muted);box-shadow:0 0 0 4px rgba(255,255,255,.025)}
+.done .dot{background:var(--green)}
+.active .dot{background:var(--amber)}
+.pending .dot{background:#53606b}
+.local .dot{background:var(--local)}
+.blocked .dot{background:var(--red)}
+.name{font-size:13px;font-weight:700}
+.desc{font-size:11px;color:var(--muted);line-height:1.4;margin-top:2px}
+.badge{font-size:10px;font-weight:850;letter-spacing:.08em;border:1px solid var(--line);border-radius:99px;padding:4px 7px;color:var(--muted);white-space:nowrap}
+.done .badge{border-color:rgba(99,230,163,.25);color:var(--green)}
+.active .badge{border-color:rgba(255,194,102,.28);color:var(--amber)}
+.local .badge{border-color:rgba(191,147,255,.3);color:var(--local)}
+.blocked .badge{border-color:rgba(255,122,122,.3);color:var(--red)}
+.critical{grid-column:span 7}
+.localcard{grid-column:span 5}
+.callout{padding:12px;border:1px solid var(--line2);border-radius:12px;background:#0b1014;margin-top:9px}
+.callout strong{font-size:13px}
+.callout p{margin:4px 0 0;color:var(--muted);font-size:12px;line-height:1.45}
+.roadmap{grid-column:span 12}
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:14px}
+.step{position:relative;border:1px solid var(--line2);border-radius:13px;padding:13px;background:#0c1115}
+.num{font-size:10px;color:var(--cyan);letter-spacing:.12em;font-weight:850}
+.step h3{margin:6px 0}
+.step p{font-size:11px;color:var(--muted);line-height:1.45;margin:0}
+.links{grid-column:span 12;display:flex;flex-wrap:wrap;gap:8px}
+.btn{font-size:12px;text-decoration:none;border:1px solid var(--line);background:#0e1419;border-radius:10px;padding:9px 11px}
+.btn:hover{border-color:#4b5b67}
+.footer{margin-top:22px;border-top:1px solid var(--line);padding-top:16px;font-size:11px;color:#6f7a84;line-height:1.55}
+.live{display:inline-flex;gap:6px;align-items:center}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(99,230,163,.5);animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 8px rgba(99,230,163,0)}100%{box-shadow:0 0 0 0 rgba(99,230,163,0)}}
+@media(max-width:850px){
+ .top{display:block}.source{margin-top:16px}.hero{grid-template-columns:1fr}.hw,.sw,.critical,.localcard{grid-column:span 12}
+ .steps{grid-template-columns:1fr}.two{grid-template-columns:1fr 1fr}.kpi{font-size:58px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">ZDENEK LAB / AI HEAD</div>
+      <h1>BUILD STATUS</h1>
+      <div class="sub">Jedna stránka pro odpověď na dvě otázky: <b>kde AI HEAD právě je</b> a <b>co ještě chybí do přesvědčivé WOW sestavy</b>. Dashboard je pozorovatel — nikdy není nový zdroj pravdy.</div>
+    </div>
+    <div class="source">
+      <div class="live"><span class="pulse"></span><b>Published state: GitHub main</b></div>
+      <div id="sha">Načítám aktuální commit…</div>
+      <div id="updated">Semantic review: 25. 10. 2026</div>
+      <div style="margin-top:6px">SoT: <b>STATE.md</b>, Mechanical <b>STATUS.md</b>, Control Room + schválené production docs.</div>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section class="card hero">
+      <div>
+        <div class="label">WOW readiness — orientační, odvozené z milníků</div>
+        <div class="kpi"><span id="overallPct">60</span><small>%</small></div>
+        <div class="progress"><i id="overallBar" style="width:60%"></i></div>
+        <div class="note">Nejde o release metriku. 100 % znamená: fyzicky složená prémiová LYRA hlava, bezpečný 2-axis motion, kamera + audio + display, hlasová interakce a první kontrolovaný agentní demo scénář.</div>
+      </div>
+      <div class="two">
+        <div class="metric">
+          <div class="label">Hardware / mechanics</div>
+          <strong><span id="hardwarePct">64</span>%</strong>
+          <div class="progress"><i id="hardwareBar" style="width:64%"></i></div>
+          <div class="note">Největší práce: shell → Print Release po dílech, optika, fyzická montáž a balance.</div>
+        </div>
+        <div class="metric">
+          <div class="label">Software / intelligence</div>
+          <strong><span id="softwarePct">56</span>%</strong>
+          <div class="progress"><i id="softwareBar" style="width:56%"></i></div>
+          <div class="note">Silný motion/agent základ. Chybí fyzický AGENT-4 a zejména voice/vision/media integrace.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card hw">
+      <h2>Hardware</h2>
+      <p class="sectionintro">Mechanika, periferie a LYRA shell. Stav „LOCAL“ znamená aktivní práci, která ještě není public/main truth.</p>
+      <div class="rows">
+        <div class="row done"><span class="dot"></span><div><div class="name">Base + Mac mini + ballast</div><div class="desc">Základní platforma existuje; Mac mini reference a ballast jsou verified, Neck Base je v PRINT RELEASE.</div></div><span class="badge">MATURE</span></div>
+        <div class="row done" id="hw-shoulder"><span class="dot"></span><div><div class="name">Shoulder A² + Top Frame</div><div class="desc">Publikovaný stav: PRINT RELEASE, fyzický fit stále samostatný gate.</div></div><span class="badge">PRINT RELEASE</span></div>
+        <div class="row active"><span class="dot"></span><div><div class="name">2-axis neck C+</div><div class="desc">SIMPLE C+ je současný neck candidate; geometrie existuje, fyzická verifikace / širší bezpečný rozsah není uzavřený.</div></div><span class="badge">SKELETON</span></div>
+        <div class="row active"><span class="dot"></span><div><div class="name">Head Cage V1</div><div class="desc">Univerzální platforma pro adaptéry/periferie; princip „Cage zůstává, adapter se přizpůsobuje“.</div></div><span class="badge">SKELETON</span></div>
+        <div class="row active"><span class="dot"></span><div><div class="name">Display / camera / speakers / mic</div><div class="desc">Reálné purchased references + carriers existují v různých stupních. Camera a visor právě blokují optické detaily.</div></div><span class="badge">DETAIL</span></div>
+        <div class="row local"><span class="dot"></span><div><div class="name">LYRA shell interfaces</div><div class="desc">Aktivní lokální stav: 7 panelů C8 PASS, sousední rozhraní zelená, servisní sweepy bez kontaktu; interface freeze připraven.</div></div><span class="badge">LOCAL GREEN</span></div>
+        <div class="row local"><span class="dot"></span><div><div class="name">P5 occiput</div><div class="desc">Checkpoint 12f2e36: GEOMETRY / ASSEMBLY READY; magnet carriers oddělené. Formální SUPPORTS=NONE print gate zůstává otevřený.</div></div><span class="badge">LOCAL READY</span></div>
+        <div class="row active"><span class="dot"></span><div><div class="name">FRONT + P7 + smoked PMMA</div><div class="desc">3 mm flat smoked PMMA zachováno. P7 musí dostat skutečné výrobní uložení; řez PMMA se odvodí až z finální drážky.</div></div><span class="badge">CRITICAL PATH</span></div>
+        <div class="row active"><span class="dot"></span><div><div class="name">Camera optical window</div><div class="desc">Fyzicky změřený lens barrel Ø14, glass Ø11, aperture ≈6, PCB→rim 22.75 mm. Sled se balicím problémem pravděpodobně neprojde; nejbližší řešení je lokální bezel/pod.</div></div><span class="badge">ACTIVE</span></div>
+        <div class="row pending"><span class="dot"></span><div><div class="name">Full skull print + final assembly</div><div class="desc">Po dílech: P5 → FRONT → sides → crown → optics → assembly → CG / acoustic / service fit.</div></div><span class="badge">PENDING</span></div>
+      </div>
+    </section>
+
+    <section class="card sw">
+      <h2>Software</h2>
+      <p class="sectionintro">AI CUBE Studio je jediný aktivní frontend. Model smí navrhnout ActionRequest; autorizace a execution zůstávají deterministické.</p>
+      <div class="rows">
+        <div class="row done"><span class="dot"></span><div><div class="name">AI CUBE Studio</div><div class="desc">Aktivní engineering/operation frontend; Console je retired.</div></div><span class="badge">DONE</span></div>
+        <div class="row done"><span class="dot"></span><div><div class="name">Motion V1 + safe execution path</div><div class="desc">HOME, LOOK, GLANCE, NOD, SHAKE, CURIOUS, IDLE nad jediným deterministic motion stackem.</div></div><span class="badge">DONE</span></div>
+        <div class="row done" id="sw-agent1"><span class="dot"></span><div><div class="name">AGENT-1</div><div class="desc">Text → local model → strict ActionRequest → DRY RUN.</div></div><span class="badge">DONE</span></div>
+        <div class="row done" id="sw-agent2"><span class="dot"></span><div><div class="name">AGENT-2 backend</div><div class="desc">Trusted execution gate; Contract / Readiness / live Guard / procedures.invoke.</div></div><span class="badge">DONE</span></div>
+        <div class="row done" id="sw-agent3"><span class="dot"></span><div><div class="name">AGENT-3 human RUN</div><div class="desc">Human může ze Studia poslat přesně zobrazený request do trusted backendu.</div></div><span class="badge">DONE</span></div>
+        <div class="row active" id="sw-agent4"><span class="dot"></span><div><div class="name">AGENT-4 physical agentic NOD</div><div class="desc">První watched fyzické agentní provedení přes skutečný UI → trusted execution chain.</div></div><span class="badge">NEXT</span></div>
+        <div class="row active" id="sw-fast"><span class="dot"></span><div><div class="name">FAST semantic brain</div><div class="desc">PoC7-v2: 194/200 = 97.0 %, p95 13.5 ms. Research target splněn, zatím není wired do production path.</div></div><span class="badge">RESEARCH DONE</span></div>
+        <div class="row pending" id="sw-audio"><span class="dot"></span><div><div class="name">Voice / STT / audio runtime</div><div class="desc">MEDIA/AUDIO backend ještě není implementovaný; FAST má první real use až nad skutečnými STT transcript-y v shadow režimu.</div></div><span class="badge">PENDING</span></div>
+        <div class="row pending" id="sw-vision"><span class="dot"></span><div><div class="name">Vision / camera runtime</div><div class="desc">MEDIA/VISION backend ještě není implementovaný. Fyzická head camera se právě balí do LYRA skull.</div></div><span class="badge">PENDING</span></div>
+        <div class="row active"><span class="dot"></span><div><div class="name">Learning measurement loop</div><div class="desc">Koncept: 2 external cameras + SYNC LED + telemetry → deterministic measurement → local semantic evaluation. Hardware/detail zatím nedokončen.</div></div><span class="badge">PLANNED</span></div>
+        <div class="row pending"><span class="dot"></span><div><div class="name">End-to-end WOW demo</div><div class="desc">Vidí / slyší / odpovídá / pohybuje hlavou a ukazuje vlastní stav na displayi v jednom spolehlivém scénáři.</div></div><span class="badge">GOAL</span></div>
+      </div>
+    </section>
+
+    <section class="card critical">
+      <h2>Aktuální kritická cesta</h2>
+      <p class="sectionintro">Nejmenší kroky, které skutečně posouvají celou sestavu dopředu.</p>
+      <div class="callout"><strong>1 — FRONT optical procurement</strong><p>Dokončit P7 výrobní rám, zachovat 3 mm smoked PMMA, odvodit skutečný DXF/SVG z drážky. Kamera: lokální optické řešení bez odlesků IR LED do objektivu a bez falešného osvětlení light sensoru.</p></div>
+      <div class="callout"><strong>2 — Shell parts do PRINT RELEASE</strong><p>Po interface freeze dokončovat díl po dílu, ne celou lebku najednou. Každý díl má vlastní geometry / neighbour / service gate a potom jde do Mechanical Studia k exportu.</p></div>
+      <div class="callout"><strong>3 — Fyzická sestava + balance</strong><p>Vytisknout shell, namontovat display, camera, speakers, mic, skryté fasteners a P5 magnet closure. Změřit skutečné CG a doladit zadní ballast.</p></div>
+      <div class="callout"><strong>4 — Software WOW path</strong><p>AGENT-4 → voice/STT → vision → display expressions → první omezený end-to-end demo scénář. Bez obcházení Contract / Readiness / Guard.</p></div>
+    </section>
+
+    <section class="card localcard">
+      <h2>Active local work</h2>
+      <p class="sectionintro">Toto jsou nejnovější pracovní výsledky z Mac mini / Opus, které ještě nemusí být na GitHub main.</p>
+      <div class="rows">
+        <div class="row local"><span class="dot"></span><div><div class="name">LYRA interface network</div><div class="desc">7/7 C8 panels PASS, 9 neighbour pairs PASS, min clearance 0.303 mm, service sweeps clear.</div></div><span class="badge">LOCAL</span></div>
+        <div class="row local"><span class="dot"></span><div><div class="name">P5 checkpoint</div><div class="desc">12f2e36 — geometry/assembly ready, print-method gate intentionally not on critical path.</div></div><span class="badge">12f2e36</span></div>
+        <div class="row local"><span class="dot"></span><div><div class="name">Camera measurements</div><div class="desc">PCB 1.66 mm; lens rim projection 22.75 mm; barrel Ø14; glass Ø11; optical aperture ≈6 mm.</div></div><span class="badge">MEASURED</span></div>
+        <div class="row active"><span class="dot"></span><div><div class="name">Next local decision</div><div class="desc">Finish DISPLAY PMMA first; then camera bezel/window. Avoid another long whole-skull optimization loop.</div></div><span class="badge">NOW</span></div>
+      </div>
+    </section>
+
+    <section class="card roadmap">
+      <h2>Cesta k WOW sestavě</h2>
+      <p class="sectionintro">Pořadí je optimalizované pro paralelní tisk a vývoj. Kvalita LYRA exteriéru má přednost před „rychlým STL za každou cenu“.</p>
+      <div class="steps">
+        <div class="step"><div class="num">01 / OPTICS</div><h3>P7 + visor + camera</h3><p>Uzavřít výrobní geometrii a objednat oba optické díly.</p></div>
+        <div class="step"><div class="num">02 / SHELL</div><h3>Print Release po dílech</h3><p>P5 → FRONT → sides → crown. Frozen seams se znovu neotevírají bez explicitního důvodu.</p></div>
+        <div class="step"><div class="num">03 / BUILD</div><h3>Fyzická LYRA</h3><p>Tisk, skryté šrouby, magnets P5, optics, cable paths, balance a service fit.</p></div>
+        <div class="step"><div class="num">04 / BRAIN</div><h3>AGENT-4 + media</h3><p>Fyzický trusted NOD, potom STT/voice a vision bez druhé execution path.</p></div>
+        <div class="step"><div class="num">05 / WOW</div><h3>Integrated demo</h3><p>Head listens, sees, responds, turns, expresses state and remains serviceable/repeatable.</p></div>
+      </div>
+    </section>
+
+    <section class="links">
+      <a class="btn" href="https://zdeneklab.cz/mechanical-studio.html">Mechanical Studio</a>
+      <a class="btn" href="https://github.com/ZdenekLukes/AI_HEAD">AI_HEAD GitHub</a>
+      <a class="btn" href="https://github.com/ZdenekLukes/AI_HEAD/blob/main/STATE.md">STATE.md</a>
+      <a class="btn" href="https://github.com/ZdenekLukes/AI_HEAD/blob/main/docs/mechanical/studio/STATUS.md">Mechanical STATUS</a>
+      <a class="btn" href="https://github.com/ZdenekLukes/AI_HEAD/blob/main/PROJECT/CONTROL_ROOM.md">Control Room</a>
+    </section>
+  </main>
+
+  <div class="footer">
+    <b>Observer-only dashboard.</b> Kanonická fakta zůstávají v AI_HEAD repu. Published část se při otevření stránky kontroluje proti GitHub main; semantic/WOW roadmap se aktualizuje pouze z kanonických zdrojů nebo explicitně označeného local-work reportu. Procenta jsou orientační odhad odvozený z viditelných milníků, nikoli engineering release gate.
+  </div>
+</div>
+<script>
+(function(){
+  const GH='https://raw.githubusercontent.com/ZdenekLukes/AI_HEAD/main/';
+  const API='https://api.github.com/repos/ZdenekLukes/AI_HEAD/commits/main';
+  function setRow(id,state,badge,desc){
+    const el=document.getElementById(id); if(!el)return;
+    el.classList.remove('done','active','pending','blocked');
+    el.classList.add(state);
+    if(badge)el.querySelector('.badge').textContent=badge;
+    if(desc)el.querySelector('.desc').textContent=desc;
+  }
+  async function txt(path){const r=await fetch(GH+path,{cache:'no-store'});if(!r.ok)throw new Error(path);return r.text()}
+  Promise.all([
+    fetch(API,{headers:{'Accept':'application/vnd.github+json'},cache:'no-store'}).then(r=>r.json()),
+    txt('STATE.md'),
+    txt('docs/mechanical/studio/STATUS.md'),
+    txt('PROJECT/CONTROL_ROOM.md')
+  ]).then(([commit,state,mech,control])=>{
+    const sha=(commit.sha||'').slice(0,7);
+    const dt=commit.commit&&commit.commit.committer&&commit.commit.committer.date;
+    document.getElementById('sha').innerHTML='<span class="ok">LIVE</span> main <b>'+sha+'</b>'+(dt?' · '+new Date(dt).toLocaleString('cs-CZ'):'');
+    if(/AGENT-3[^\n]{0,160}(DONE|PASS)/i.test(state)) setRow('sw-agent3','done','DONE');
+    if(/AGENT-4[^\n]{0,160}(DONE|PASS)/i.test(state)) setRow('sw-agent4','done','DONE','První fyzický agentní motion demo je podle aktuálního STATE uzavřen.');
+    else setRow('sw-agent4','active','NEXT');
+    if(/PoC7-v2:[^\n]{0,80}194\/200\s*=\s*97\.0/i.test(state)) setRow('sw-fast','active','97.0% RESEARCH');
+    if(/MEDIA\s*\/\s*VISION[^\n]{0,120}NOT IMPLEMENTED/i.test(state) || /VISION·AUDIO·DISPLAY[^\n]{0,120}NOT IMPLEMENTED/i.test(state)){
+      setRow('sw-vision','pending','PENDING'); setRow('sw-audio','pending','PENDING');
+    }
+    if(/Neck Shoulder[\s\S]{0,700}PRINT RELEASE/i.test(mech)) setRow('hw-shoulder','done','PRINT RELEASE');
+    // Derive a conservative published software readiness without using it as a release gate.
+    let sw=0;
+    sw += /Studio is the one active frontend/i.test(state)?10:5;
+    sw += /AGENT-1 is DONE/i.test(state)?10:3;
+    sw += /AGENT-2 backend is DONE/i.test(state)?10:3;
+    sw += /AGENT-3 is DONE/i.test(state)?10:3;
+    sw += /AGENT-4[^\n]{0,120}(DONE|PASS)/i.test(state)?10:3;
+    sw += /194\/200\s*=\s*97\.0/i.test(state)?8:2;
+    sw += /VISION·AUDIO·DISPLAY[^\n]{0,120}NOT IMPLEMENTED/i.test(state)?0:4;
+    sw=Math.max(0,Math.min(100,Math.round(sw/58*56)));
+    // Keep the hardware number conservative until LYRA local checkpoints are published.
+    const hw=64;
+    const overall=Math.round(hw*.58+sw*.42);
+    document.getElementById('softwarePct').textContent=sw;
+    document.getElementById('softwareBar').style.width=sw+'%';
+    document.getElementById('hardwarePct').textContent=hw;
+    document.getElementById('hardwareBar').style.width=hw+'%';
+    document.getElementById('overallPct').textContent=overall;
+    document.getElementById('overallBar').style.width=overall+'%';
+  }).catch(err=>{
+    document.getElementById('sha').textContent='Live GitHub check unavailable — zobrazen je poslední semantic snapshot.';
+  });
+})();
+</script>
+</body>
+</html>
