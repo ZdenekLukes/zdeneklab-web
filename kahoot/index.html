@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#6e4cc4"><meta name="description" content="Jak dobře znáš Káju? Pět otázek, čtyři možnosti a malá výzva pro kamarády.">
+<title>Kahoot · Jak dobře znáš Káju? · Zdeněk Lab</title>
+<link rel="stylesheet" href="style.css"><script src="app.js" defer></script>
+</head>
+<body>
+<header><a class="brand" href="https://zdeneklab.cz/">ZDENĚK <b>LAB</b></a><span class="divider">/</span><span class="section-label">KAHOOT</span><a class="back" href="https://zdeneklab.cz/">← Zpět do Labu</a></header>
+<main id="app">
+<section id="home">
+<div class="hero"><div><p class="eyebrow">MALÝ KVÍZ. VELKÁ OTÁZKA.</p><h1>Jak dobře<br>znáš <em>Káju?</em></h1><p class="lead">Oblíbená barva, jídlo, číslo i zvíře.<br>Pět otázek, které prověří, jak se znáte.</p><div class="pills"><span>5 otázek</span><span>4 možnosti</span><span>Pro kamarády i rodinu</span></div></div><div class="hero-art" aria-hidden="true"><div class="art-tile red">▲</div><div class="art-tile blue">◆</div><div class="art-tile gold">●</div><div class="art-tile green">■</div><div class="art-badge">KÁJA<br><b>?</b></div></div></div>
+<div class="section-title"><div><p class="eyebrow">VYBER SI TEMPO</p><h2>Jdeme na to?</h2></div><span class="quiet">Jedna obrazovka. Jeden hráč.</span></div>
+<div class="modes"><button class="mode selected" data-mode="practice" aria-pressed="true"><span class="mode-icon">✦</span><strong>V klidu</strong><span>Bez odpočtu. Odpověď si můžeš rozmyslet a hned zjistíš, jak jsi na tom.</span><small>PROCVIČOVÁNÍ</small></button><button class="mode" data-mode="challenge" aria-pressed="false"><span class="mode-icon">◷</span><strong>Na čas</strong><span>20 sekund na otázku. Čím rychleji odpovíš správně, tím více bodů získáš.</span><small>RYCHLÁ VÝZVA</small></button></div>
+<div class="launch"><div><strong id="key-status"></strong><p id="key-hint" class="quiet"></p></div><button id="start" class="primary">Nastavit odpovědi →</button></div>
+<div class="home-actions"><button id="edit" class="text-button">Nastavení otázek a odpovědí</button><button id="try" class="text-button">Zkusit bez hodnocení →</button></div>
+<p id="record" class="quiet"></p>
+</section>
+<section id="editor" hidden><div class="section-title"><div><p class="eyebrow">NEJDŘÍV AŤ ODPOVÍ KÁJA</p><h1 class="smaller">Nastavení kvízu</h1></div></div><p class="lead">U každé otázky označ jednu správnou odpověď. Texty můžeš opravit. Nastavení zůstává pouze v tomto prohlížeči.</p><p class="notice">Fotografie neobsahuje klíč správných odpovědí. První příjmení je přepsané jako „Bokušová“ — případně ho oprav.</p><form id="editor-form"><div id="editor-questions"></div><p id="editor-error" role="alert"></p><div class="actions"><button class="primary" type="submit">Uložit nastavení</button><button id="cancel-edit" type="button" class="secondary">Zpět</button></div></form></section>
+<section id="game" hidden><div class="game-top"><button id="quit" class="text-button">← Ukončit kolo</button><span id="game-mode" class="eyebrow"></span><strong id="points"></strong></div><div class="progress"><div id="progress-fill"></div></div><div class="question-meta"><span id="question-count"></span><span id="timer" role="timer"></span></div><div class="question-panel"><p id="question-topic" class="eyebrow"></p><h1 id="question" class="question" tabindex="-1"></h1></div><div id="answers" class="answers"></div><div id="feedback" class="feedback" role="status"></div><button id="next" class="primary next" hidden>Další otázka →</button></section>
+<section id="result" hidden><p class="eyebrow">KOLO JE U KONCE</p><h1 class="smaller" id="result-title" tabindex="-1"></h1><p id="result-subtitle" class="lead"></p><div id="result-metrics" class="metrics"></div><div class="actions"><button id="again" class="primary">Hrát znovu →</button><button id="retry" class="secondary">Zopakovat chyby</button><button id="home-button" class="text-button">Na úvod</button></div><h2 class="review-title">Jak to dopadlo</h2><div id="review"></div></section>
+<p id="storage-warning" class="notice" role="status" hidden>Prohlížeč nepovolil ukládání. Kvíz funguje, ale nastavení a výsledek se po zavření nemusí zachovat.</p>
+</main>
+<footer><span>Kahoot · Kvíz o Káje</span><span>Podle ručně psaných otázek · Nezávislý kvíz, bez propojení s Kahoot!</span><nav aria-label="Další aplikace"><a href="https://zdeneklab.cz/reky/">Řeky</a><a href="https://zdeneklab.cz/astronomie/">Astronomie</a></nav></footer>
+</body></html>
