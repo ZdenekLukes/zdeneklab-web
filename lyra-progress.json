@@ -128,5 +128,11 @@
       "title": "NOČNÍ HANDOFF",
       "detail": "Oprava C8 funguje na části starších panelů, mřížky mají průchozí perforaci; CLEAN poslední změny ještě neověřené."
     }
-  ]
+  ],
+  "pulse": {
+    "lastCheckedAt": "2026-10-28T05:30:20Z",
+    "publicPreview": "mechanical-studio-preview-integration-lyra-polish-0700.html",
+    "lastPublicPreviewCommit": "fe012a54da5b43e386bffb5c911c58d2bbed3a9f",
+    "lastPublicPreviewAt": "2026-10-28T05:29:08Z"
+  }
 }
