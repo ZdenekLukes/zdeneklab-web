@@ -58,7 +58,7 @@ for(const s of d.snapshots){const fig=node(gallery,"figure","shot");const frame=
 if(s.image&&/^assets\/lyra-progress\/[a-z0-9/_-]+\.png$/i.test(s.image)){const im=node(frame,"img");im.src="/"+s.image;im.alt=s.name;im.loading="lazy";}else{node(frame,"div","placeholder","SOURCE-REAL SNAPSHOT\nČEKÁ NA EXPORT");}
 const cap=node(fig,"figcaption");node(cap,"div","type",s.kind);node(cap,"div","name",s.name);node(cap,"div","desc",s.note);}
 const log=byId("log");log.replaceChildren();for(const h of d.history.slice(0,8)){const li=node(log,"li");node(li,"div","when",when(h.at)+" · "+h.title);node(li,"div","detail",h.detail);}
-byId("age").textContent="Poslední datový checkpoint: "+Math.max(0,Math.round((Date.now()-new Date(d.updatedAt))/60000))+" min zpět";
+byId("age").textContent="Ověřená data: "+Math.max(0,Math.round((Date.now()-new Date(d.updatedAt))/60000))+" min · Web kontrola: "+(d.pulse&&d.pulse.lastCheckedAt?when(d.pulse.lastCheckedAt):"plánována");
 byId("checked").textContent="Automatická kontrola dat 30 min · Naposledy "+when(new Date().toISOString())+". Bez nového zveřejněného checkpointu se procenta nemění.";
 }
 async function refresh(){try{const r=await fetch("/lyra-progress.json?tick="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error("HTTP "+r.status);const d=await r.json();if(d.schema!==1)throw Error("Neočekávaný formát");render(d);}catch(e){byId("checked").textContent="Chyba načtení: "+e.message+". Zobrazená poslední data zůstávají."}}
