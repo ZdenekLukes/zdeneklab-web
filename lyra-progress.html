@@ -59,7 +59,7 @@ const waiting=d.snapshots.filter(s=>!s.image);
 const previous=d.snapshots.filter(s=>s.image&&s.sourceSha!==d.source.sha);
 function showShot(container,s){const fig=node(container,"figure","shot");const frame=node(fig,"div","frame");
 const safe=s.image&&/^assets\/lyra-progress\/[a-z0-9/_-]+\.png$/i.test(s.image);
-if(safe){if(s.compareAfterRight)frame.classList.add("after-right");const im=node(frame,"img");im.src="/"+s.image;im.alt=s.name+(s.compareAfterRight?" (aktuální verze = pravá polovina zdrojového srovnání)":"");im.loading="lazy";}else{node(frame,"div","placeholder","SOURCE-REAL SNAPSHOT\nČEKÁ NA EXPORT");}
+if(safe){if(s.compareAfterRight)frame.classList.add("after-right");const im=node(frame,"img");im.src="/"+s.image;im.alt=s.name+(s.compareAfterRight?" (aktuální verze = pravá polovina zdrojového srovnání)":"");im.loading="lazy";}else{node(frame,"div","placeholder","ČEKÁ NA AKTUÁLNÍ EXPORT");}
 const cap=node(fig,"figcaption");node(cap,"div","type",s.kind);node(cap,"div","name",s.name);
 if(s.sourceSha&&s.milestoneAt)node(cap,"div","stamp","MILNÍK "+when(s.milestoneAt)+" · SHA "+s.sourceSha.slice(0,9));
 node(cap,"div","desc",s.note);if(s.compareAfterRight&&safe){const a=node(cap,"a","photo-link","Otevřít celé srovnání PŘED / PO");a.href="/"+s.image;a.target="_blank";a.rel="noopener noreferrer";}}

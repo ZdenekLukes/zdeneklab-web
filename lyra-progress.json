@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "updatedAt": "2026-10-28T16:35:00+01:00",
+ "updatedAt": "2026-10-28T16:48:00+01:00",
  "sprint": {
   "startsAt": "2026-10-28T06:00:00+01:00",
   "endsAt": "2026-10-28T18:00:00+01:00"
@@ -14,8 +14,8 @@
   "ready": 0,
   "total": 9,
   "phase": "DETAIL (výroba)",
-  "review": "SKELETON schválen (430a292); hledí B-flat čeká na schválení",
-  "verdict": "Žádný díl zatím není PRINT RELEASE (0/9). Hledí: návrh B-flat čeká na schválení a ověření; P8 a kamerová okna NOT ORDER READY. Termín 18:00 se pro celou lebku nestihne — cílem je nejdřívější ověřené dokončení, finální regrese povinná."
+  "review": "SKELETON schválen (430a292); hledí B-flat vizuálně přijato, čeká na ověření",
+  "verdict": "Žádný díl zatím není PRINT RELEASE (0/9). BLOKÁTORY: GL zasahuje do koruny P1 (oprava vložky probíhá, poté opakované kontroly); hledí B-flat vizuálně přijato, ale nezmrazeno do ověření tolerancí na skutečném kandidátovi; bočnice P3R/P4R čekají na fyzickou zkoušku rohů Cage; P2/P5 tisková opěrná plocha ve vývoji. P8 a kamerová okna NOT ORDER READY. Termín 18:00 se pro celou lebku nestihne — cílem je nejdřívější ověřené dokončení, finální regrese povinná."
  },
  "tasks": [
   {
@@ -64,59 +64,65 @@
    "name": "Studio / náhled",
    "done": 1,
    "total": 1,
-   "note": "Domovská tlačítka LYRA POLISH-CLEAN, díly + Isolate; desktop smoke PASS (ae09d68), náhled aktualizován."
+   "note": "Veřejný Studio náhled ověřen: bajtově shodný se Standalone ae09d68 (sha256 3ae2174e…), online od 16:30. Domovská tlačítka LYRA POLISH-CLEAN, díly + Isolate; desktop smoke PASS."
   }
  ],
  "snapshots": [
   {
+   "name": "Aktuální výrobní geometrie (ae09d68)",
+   "kind": "ČEKÁ NA AKTUÁLNÍ EXPORT",
+   "image": null,
+   "note": "Žádný schválený snapshot aktuální revize zatím není. Starší obrázky jsou v archivu jako historické / referenční."
+  },
+  {
    "name": "SKELETON / čelo a hledí P7",
-   "kind": "AKTUÁLNÍ SKELETON · 430a292",
+   "kind": "HISTORICKÝ SCHVÁLENÝ SKELETON · 430a292",
    "image": "assets/lyra-progress/2026-10-28_skeleton-front_P7_430a292.png",
    "sourceSha": "430a292e8c84d10ada920f220da94e6b8cf9dee4",
    "component": "LYRA/P7",
    "milestoneAt": "2026-10-28T11:26:04+01:00",
    "compareAfterRight": true,
-   "note": "Zdrojový render aktuální revize 430a292. Zobrazený pravý výřez = PO opravě. SKELETON schválen; sedlo P8 je stále ve vývoji."
+   "note": "Historický render schváleného SKELETONu 430a292 (11:26). NENÍ aktuální výrobní geometrie — hledí se od té doby mění (návrh B-flat čeká na ověření)."
   },
   {
    "name": "SKELETON / pravý pohled ¾",
-   "kind": "AKTUÁLNÍ SKELETON · 430a292",
+   "kind": "HISTORICKÝ SCHVÁLENÝ SKELETON · 430a292",
    "image": "assets/lyra-progress/2026-10-28_skeleton-front34-right_P7_430a292.png",
    "sourceSha": "430a292e8c84d10ada920f220da94e6b8cf9dee4",
    "component": "LYRA/P7",
    "milestoneAt": "2026-10-28T11:26:04+01:00",
    "compareAfterRight": true,
-   "note": "Zdrojový render aktuální revize 430a292. Zobrazený pravý výřez = PO opravě. SKELETON schválen; sedlo P8 je stále ve vývoji."
+   "note": "Historický render schváleného SKELETONu 430a292 (11:26). NENÍ aktuální výrobní geometrie — hledí se od té doby mění (návrh B-flat čeká na ověření)."
   },
   {
    "name": "SKELETON / levý pohled ¾",
-   "kind": "AKTUÁLNÍ SKELETON · 430a292",
+   "kind": "HISTORICKÝ SCHVÁLENÝ SKELETON · 430a292",
    "image": "assets/lyra-progress/2026-10-28_skeleton-front34-left_P7_430a292.png",
    "sourceSha": "430a292e8c84d10ada920f220da94e6b8cf9dee4",
    "component": "LYRA/P7",
    "milestoneAt": "2026-10-28T11:26:04+01:00",
    "compareAfterRight": true,
-   "note": "Zdrojový render aktuální revize 430a292. Zobrazený pravý výřez = PO opravě. SKELETON schválen; sedlo P8 je stále ve vývoji."
+   "note": "Historický render schváleného SKELETONu 430a292 (11:26). NENÍ aktuální výrobní geometrie — hledí se od té doby mění (návrh B-flat čeká na ověření)."
   },
   {
    "name": "P7 / dolní pravý roh hledí",
-   "kind": "AKTUÁLNÍ SKELETON · 430a292",
+   "kind": "HISTORICKÝ SCHVÁLENÝ SKELETON · 430a292",
    "image": "assets/lyra-progress/2026-10-28_P7-corner-right_430a292.png",
    "sourceSha": "430a292e8c84d10ada920f220da94e6b8cf9dee4",
    "component": "P7",
    "milestoneAt": "2026-10-28T11:26:04+01:00",
    "compareAfterRight": true,
-   "note": "Zdrojový render aktuální revize 430a292. Zobrazený pravý výřez = PO opravě. SKELETON schválen; sedlo P8 je stále ve vývoji."
+   "note": "Historický render schváleného SKELETONu 430a292 (11:26). NENÍ aktuální výrobní geometrie — hledí se od té doby mění (návrh B-flat čeká na ověření)."
   },
   {
    "name": "P7 / dolní levý roh hledí",
-   "kind": "AKTUÁLNÍ SKELETON · 430a292",
+   "kind": "HISTORICKÝ SCHVÁLENÝ SKELETON · 430a292",
    "image": "assets/lyra-progress/2026-10-28_P7-corner-left_430a292.png",
    "sourceSha": "430a292e8c84d10ada920f220da94e6b8cf9dee4",
    "component": "P7",
    "milestoneAt": "2026-10-28T11:26:04+01:00",
    "compareAfterRight": true,
-   "note": "Zdrojový render aktuální revize 430a292. Zobrazený pravý výřez = PO opravě. SKELETON schválen; sedlo P8 je stále ve vývoji."
+   "note": "Historický render schváleného SKELETONu 430a292 (11:26). NENÍ aktuální výrobní geometrie — hledí se od té doby mění (návrh B-flat čeká na ověření)."
   },
   {
    "name": "POLISH · sestava ¾",
@@ -150,25 +156,25 @@
   },
   {
    "name": "P1 / P2 · koruna a optika",
-   "kind": "SNAPSHOT PENDING",
+   "kind": "ČEKÁ NA AKTUÁLNÍ EXPORT",
    "image": null,
    "note": "Čeká se na reálný nový render dílu."
   },
   {
    "name": "PF · bílá čelní část",
-   "kind": "SNAPSHOT PENDING",
+   "kind": "ČEKÁ NA AKTUÁLNÍ EXPORT",
    "image": null,
    "note": "Nový merged FRONT z výrobní geometrie."
   },
   {
    "name": "P3R / P4R · bočnice",
-   "kind": "SNAPSHOT PENDING",
+   "kind": "ČEKÁ NA AKTUÁLNÍ EXPORT",
    "image": null,
    "note": "Reálné výrobní bočnice a vnitřní úchyty."
   },
   {
    "name": "P5 / P7 · zátylek / hledí",
-   "kind": "SNAPSHOT PENDING",
+   "kind": "ČEKÁ NA AKTUÁLNÍ EXPORT",
    "image": null,
    "note": "Zatím bez ověřeného nového snapshotu."
   },
@@ -176,23 +182,28 @@
    "name": "GL · akustická vložka",
    "kind": "SOURCE-REAL / 8e5f800",
    "image": "assets/lyra-progress/2026-10-28_0630_gl-acoustic-insert_8e5f800.png",
-   "note": "Reálný export STL (sha 68238b3e9aac355b), tisková smlouva 21/21 a PrusaSlicer PASS bez podpor."
+   "note": "Historický export 8e5f800. GL nyní zasahuje do koruny P1 (blokátor) — po opravě geometrie se kontroly opakují a snapshot se nahradí."
   }
  ],
  "history": [
+  {
+   "at": "2026-10-28T16:48:00+01:00",
+   "title": "OPRAVA BUILD LOGU",
+   "detail": "Obrázky 430a292 přeznačeny jako historický schválený SKELETON; aktuální snapshot: ČEKÁ NA AKTUÁLNÍ EXPORT. Blokátor GL × P1 zobrazen."
+  },
   {
    "at": "2026-10-28T16:35:00+01:00",
    "title": "TOLERANCE HLEDÍ / B-FLAT",
    "detail": "Nejhorší případ tolerancí: spodní rohy displeje by mohly být zakryty. Řešení T1 (lokátor k FRONT) + návrh B-flat (spodní hrana −0,25 mm, hladké rohy) předložen ke schválení; nic nezmrazeno, 0/9 PRINT RELEASE."
   },
   {
-   "at": "2026-10-28T16:05:00+01:00",
+   "at": "2026-10-28T16:30:23+01:00",
    "title": "STUDIO NÁHLED ae09d68",
-   "detail": "Mechanical Studio: LYRA POLISH-CLEAN na domovské obrazovce, díly z kanonického registru; desktop smoke PASS; rychlejší přepínání pohledů."
+   "detail": "Veřejný Mechanical Studio náhled ověřen (bajtově shodný s ae09d68): LYRA POLISH-CLEAN na domovské obrazovce, díly z kanonického registru; desktop smoke PASS."
   },
   {
    "at": "2026-10-28T11:09:10.583Z",
-   "title": "AKTUÁLNÍ SKELETON / FOTO 430a292",
+   "title": "SKELETON / FOTO 430a292 (HISTORICKÉ)",
    "detail": "Zveřejněno 5 skutečných renderů sestavy a rohů P7 (porovnání PŘED/PO). Navazují na schválení 11:26; výrobní progres se nemění."
   },
   {
@@ -234,7 +245,8 @@
  "pulse": {
   "lastCheckedAt": "2026-10-28T11:34:20Z",
   "publicPreview": "mechanical-studio-preview-integration-lyra-polish-0700.html",
-  "lastPublicPreviewCommit": "c3933e34310d956836d7da6532ccd0d0aacd4486",
-  "lastPublicPreviewAt": "2026-10-28T10:11:39Z"
+  "lastPublicPreviewCommit": "b4401f079c37bc0c221e50b622eb89d80af9c204",
+  "lastPublicPreviewAt": "2026-10-28T15:30:23Z",
+  "lastPublicPreviewSourceSha": "ae09d68"
  }
 }
