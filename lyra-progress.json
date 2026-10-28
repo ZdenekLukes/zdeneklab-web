@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updatedAt": "2026-10-28T07:05:54+01:00",
+  "updatedAt": "2026-10-28T07:35:07+01:00",
   "sprint": {
     "startsAt": "2026-10-28T06:00:00+01:00",
     "endsAt": "2026-10-28T18:00:00+01:00"
@@ -28,13 +28,13 @@
       "name": "Dělení panelů / spáry",
       "done": 3,
       "total": 4,
-      "note": "Finální čisté dělení vč. sloučeného PF, 0 samoprotnutí ve všech panelech; kontrola sousedních hran zbývá."
+      "note": "Finální čisté dělení vč. sloučeného PF, 0 samoprotnutí ve všech panelech; oprava rohu U1 probíhá."
     },
     {
       "name": "C8 / výrobní stěny",
-      "done": 1,
+      "done": 3,
       "total": 4,
-      "note": "Beze změny, běží na čistých záznamech."
+      "note": "Na finálním čistém dělení prochází 6 ze 7 panelů (P1, P2, P5, P7, jednodílná PF, P3R) všemi kontrolami C8; P4R čeká na úpravu spodního otvoru U1; 9 sousedních spár OK (0,365–0,399 mm). Zatím neintegrováno."
     },
     {
       "name": "Úchyty / kamera / servis",
@@ -124,6 +124,11 @@
     }
   ],
   "history": [
+    {
+      "at": "2026-10-28T07:35:07+01:00",
+      "title": "C8 VÝROBNÍ STĚNY",
+      "detail": "C8 stěny: 6/7 panelů PASS na čistém dělení; P4R čeká na opravu U1."
+    },
     {
       "at": "2026-10-28T07:05:54+01:00",
       "title": "POLISH-CLEAN A DĚLENÍ PANELŮ",
