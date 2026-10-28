@@ -61,7 +61,8 @@ const log=byId("log");log.replaceChildren();for(const h of d.history.slice(0,8))
 byId("age").textContent="Ověřená data: "+Math.max(0,Math.round((Date.now()-new Date(d.updatedAt))/60000))+" min · Web kontrola: "+(d.pulse&&d.pulse.lastCheckedAt?when(d.pulse.lastCheckedAt):"plánována");
 byId("checked").textContent="Automatická kontrola dat 30 min · Naposledy "+when(new Date().toISOString())+". Bez nového zveřejněného checkpointu se procenta nemění.";
 }
-async function refresh(){try{const r=await fetch("/lyra-progress.json?tick="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error("HTTP "+r.status);const d=await r.json();if(d.schema!==1)throw Error("Neočekávaný formát");render(d);}catch(e){byId("checked").textContent="Chyba načtení: "+e.message+". Zobrazená poslední data zůstávají."}}
+async function readProgress(url){const r=await fetch(url,{cache:"no-store"});if(!r.ok)throw Error("HTTP "+r.status);return r.json();}
+async function refresh(){try{const tick=Date.now();let d;try{d=await readProgress("https://raw.githubusercontent.com/ZdenekLukes/zdeneklab-web/main/lyra-progress.json?tick="+tick);}catch(e){d=await readProgress("/lyra-progress.json?tick="+tick);}if(d.schema!==1)throw Error("Neočekávaný formát");render(d);}catch(e){byId("checked").textContent="Chyba načtení: "+e.message+". Zobrazená poslední data zůstávají."}}
 refresh();setInterval(refresh,every);document.addEventListener("visibilitychange",()=>{if(!document.hidden)refresh();});
 })();
 </script>
