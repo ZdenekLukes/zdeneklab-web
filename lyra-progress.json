@@ -1,13 +1,13 @@
 {
   "schema": 1,
-  "updatedAt": "2026-10-28T06:36:55+01:00",
+  "updatedAt": "2026-10-28T07:05:54+01:00",
   "sprint": {
     "startsAt": "2026-10-28T06:00:00+01:00",
     "endsAt": "2026-10-28T18:00:00+01:00"
   },
   "source": {
     "branch": "integration/lyra-polish-0700",
-    "sha": "8e5f80068762a93507f724f9bd5f6771074cd008",
+    "sha": "9ab353899b98719a28e40f88666bb4d1b68f8acc",
     "private": true
   },
   "release": {
@@ -15,20 +15,20 @@
     "total": 9,
     "phase": "SKELETON",
     "review": "WAIT",
-    "verdict": "Žádný nový panel LYRA POLISH zatím není PRINT RELEASE (SKELETON zatím neschválen). Akustické vložky GL/GR prošly tiskovou smlouvou (21/21), validate_printability (geometrie i montáž OK) a PrusaSlicerem (bez podpor, ~4 h 10 min / 20 g každá) — ověřené tiskové kandidáty, čekají na schválení SKELETON a sedlo bočního krytu."
+    "verdict": "Žádný nový panel LYRA POLISH zatím není PRINT RELEASE (SKELETON zatím neschválen). C8 výrobní stěny se nyní přepočítávají na finálním čistém dělení panelů."
   },
   "tasks": [
     {
       "name": "POLISH-CLEAN / povrchy",
-      "done": 2,
+      "done": 3,
       "total": 3,
-      "note": "Čistý solid přestavěn bit-identicky, clearance 22/22, hledí sedí OK; P2 brow housing self-crossings se opravují."
+      "note": "Tři schválené opravy ověřeny: čistý solid bit-identický, 22/22 vůle, hledí sedí OK; beze změn mimo tyto tři rodiny."
     },
     {
       "name": "Dělení panelů / spáry",
-      "done": 2,
+      "done": 3,
       "total": 4,
-      "note": "Čisté dělení vč. sloučeného PF publikováno; rovné řezy spáry krk/U1 hotové."
+      "note": "Finální čisté dělení vč. sloučeného PF, 0 samoprotnutí ve všech panelech; kontrola sousedních hran zbývá."
     },
     {
       "name": "C8 / výrobní stěny",
@@ -124,6 +124,11 @@
     }
   ],
   "history": [
+    {
+      "at": "2026-10-28T07:05:54+01:00",
+      "title": "POLISH-CLEAN A DĚLENÍ PANELŮ",
+      "detail": "Čistý povrch POLISH-CLEAN a finální dělení panelů ověřeny (0 samoprotnutí, 22/22 vůle)."
+    },
     {
       "at": "2026-10-28T06:36:55+01:00",
       "title": "GL/GR AKUSTICKÉ VLOŽKY",
