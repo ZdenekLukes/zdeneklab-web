@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#091017"><meta name="description" content="AI HEAD LYRA — stručný živý deník vývoje a skutečné snapshoty 3D geometrie.">
+<title>LYRA / BUILD LOG — ZDENEK LAB</title>
+<style>
+:root{--bg:#080e13;--panel:#111b23;--line:#273746;--fg:#ecf2f4;--muted:#a6b7c2;--cyan:#7bdafa;--gold:#eab877;--green:#86ddb6}
+*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;color:var(--fg);font:14px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(ellipse at 68% -18%,#1b3b4a 0,transparent 50%),var(--bg)}
+a{color:inherit;text-decoration:none}a:hover{color:var(--cyan)}.wrap{width:min(1280px,calc(100% - 44px));margin:auto;padding:22px 0 60px}
+.top{display:flex;justify-content:space-between;gap:12px;align-items:center;border-bottom:1px solid var(--line);padding:0 0 17px}.brand{font-weight:800;font-size:12px;letter-spacing:.2em}.back{border:1px solid #405364;border-radius:4px;padding:9px 12px;font-size:11px;font-weight:750}
+.kicker{margin:35px 0 10px;color:var(--cyan);font:700 11px ui-monospace,monospace;letter-spacing:.15em}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:22px;flex-wrap:wrap;margin-bottom:25px}
+h1{font-size:clamp(42px,6.6vw,80px);letter-spacing:-.065em;line-height:.95;margin:0;font-weight:780}h1 b{color:var(--cyan)}
+.lead{max-width:580px;color:var(--muted);font-size:13px;margin:12px 0 0}.source{font:500 11px/1.7 ui-monospace,monospace;color:var(--muted);text-align:right}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px}.metric{background:var(--panel);border:1px solid var(--line);padding:16px;border-radius:6px}
+.value{font:750 clamp(22px,2.65vw,34px)/1.2 ui-monospace,monospace;letter-spacing:-.04em}.value.gold{color:var(--gold)}.value.blue{color:var(--cyan)}
+.cap{margin-top:7px;font:550 10px/1.5 ui-monospace,monospace;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+.cols{display:grid;grid-template-columns:minmax(305px,.91fr) minmax(0,1.3fr);gap:20px;align-items:start}
+.panel{background:#111b23ed;border:1px solid var(--line);padding:20px;border-radius:6px}.panel+.panel{margin-top:16px}
+.sect{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:13px}h2{font-size:16px;letter-spacing:-.01em;margin:0}small{color:var(--muted);font:600 10px ui-monospace,monospace}
+.warning{font-size:11px;color:var(--gold);margin:0 0 12px}.task{border-top:1px solid var(--line);padding:11px 0 12px}.task-title{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12.5px;font-weight:700}.ratio{font:700 12px ui-monospace,monospace;color:var(--cyan)}.track{height:5px;background:#25323c;border-radius:9px;overflow:hidden;margin:9px 0 6px}.fill{display:block;height:100%;background:linear-gradient(90deg,#377d9d,#81d8f8);border-radius:9px}.note{font-size:11px;color:var(--muted)}
+.gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.shot{border:1px solid var(--line);border-radius:5px;overflow:hidden;background:#0b1117;margin:0}
+.frame{aspect-ratio:4/3;display:grid;place-items:center;overflow:hidden}.frame img{width:100%;height:100%;object-fit:cover}.placeholder{font:700 11px/1.75 ui-monospace,monospace;color:#708596;text-align:center;white-space:pre-line;padding:20px}.shot figcaption{padding:11px 12px 13px}.type{font:700 9px/1.5 ui-monospace,monospace;color:var(--gold);letter-spacing:.055em}.name{font-weight:700;font-size:12px;margin:3px 0}.desc{color:var(--muted);font-size:10.5px}
+.links{display:flex;flex-wrap:wrap;gap:10px;margin:17px 0 0}.links a{border:1px solid #456579;color:var(--cyan);font-size:11px;font-weight:700;padding:10px 12px;border-radius:4px}
+.timeline{margin:0;padding:0 0 0 14px;list-style:none}.timeline li{border-left:2px solid #466778;padding:0 0 15px 13px;position:relative}.timeline li:before{content:"";position:absolute;left:-5px;top:3px;width:8px;height:8px;background:var(--cyan);border-radius:50%}.when{font:650 10px ui-monospace,monospace;color:var(--cyan)}.detail{font-size:11px;color:var(--muted);margin-top:3px}
+.hint{font-size:10.5px;color:var(--muted);margin:13px 0 0}.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding-top:16px;margin-top:28px;color:var(--muted);font:550 10px ui-monospace,monospace}
+@media(max-width:860px){.cols{grid-template-columns:1fr}.source{text-align:left}.metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:530px){.wrap{width:calc(100% - 26px)}.panel{padding:14px}.metrics{gap:7px}.metric{padding:12px}.gallery{gap:8px}.shot figcaption{padding:9px}.brand{letter-spacing:.08em}h1{font-size:41px}}
+</style></head><body>
+<div class="wrap">
+<div class="top"><a href="/" class="brand">ZDENEK LAB</a><a href="/ai-head-wow.html" class="back">AI HEAD · STATUS</a></div>
+<div class="kicker">AI HEAD / ROBOTIC SKULL / 28 OCT 2026 / WORK IN PROGRESS</div>
+<div class="head"><div><h1>LYRA <b>BUILD LOG</b></h1><p class="lead">POLISH-CLEAN / 12hodinový konstrukční sprint. Stručný stav úkolů a pravé snímky geometrie. Pro video a prezentaci AI HEAD 2026.</p></div>
+<div class="source"><div id="stamp">Načítám poslední ověřený stav…</div><div id="src">Integrace / SHA —</div><div>ZDROJ: AI_HEAD / MECHANICAL STUDIO</div></div></div>
+<div class="metrics"><div class="metric"><div class="value gold" id="ready">0 / 9</div><div class="cap">Nové díly PRINT READY</div></div><div class="metric"><div class="value blue" id="timeleft">12 h</div><div class="cap">Sprint do 18:00</div></div><div class="metric"><div class="value" id="phase">SKELETON</div><div class="cap">Fáze modelu</div></div><div class="metric"><div class="value gold" id="review">WAIT</div><div class="cap">Schválení geometrie</div></div></div>
+<div class="cols"><div>
+<section class="panel"><div class="sect"><h2>Úkoly / postup</h2><small>OVĚŘENÉ MILNÍKY</small></div><p class="warning" id="verdict">Dosud žádný nový díl není uvolněný k tisku.</p><div id="tasks"></div><p class="hint">Pruhy = dokončené kontrolní kroky, nikoliv automatické schválení tisku.</p></section>
+<section class="panel"><div class="sect"><h2>Časová osa</h2><small>PRO ČASOSBĚR</small></div><ol class="timeline" id="log"></ol><p class="hint" id="checked">Kontrola publikovaných dat při otevření a po 30 minutách.</p></section>
+</div><div><section class="panel"><div class="sect"><h2>Snapshoty / díly</h2><small>ZDROJOVÁ 3D GEOMETRIE</small></div><div class="gallery" id="gallery"></div><div class="links"><a href="/mechanical-studio-preview-integration-lyra-polish-0700.html">Aktuální Mechanical Studio</a><a href="/mechanical-studio-preview-night-acou.html">Akustické mřížky</a></div><p class="hint">Starší obrázky označujeme jako REFERENCE. Nové výrobní snapshoty jednotlivých panelů se objeví až po skutečném ověření modelu.</p></section></div></div>
+<div class="foot"><span>AUTO-REFRESH 30 MIN / PUBLIC CHECKPOINTS</span><span id="age">Poslední kontrola…</span><span>AI HEAD 2026 / DEVELOPMENT ARCHIVE</span></div>
+</div>
+<script>
+(()=>{
+const every=1800000;const byId=id=>document.getElementById(id);
+const when=iso=>new Date(iso).toLocaleString("cs-CZ",{timeZone:"Europe/Prague",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+const node=(p,tag,cls,txt)=>{const x=document.createElement(tag);if(cls)x.className=cls;if(txt!==undefined)x.textContent=txt;p.appendChild(x);return x};
+function render(d){
+byId("stamp").textContent="Ověřený stav "+when(d.updatedAt);
+byId("src").textContent="SOURCE "+d.source.sha.slice(0,9);
+byId("ready").textContent=d.release.ready+" / "+d.release.total;
+byId("phase").textContent=d.release.phase;
+byId("review").textContent=d.release.review;
+byId("verdict").textContent=d.release.verdict;
+const ms=new Date(d.sprint.endsAt).getTime()-Date.now();
+byId("timeleft").textContent=ms>0?Math.ceil(ms/3600000)+" h":"CÍL UKONČEN";
+const tasks=byId("tasks");tasks.replaceChildren();
+for(const t of d.tasks){const root=node(tasks,"div","task");const head=node(root,"div","task-title");node(head,"span","",t.name);node(head,"span","ratio",t.done+"/"+t.total);const track=node(root,"div","track");const bar=node(track,"i","fill");bar.style.width=Math.max(0,Math.min(100,Math.round(t.done/t.total*100)))+"%";node(root,"div","note",t.note);}
+const gallery=byId("gallery");gallery.replaceChildren();
+for(const s of d.snapshots){const fig=node(gallery,"figure","shot");const frame=node(fig,"div","frame");
+if(s.image&&/^assets\/lyra-progress\/[a-z0-9/_-]+\.png$/i.test(s.image)){const im=node(frame,"img");im.src="/"+s.image;im.alt=s.name;im.loading="lazy";}else{node(frame,"div","placeholder","SOURCE-REAL SNAPSHOT\nČEKÁ NA EXPORT");}
+const cap=node(fig,"figcaption");node(cap,"div","type",s.kind);node(cap,"div","name",s.name);node(cap,"div","desc",s.note);}
+const log=byId("log");log.replaceChildren();for(const h of d.history.slice(0,8)){const li=node(log,"li");node(li,"div","when",when(h.at)+" · "+h.title);node(li,"div","detail",h.detail);}
+byId("age").textContent="Poslední datový checkpoint: "+Math.max(0,Math.round((Date.now()-new Date(d.updatedAt))/60000))+" min zpět";
+byId("checked").textContent="Automatická kontrola dat 30 min · Naposledy "+when(new Date().toISOString())+". Bez nového zveřejněného checkpointu se procenta nemění.";
+}
+async function refresh(){try{const r=await fetch("/lyra-progress.json?tick="+Date.now(),{cache:"no-store"});if(!r.ok)throw Error("HTTP "+r.status);const d=await r.json();if(d.schema!==1)throw Error("Neočekávaný formát");render(d);}catch(e){byId("checked").textContent="Chyba načtení: "+e.message+". Zobrazená poslední data zůstávají."}}
+refresh();setInterval(refresh,every);document.addEventListener("visibilitychange",()=>{if(!document.hidden)refresh();});
+})();
+</script>
+</body></html>
