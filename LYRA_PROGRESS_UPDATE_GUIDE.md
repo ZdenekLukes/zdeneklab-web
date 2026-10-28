@@ -11,9 +11,12 @@ Původ dat: soukromý ZdenekLukes/AI_HEAD (Source of Truth).
 1. Ověř aktuální HEAD Mac mini, lokální změny i vzdálené commity. Neměň pracovní strom jen kvůli webu.
 2. Aktualizuj updatedAt, source.sha, release a krátký seznam tasks. Hodnota done/total znamená skutečně DOKONČENÉ, ověřené kontrolní kroky. Nezvyšuj ji pouze proto, že uběhl čas nebo vznikl nový commit.
 3. Do snapshots přidej reálné PNG pro P1, P2, PF, P3R, P4R, P5, P7, GL, GR. Publikuj jen snímky skutečné zdrojové geometrie s názvem dílu, stage a SHA. U starého obrázku zůstává jednoznačný štítek REFERENCE. Nikdy neoznačuj vizualizaci za hotový tisk.
-4. Do history vlož krátký faktický záznam (nejnovější první) pro budoucí video; existující záznamy ponech.
-5. Publikuj JSON a nové PNG do veřejného webového main. Ověř veřejnou adresu. Neposílej do webu interní technická data, kompletní soukromý BOM nebo nepovolené soubory.
-6. Stránka načítá veřejný JSON při otevření a každých 30 minut. Změna údajů nastává AŽ po publikaci ověřeného checkpointu.
+4. Každý publikovaný aktuální snímek musí mít `sourceSha` **přesně rovné** `source.sha` v daném JSON checkpointu, `milestoneAt` jako skutečný čas odpovídajícího ověřeného milníku, a datované PNG jméno obsahující komponentu a zkrácené SHA (např. `2026-10-28_P7-front_430a292.png`). `history` musí obsahovat související skutečný milník. `compareAfterRight: true` použij jen pro pravou (aktuální) polovinu originálního PŘED/PO obrázku. Web snímky s jiným `sourceSha` automaticky přesune do archivu.
+5. Do history vlož krátký faktický záznam (nejnovější první) pro budoucí video; existující záznamy ponech. Rozliš čas výrobního milníku od času pozdější publikace obrázku.
+6. Publikuj JSON a nové PNG do veřejného webového main. Ověř veřejnou adresu. Neposílej do webu interní technická data, kompletní soukromý BOM nebo nepovolené soubory.
+7. Stránka načítá veřejný JSON při otevření a každých 30 minut. Změna údajů nastává AŽ po publikaci ověřeného checkpointu.
+
+Pokud pro nový SHA chybí skutečný nový PNG export, nech `image: null` / ČEKÁ NA EXPORT a starší screenshot ponech jen v archivu. Pouhý commit nebo časový posun **nesmí** změnit štítek starého screenshotu na AKTUÁLNÍ. Při checkpointu dělej lehký export z již připravené geometrie, nespouštěj nové C8 jen kvůli webu.
 
 ## Plánovaná půlhodinová kontrola
 
