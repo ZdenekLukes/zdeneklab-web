@@ -1,0 +1,132 @@
+{
+  "schema": 1,
+  "updatedAt": "2026-10-28T06:09:12+01:00",
+  "sprint": {
+    "startsAt": "2026-10-28T06:00:00+01:00",
+    "endsAt": "2026-10-28T18:00:00+01:00"
+  },
+  "source": {
+    "branch": "integration/lyra-polish-0700",
+    "sha": "3131c21942981aed0ce147031117fc3ce1b602e1",
+    "private": true
+  },
+  "release": {
+    "ready": 0,
+    "total": 9,
+    "phase": "SKELETON",
+    "review": "WAIT",
+    "verdict": "Žádný nový panel LYRA POLISH dosud není PRINT RELEASE. Čistý povrch, C8 a skutečná montáž se právě integrují."
+  },
+  "tasks": [
+    {
+      "name": "POLISH-CLEAN / povrchy",
+      "done": 1,
+      "total": 3,
+      "note": "Vizuální základ schválen; poslední očištění čeká na ověření."
+    },
+    {
+      "name": "Dělení panelů / spáry",
+      "done": 1,
+      "total": 4,
+      "note": "SKELETON rozdělen; CLEAN + merged PF zatím neověřeno."
+    },
+    {
+      "name": "C8 / výrobní stěny",
+      "done": 1,
+      "total": 4,
+      "note": "Část původních panelů PASS; kompletní CLEAN sestava ne."
+    },
+    {
+      "name": "Úchyty / kamera / servis",
+      "done": 2,
+      "total": 4,
+      "note": "Stanice ověřené; integrace a servisní kontrola zbývají."
+    },
+    {
+      "name": "Akustické mřížky GL / GR",
+      "done": 2,
+      "total": 4,
+      "note": "Průchozí perforace hotová; boční sedla čekají na integraci."
+    },
+    {
+      "name": "P8 / optická okna",
+      "done": 1,
+      "total": 4,
+      "note": "Vnitřní sedlo a optika podmíněné, výkresy neobjednávat."
+    },
+    {
+      "name": "Printability / slicer / regrese",
+      "done": 0,
+      "total": 4,
+      "note": "Pro nové díly ještě neprovedeno; žádný tiskový release."
+    }
+  ],
+  "snapshots": [
+    {
+      "name": "POLISH · sestava ¾",
+      "kind": "REFERENCE / 411b9e5",
+      "image": "assets/lyra-progress/polish-front34.png",
+      "note": "Zdrojový render před čištěním, není aktuální výrobní panel."
+    },
+    {
+      "name": "POLISH · pohled zepředu",
+      "kind": "REFERENCE / 411b9e5",
+      "image": "assets/lyra-progress/polish-front.png",
+      "note": "Schválený výtvarný základ."
+    },
+    {
+      "name": "POLISH · profil",
+      "kind": "REFERENCE / 411b9e5",
+      "image": "assets/lyra-progress/polish-side.png",
+      "note": "Původní silueta před poslední úpravou hran."
+    },
+    {
+      "name": "Akustika / strana",
+      "kind": "REFERENCE / 411b9e5",
+      "image": "assets/lyra-progress/polish-acoustic.png",
+      "note": "Starý render; nová mřížka je skutečně průchozí."
+    },
+    {
+      "name": "CLEAN / geometrická evidence",
+      "kind": "WIP / ff8c192",
+      "image": "assets/lyra-progress/clean-geometry-evidence.png",
+      "note": "Výpočetní mapa úprav povrchů, nikoli aktuální SKELETON."
+    },
+    {
+      "name": "P1 / P2 · koruna a optika",
+      "kind": "SNAPSHOT PENDING",
+      "image": null,
+      "note": "Čeká se na reálný nový render dílu."
+    },
+    {
+      "name": "PF · bílá čelní část",
+      "kind": "SNAPSHOT PENDING",
+      "image": null,
+      "note": "Nový merged FRONT z výrobní geometrie."
+    },
+    {
+      "name": "P3R / P4R · bočnice",
+      "kind": "SNAPSHOT PENDING",
+      "image": null,
+      "note": "Reálné výrobní bočnice a vnitřní úchyty."
+    },
+    {
+      "name": "P5 / P7 · zátylek / hledí",
+      "kind": "SNAPSHOT PENDING",
+      "image": null,
+      "note": "Zatím bez ověřeného nového snapshotu."
+    }
+  ],
+  "history": [
+    {
+      "at": "2026-10-28T06:09:12+01:00",
+      "title": "RANNÍ INTEGRACE",
+      "detail": "Nová větev integration/lyra-polish-0700 @ 3131c21: oprava zobrazení spojeného PF ve Studiu; bez PRINT RELEASE."
+    },
+    {
+      "at": "2026-10-28T05:52:00+01:00",
+      "title": "NOČNÍ HANDOFF",
+      "detail": "Oprava C8 funguje na části starších panelů, mřížky mají průchozí perforaci; CLEAN poslední změny ještě neověřené."
+    }
+  ]
+}
