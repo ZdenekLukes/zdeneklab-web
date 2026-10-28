@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "updatedAt": "2026-10-28T20:47:25+01:00",
+ "updatedAt": "2026-10-28T21:16:00+01:00",
  "sprint": {
   "startsAt": "2026-10-28T06:00:00+01:00",
   "endsAt": "2026-10-28T18:00:00+01:00"
@@ -15,7 +15,24 @@
   "total": 9,
   "phase": "DETAIL (výroba)",
   "review": "SKELETON schválen (430a292); hledí B-flat vizuálně přijato, čeká na ověření",
-  "verdict": "Žádný díl zatím není PRINT RELEASE (0/9). BLOKÁTORY: P8 — spodní zadní doraz + pružiny se ještě navrhují, hledí NEZMRAZENO; finální C8 přestavba P1/P7/PF; kolíky koruny P2; P3R/P4R — fit celé sestavy a stanice stále čekají (rohové kupóny Cage fyzicky OK, ale to nestačí); GL/GR — kontrola sítě (degenerované trojúhelníky) ještě neprochází + skryté úchyty šroubů se dokončují; povinná kompletní regrese na finálním SHA. P5 (zátylek) je zmrazen jako uživatelský ZKUŠEBNÍ TISK (branch codex/lyra-p5-trial @ 44795e0) — to NENÍ PRINT RELEASE; orientace/podpory čekají na uživatele v PrusaSlicer, formální release až po finální regresi. P8 a kamerová okna NOT ORDER READY."
+  "verdict": "Žádný díl zatím není PRINT RELEASE (0/9). BLOKÁTORY: P8 — spodní zadní doraz + pružiny se ještě navrhují, hledí NEZMRAZENO; finální C8 přestavba P1/P7/PF; kolíky koruny P2 se přestavují; P3R/P4R — slučování stanic běží, fit celé sestavy stále chybí (rohové kupóny Cage fyzicky OK, ale to nestačí); GL/GR — tisková smlouva 20/21 (zbývá overhang v deklarované orientaci, čeká na uživatelský 3MF), skryté úchyty šroubů navrženy ale ještě NEsloučeny do P3R/P4R; povinná kompletní regrese na finálním SHA. P5 (zátylek) je zmrazen jako uživatelský ZKUŠEBNÍ TISK (branch codex/lyra-p5-trial @ 44795e0) — to NENÍ PRINT RELEASE; vizuální kontrola v Mechanical Studiu je blokovaná chybou zobrazení (ne geometrie), orientace/podpory čekají na uživatele v PrusaSlicer, formální release až po finální regresi. P8 a kamerová okna NOT ORDER READY."
+ },
+ "firstPrintablePath": {
+  "title": "Cesta k prvnímu tisknutelnému dílu",
+  "component": "P5 (zátylek)",
+  "source": "codex/lyra-p5-trial @ 44795e0",
+  "asOf": "2026-10-28T21:15:00+01:00",
+  "statement": "P5 STL pro zkušební tisk existuje. Doporučení: tisknout až po vizuální kontrole v Mechanical Studiu.",
+  "distance": "Zbývá: dokončit běžící plný C8 test, opravit vizuální náhled sestavy ve Studiu, získat uživatelské schválení vzhledu, zvolit orientaci a podpory v PrusaSlicer (3MF), provést zkušební tisk — a teprve poté formální PRINT RELEASE po finální kompletní regresi.",
+  "steps": [
+   {"status": "done", "text": "Geometrie zmrazena jako USER PRINT TRIAL (jedno těleso, magnetové stanice pol_om_l/r, odstup od exteriéru 1,10 / 1,14 mm)."},
+   {"status": "done", "text": "Montážní a kolizní kontroly: Cage 0 mm³ (mezera 1,268 mm), P1/P3R/P4R a hardware 0 mm³, demontáž volná."},
+   {"status": "done", "text": "Fokusovaný test stanic P5 14/14 PASS (ověřeno znovu na čisté kopii)."},
+   {"status": "inprogress", "text": "Plný C8 test na 44795e0 běží — ve 21:15 mezivýsledek 67 PASS / 0 FAIL (NENÍ konečný výsledek)."},
+   {"status": "blocked", "text": "Vizuální kontrola P5 v Mechanical Studiu BLOKOVÁNA: náhled sestavy zobrazuje panely posunuté (chyba umístění v UI, ne v geometrii P5); oprava probíhá."},
+   {"status": "pending", "text": "Uživatelské schválení vzhledu → uživatel volí orientaci a podpěry v PrusaSlicer (3MF) → zkušební tisk."},
+   {"status": "pending", "text": "Formální PRINT RELEASE až po finální kompletní regresi na finálním SHA."}
+  ]
  },
  "tasks": [
   {
@@ -40,25 +57,25 @@
    "name": "Úchyty / kamera / servis",
    "done": 4,
    "total": 5,
-   "note": "Fyzická zkouška rohových kupónů Cage (vytiskl uživatel): P3R i P4R sedí bez vzpříčení, ~0,5 mm celkové vůle u obou párů. Fit celé sestavy P3R/P4R ještě chybí — bočnice zůstávají blokované pro PRINT RELEASE. Souběžně: P5 (zátylek) geometricky zmrazen jako uživatelský ZKUŠEBNÍ TISK (codex/lyra-p5-trial @ 44795e0) — jeden exact-union shell s oběma magnetovými stanicemi (pol_om_l/r, min. mezera k povrchu 1,10 / 1,14 mm, požadováno ≥0,9), 0 mm³ s Cage (mezera 1,268 mm) i s P1/P3R/P4R a hardwarem, čistá cesta demontáže; ložiskový smoke 14/14 PASS (ověřeno Claude na čisté kopii 44795e0, ~20:50). Orientace/podpory čekají na uživatele v PrusaSlicer; formální PRINT RELEASE až po finální regresi."
+   "note": "Fyzické Cage-rohové kupóny P3R/P4R sedí (~0,5 mm celkové vůle); slučování magnetových stanic do P3R/P4R běží; fit celé sestavy ještě neověřen → bočnice zůstávají blokované pro PRINT RELEASE. GL/GR mají 6 skrytých úchytů šroubů navrženo (≥1,07 mm od exteriéru), ale ještě NEsloučeno do P3R/P4R — zkušební vložky tak zatím nemají do čeho se přišroubovat; test vedená dírka (pilot hole) exportován. Souběžně: P5 (zátylek) geometricky zmrazen jako uživatelský ZKUŠEBNÍ TISK (codex/lyra-p5-trial @ 44795e0) — jeden exact-union shell s oběma magnetovými stanicemi (pol_om_l/r, min. mezera k povrchu 1,10 / 1,14 mm, požadováno ≥0,9), 0 mm³ s Cage (mezera 1,268 mm) i s P1/P3R/P4R a hardwarem, čistá cesta demontáže; ložiskový smoke 14/14 PASS (ověřeno znovu na čisté kopii 44795e0). Vizuální kontrola ve Studiu blokovaná chybou zobrazení (oprava probíhá); orientace/podpory čekají na uživatele v PrusaSlicer; formální PRINT RELEASE až po finální regresi."
   },
   {
    "name": "Akustické mřížky GL / GR",
-   "done": 3,
+   "done": 4,
    "total": 5,
-   "note": "GL/GR přestavěny na skutečné boční kryty (0 mm³ průnik) — blokátor GL × koruna P1 odstraněn. Skryté úchyty šroubů ve vývoji. Jedna kontrola sítě (degenerované trojúhelníky) ještě neprochází → GL/GR zatím nejsou vydány."
+   "note": "GL/GR přestavěny na skutečné boční kryty: 0 mm³ se všemi panely/Cage/reproduktory, mezera krytu 0,327 / 0,315 mm; defekt degenerovaných trojúhelníků v síti opraven (night/acou2 fe14e94). Tisková smlouva 20/21 — jediná otevřená položka je overhang v deklarované orientaci, čeká na uživatelský 3MF. 6 skrytých úchytů šroubů navrženo (≥1,07 mm od exteriéru), ale ještě NEsloučeno do P3R/P4R; test vedená dírka exportována."
   },
   {
    "name": "P8 / optická okna",
    "done": 3,
    "total": 6,
-   "note": "Nejhorší případ tolerancí odhalil zakrytí rohů displeje. Lokátor displeje k FRONT (T1) namodelován; skrytý spodní držák + horní doraz ověřeny (0 mm² viditelné). Černý okraj na zadní straně P8 schválen jako výtvarné řešení (není order ready); spodní zadní doraz + pružiny se stále navrhují. Hledí NENÍ zmrazeno, návrh B-flat čeká na schválení."
+   "note": "Nejhorší případ tolerancí odhalil zakrytí rohů displeje. Lokátor displeje k FRONT (T1) namodelován; skrytý spodní držák + horní doraz ověřeny (0 mm² viditelné). Černý okraj na zadní straně P8 schválen jako výtvarné řešení (není order ready); hledí NENÍ zmrazeno — spodní hranový datum, maska černého okraje a pružiny se stále modelují. Zůstává reziduální riziko, které bude vyžadovat uživatelské schválení."
   },
   {
    "name": "Printability / slicer / regrese",
    "done": 1,
    "total": 5,
-   "note": "GL/GR PASS; P2/P5 potřebují tiskovou opěrnou plochu (návrh čeká na schválení); kompletní regrese až na finálním SHA."
+   "note": "GL/GR tisková smlouva 20/21 (overhang v orientaci čeká na uživatelský 3MF). P5 plný C8 test běží (mezivýsledek 67 PASS / 0 FAIL ve 21:15, není konečný). P2/P5 potřebují tiskovou opěrnou plochu / orientaci (čeká na uživatele); kompletní regrese povinná na finálním SHA před release."
   },
   {
    "name": "Studio / náhled",
@@ -186,6 +203,11 @@
   }
  ],
  "history": [
+  {
+   "at": "2026-10-28T21:15:00+01:00",
+   "title": "STAV 21:15 — P5 PŘED VIZUÁLNÍ KONTROLOU",
+   "detail": "P5 (zátylek, codex/lyra-p5-trial @ 44795e0): geometrie zmrazena jako USER PRINT TRIAL, montážní/kolizní kontroly 0 mm³, fokusovaný test stanic 14/14 PASS. Plný C8 test běží — mezivýsledek 67 PASS / 0 FAIL (nekonečný). Vizuální kontrola v Mechanical Studiu BLOKOVÁNA chybou zobrazení panelů (ne geometrie P5), oprava probíhá. P5 STL pro zkušební tisk existuje; doporučení je tisknout až po vizuální kontrole. Zbývá: dokončit C8 regresi, opravit náhled, získat uživatelské schválení, orientaci/podpory v PrusaSlicer, zkušební tisk, finální regrese → formální PRINT RELEASE."
+  },
   {
    "at": "2026-10-28T20:55:00+01:00",
    "title": "FYZICKÁ ZKOUŠKA ROHŮ CAGE",
