@@ -1,0 +1,36 @@
+name: LYRA 30-minute progress pulse
+
+on:
+  schedule:
+    - cron: '9,39 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: lyra-progress-pulse
+  cancel-in-progress: false
+
+jobs:
+  pulse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Check public LYRA site and record heartbeat
+        run: python3 scripts/lyra-progress-pulse.py
+      - name: Publish heartbeat without altering engineering verdicts
+        run: |
+          if git diff --quiet -- lyra-progress.json; then
+            echo 'No update outside sprint window'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add lyra-progress.json
+          git commit -m "status(lyra): public 30-minute progress heartbeat"
+          git push origin HEAD:main
