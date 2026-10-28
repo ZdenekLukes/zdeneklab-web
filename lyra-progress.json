@@ -1,13 +1,13 @@
 {
   "schema": 1,
-  "updatedAt": "2026-10-28T06:09:12+01:00",
+  "updatedAt": "2026-10-28T06:36:55+01:00",
   "sprint": {
     "startsAt": "2026-10-28T06:00:00+01:00",
     "endsAt": "2026-10-28T18:00:00+01:00"
   },
   "source": {
     "branch": "integration/lyra-polish-0700",
-    "sha": "3131c21942981aed0ce147031117fc3ce1b602e1",
+    "sha": "8e5f80068762a93507f724f9bd5f6771074cd008",
     "private": true
   },
   "release": {
@@ -15,50 +15,50 @@
     "total": 9,
     "phase": "SKELETON",
     "review": "WAIT",
-    "verdict": "Žádný nový panel LYRA POLISH dosud není PRINT RELEASE. Čistý povrch, C8 a skutečná montáž se právě integrují."
+    "verdict": "Žádný nový panel LYRA POLISH zatím není PRINT RELEASE (SKELETON zatím neschválen). Akustické vložky GL/GR prošly tiskovou smlouvou (21/21), validate_printability (geometrie i montáž OK) a PrusaSlicerem (bez podpor, ~4 h 10 min / 20 g každá) — ověřené tiskové kandidáty, čekají na schválení SKELETON a sedlo bočního krytu."
   },
   "tasks": [
     {
       "name": "POLISH-CLEAN / povrchy",
-      "done": 1,
+      "done": 2,
       "total": 3,
-      "note": "Vizuální základ schválen; poslední očištění čeká na ověření."
+      "note": "Čistý solid přestavěn bit-identicky, clearance 22/22, hledí sedí OK; P2 brow housing self-crossings se opravují."
     },
     {
       "name": "Dělení panelů / spáry",
-      "done": 1,
+      "done": 2,
       "total": 4,
-      "note": "SKELETON rozdělen; CLEAN + merged PF zatím neověřeno."
+      "note": "Čisté dělení vč. sloučeného PF publikováno; rovné řezy spáry krk/U1 hotové."
     },
     {
       "name": "C8 / výrobní stěny",
       "done": 1,
       "total": 4,
-      "note": "Část původních panelů PASS; kompletní CLEAN sestava ne."
+      "note": "Beze změny, běží na čistých záznamech."
     },
     {
       "name": "Úchyty / kamera / servis",
       "done": 2,
       "total": 4,
-      "note": "Stanice ověřené; integrace a servisní kontrola zbývají."
+      "note": "Beze změny; integrace a servisní kontrola zbývají."
     },
     {
       "name": "Akustické mřížky GL / GR",
-      "done": 2,
+      "done": 3,
       "total": 4,
-      "note": "Průchozí perforace hotová; boční sedla čekají na integraci."
+      "note": "Tisk + slicer PASS; sedlo/úchyty bočního krytu čekají."
     },
     {
       "name": "P8 / optická okna",
       "done": 1,
       "total": 4,
-      "note": "Vnitřní sedlo a optika podmíněné, výkresy neobjednávat."
+      "note": "Beze změny; vnitřní sedlo a optika podmíněné, výkresy neobjednávat (NOT ORDER READY)."
     },
     {
       "name": "Printability / slicer / regrese",
-      "done": 0,
+      "done": 1,
       "total": 4,
-      "note": "Pro nové díly ještě neprovedeno; žádný tiskový release."
+      "note": "GL/GR slicer PASS; kompletní regrese zatím neproběhla."
     }
   ],
   "snapshots": [
@@ -115,9 +115,20 @@
       "kind": "SNAPSHOT PENDING",
       "image": null,
       "note": "Zatím bez ověřeného nového snapshotu."
+    },
+    {
+      "name": "GL · akustická vložka",
+      "kind": "SOURCE-REAL / 8e5f800",
+      "image": "assets/lyra-progress/2026-10-28_0630_gl-acoustic-insert_8e5f800.png",
+      "note": "Reálný export STL (sha 68238b3e9aac355b), tisková smlouva 21/21 a PrusaSlicer PASS bez podpor."
     }
   ],
   "history": [
+    {
+      "at": "2026-10-28T06:36:55+01:00",
+      "title": "GL/GR AKUSTICKÉ VLOŽKY",
+      "detail": "GL/GR akustické vložky: tisková smlouva 21/21, validator OK, PrusaSlicer bez podpor (4 h 10 min, 20 g)."
+    },
     {
       "at": "2026-10-28T06:09:12+01:00",
       "title": "RANNÍ INTEGRACE",
