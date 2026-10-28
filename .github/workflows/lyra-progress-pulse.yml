@@ -3,11 +3,15 @@ name: LYRA 30-minute progress pulse
 on:
   schedule:
     - cron: '9,39 * * * *'
+  push:
+    paths:
+      - '.github/workflows/lyra-progress-pulse.yml'
   workflow_dispatch:
 
 permissions:
   contents: write
   actions: write
+  pages: write
 
 concurrency:
   group: lyra-progress-pulse
@@ -25,6 +29,8 @@ jobs:
       - name: Check public LYRA site and record heartbeat
         run: python3 scripts/lyra-progress-pulse.py
       - name: Publish heartbeat without altering engineering verdicts
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           if git diff --quiet -- lyra-progress.json; then
             echo 'No update outside sprint window'
@@ -35,6 +41,11 @@ jobs:
           git add lyra-progress.json
           git commit -m "status(lyra): public 30-minute progress heartbeat"
           git push origin HEAD:main
+          # GITHUB_TOKEN commits do not automatically trigger a branch-source Pages build.
+          curl --fail-with-body --silent --show-error --retry 2 --retry-delay 2 -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/pages/builds"
 
       - name: Disable this scheduled workflow after the 12-hour window
         if: always()
