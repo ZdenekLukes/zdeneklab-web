@@ -1,224 +1,240 @@
 {
-  "schema": 1,
-  "updatedAt": "2026-10-28T11:09:10.583Z",
-  "sprint": {
-    "startsAt": "2026-10-28T06:00:00+01:00",
-    "endsAt": "2026-10-28T18:00:00+01:00"
+ "schema": 1,
+ "updatedAt": "2026-10-28T16:35:00+01:00",
+ "sprint": {
+  "startsAt": "2026-10-28T06:00:00+01:00",
+  "endsAt": "2026-10-28T18:00:00+01:00"
+ },
+ "source": {
+  "branch": "integration/lyra-polish-0700",
+  "sha": "ae09d68",
+  "private": true
+ },
+ "release": {
+  "ready": 0,
+  "total": 9,
+  "phase": "DETAIL (výroba)",
+  "review": "SKELETON schválen (430a292); hledí B-flat čeká na schválení",
+  "verdict": "Žádný díl zatím není PRINT RELEASE (0/9). Hledí: návrh B-flat čeká na schválení a ověření; P8 a kamerová okna NOT ORDER READY. Termín 18:00 se pro celou lebku nestihne — cílem je nejdřívější ověřené dokončení, finální regrese povinná."
+ },
+ "tasks": [
+  {
+   "name": "POLISH-CLEAN / povrchy",
+   "done": 3,
+   "total": 3,
+   "note": "Tři schválené opravy ověřeny: čistý solid bit-identický, 22/22 vůle, hledí sedí OK; beze změn mimo tyto tři rodiny."
   },
-  "source": {
-    "branch": "integration/lyra-polish-0700",
-    "sha": "430a292e8c84d10ada920f220da94e6b8cf9dee4",
-    "private": true
+  {
+   "name": "Dělení panelů / spáry",
+   "done": 4,
+   "total": 4,
+   "note": "Finální čisté dělení vč. sloučeného PF, 0 samoprotnutí ve všech panelech; oprava rohu U1 dokončena."
   },
-  "release": {
-    "ready": 0,
-    "total": 9,
-    "phase": "SKELETON → DETAIL",
-    "review": "APPROVED (SKELETON 430a292)",
-    "verdict": "SKELETON schválen; žádný skořepinový díl zatím není PRINT RELEASE. P8 sedlo/retainer čekají na ověření C1; P8 a kamerová okna NOT ORDER READY."
+  {
+   "name": "C8 / výrobní stěny",
+   "done": 4,
+   "total": 5,
+   "note": "Plný C8 smoke 83/0 (oprava fixtur). Zbývá finální přestavba P1/P7/PF a výplň sedla na zmrazeném hledí."
   },
-  "tasks": [
-    {
-      "name": "POLISH-CLEAN / povrchy",
-      "done": 3,
-      "total": 3,
-      "note": "Tři schválené opravy ověřeny: čistý solid bit-identický, 22/22 vůle, hledí sedí OK; beze změn mimo tyto tři rodiny."
-    },
-    {
-      "name": "Dělení panelů / spáry",
-      "done": 4,
-      "total": 4,
-      "note": "Finální čisté dělení vč. sloučeného PF, 0 samoprotnutí ve všech panelech; oprava rohu U1 dokončena."
-    },
-    {
-      "name": "C8 / výrobní stěny",
-      "done": 4,
-      "total": 4,
-      "note": "28c: 7 panelů + 12 spár PASS, Cage odlehčení ≥ 0,316 mm, R3d.1 identické."
-    },
-    {
-      "name": "Úchyty / kamera / servis",
-      "done": 3,
-      "total": 4,
-      "note": "Stanice ověřeny na čistých panelech (40 polovin), demontáže OK; zbývá vnitřní odlehčení u rohů desky Cage."
-    },
-    {
-      "name": "Akustické mřížky GL / GR",
-      "done": 3,
-      "total": 4,
-      "note": "Tisk + slicer PASS; sedlo/úchyty bočního krytu čekají."
-    },
-    {
-      "name": "P8 / optická okna",
-      "done": 2,
-      "total": 4,
-      "note": "P8 o 1,25 mm hlouběji; C1 (plynulé místní zúžení průhledu) doporučena k validaci. Viditelnost displeje, retainer a výrobní tolerance nejsou uzavřeny."
-    },
-    {
-      "name": "Printability / slicer / regrese",
-      "done": 1,
-      "total": 4,
-      "note": "GL/GR slicer PASS; kompletní regrese zatím neproběhla."
-    }
-  ],
-  "snapshots": [
-    {
-      "name": "SKELETON / čelo a hledí P7",
-      "kind": "AKTUÁLNÍ SKELETON · 430a292",
-      "image": "assets/lyra-progress/2026-10-28_skeleton-front_P7_430a292.png",
-      "sourceSha": "430a292e8c84d10ada920f220da94e6b8cf9dee4",
-      "component": "LYRA/P7",
-      "milestoneAt": "2026-10-28T11:26:04+01:00",
-      "compareAfterRight": true,
-      "note": "Zdrojový render aktuální revize 430a292. Zobrazený pravý výřez = PO opravě. SKELETON schválen; sedlo P8 je stále ve vývoji."
-    },
-    {
-      "name": "SKELETON / pravý pohled ¾",
-      "kind": "AKTUÁLNÍ SKELETON · 430a292",
-      "image": "assets/lyra-progress/2026-10-28_skeleton-front34-right_P7_430a292.png",
-      "sourceSha": "430a292e8c84d10ada920f220da94e6b8cf9dee4",
-      "component": "LYRA/P7",
-      "milestoneAt": "2026-10-28T11:26:04+01:00",
-      "compareAfterRight": true,
-      "note": "Zdrojový render aktuální revize 430a292. Zobrazený pravý výřez = PO opravě. SKELETON schválen; sedlo P8 je stále ve vývoji."
-    },
-    {
-      "name": "SKELETON / levý pohled ¾",
-      "kind": "AKTUÁLNÍ SKELETON · 430a292",
-      "image": "assets/lyra-progress/2026-10-28_skeleton-front34-left_P7_430a292.png",
-      "sourceSha": "430a292e8c84d10ada920f220da94e6b8cf9dee4",
-      "component": "LYRA/P7",
-      "milestoneAt": "2026-10-28T11:26:04+01:00",
-      "compareAfterRight": true,
-      "note": "Zdrojový render aktuální revize 430a292. Zobrazený pravý výřez = PO opravě. SKELETON schválen; sedlo P8 je stále ve vývoji."
-    },
-    {
-      "name": "P7 / dolní pravý roh hledí",
-      "kind": "AKTUÁLNÍ SKELETON · 430a292",
-      "image": "assets/lyra-progress/2026-10-28_P7-corner-right_430a292.png",
-      "sourceSha": "430a292e8c84d10ada920f220da94e6b8cf9dee4",
-      "component": "P7",
-      "milestoneAt": "2026-10-28T11:26:04+01:00",
-      "compareAfterRight": true,
-      "note": "Zdrojový render aktuální revize 430a292. Zobrazený pravý výřez = PO opravě. SKELETON schválen; sedlo P8 je stále ve vývoji."
-    },
-    {
-      "name": "P7 / dolní levý roh hledí",
-      "kind": "AKTUÁLNÍ SKELETON · 430a292",
-      "image": "assets/lyra-progress/2026-10-28_P7-corner-left_430a292.png",
-      "sourceSha": "430a292e8c84d10ada920f220da94e6b8cf9dee4",
-      "component": "P7",
-      "milestoneAt": "2026-10-28T11:26:04+01:00",
-      "compareAfterRight": true,
-      "note": "Zdrojový render aktuální revize 430a292. Zobrazený pravý výřez = PO opravě. SKELETON schválen; sedlo P8 je stále ve vývoji."
-    },
-    {
-      "name": "POLISH · sestava ¾",
-      "kind": "REFERENCE / 411b9e5",
-      "image": "assets/lyra-progress/polish-front34.png",
-      "note": "Zdrojový render před čištěním, není aktuální výrobní panel."
-    },
-    {
-      "name": "POLISH · pohled zepředu",
-      "kind": "REFERENCE / 411b9e5",
-      "image": "assets/lyra-progress/polish-front.png",
-      "note": "Schválený výtvarný základ."
-    },
-    {
-      "name": "POLISH · profil",
-      "kind": "REFERENCE / 411b9e5",
-      "image": "assets/lyra-progress/polish-side.png",
-      "note": "Původní silueta před poslední úpravou hran."
-    },
-    {
-      "name": "Akustika / strana",
-      "kind": "REFERENCE / 411b9e5",
-      "image": "assets/lyra-progress/polish-acoustic.png",
-      "note": "Starý render; nová mřížka je skutečně průchozí."
-    },
-    {
-      "name": "CLEAN / geometrická evidence",
-      "kind": "WIP / ff8c192",
-      "image": "assets/lyra-progress/clean-geometry-evidence.png",
-      "note": "Výpočetní mapa úprav povrchů, nikoli aktuální SKELETON."
-    },
-    {
-      "name": "P1 / P2 · koruna a optika",
-      "kind": "SNAPSHOT PENDING",
-      "image": null,
-      "note": "Čeká se na reálný nový render dílu."
-    },
-    {
-      "name": "PF · bílá čelní část",
-      "kind": "SNAPSHOT PENDING",
-      "image": null,
-      "note": "Nový merged FRONT z výrobní geometrie."
-    },
-    {
-      "name": "P3R / P4R · bočnice",
-      "kind": "SNAPSHOT PENDING",
-      "image": null,
-      "note": "Reálné výrobní bočnice a vnitřní úchyty."
-    },
-    {
-      "name": "P5 / P7 · zátylek / hledí",
-      "kind": "SNAPSHOT PENDING",
-      "image": null,
-      "note": "Zatím bez ověřeného nového snapshotu."
-    },
-    {
-      "name": "GL · akustická vložka",
-      "kind": "SOURCE-REAL / 8e5f800",
-      "image": "assets/lyra-progress/2026-10-28_0630_gl-acoustic-insert_8e5f800.png",
-      "note": "Reálný export STL (sha 68238b3e9aac355b), tisková smlouva 21/21 a PrusaSlicer PASS bez podpor."
-    }
-  ],
-  "history": [
-    {
-      "at": "2026-10-28T11:09:10.583Z",
-      "title": "AKTUÁLNÍ SKELETON / FOTO 430a292",
-      "detail": "Zveřejněno 5 skutečných renderů sestavy a rohů P7 (porovnání PŘED/PO). Navazují na schválení 11:26; výrobní progres se nemění."
-    },
-    {
-      "at": "2026-10-28T11:26:04+01:00",
-      "title": "SKELETON SCHVÁLEN",
-      "detail": "SKELETON LYRA POLISH-CLEAN schválen (430a292)."
-    },
-    {
-      "at": "2026-10-28T09:23:27+01:00",
-      "title": "SKELETON PŘEDLOŽEN",
-      "detail": "SKELETON POLISH-CLEAN se skutečnými stěnami C8 předložen ke schválení."
-    },
-    {
-      "at": "2026-10-28T07:35:07+01:00",
-      "title": "C8 VÝROBNÍ STĚNY",
-      "detail": "C8 stěny: 6/7 panelů PASS na čistém dělení; P4R čeká na opravu U1."
-    },
-    {
-      "at": "2026-10-28T07:05:54+01:00",
-      "title": "POLISH-CLEAN A DĚLENÍ PANELŮ",
-      "detail": "Čistý povrch POLISH-CLEAN a finální dělení panelů ověřeny (0 samoprotnutí, 22/22 vůle)."
-    },
-    {
-      "at": "2026-10-28T06:36:55+01:00",
-      "title": "GL/GR AKUSTICKÉ VLOŽKY",
-      "detail": "GL/GR akustické vložky: tisková smlouva 21/21, validator OK, PrusaSlicer bez podpor (4 h 10 min, 20 g)."
-    },
-    {
-      "at": "2026-10-28T06:09:12+01:00",
-      "title": "RANNÍ INTEGRACE",
-      "detail": "Nová větev integration/lyra-polish-0700 @ 3131c21: oprava zobrazení spojeného PF ve Studiu; bez PRINT RELEASE."
-    },
-    {
-      "at": "2026-10-28T05:52:00+01:00",
-      "title": "NOČNÍ HANDOFF",
-      "detail": "Oprava C8 funguje na části starších panelů, mřížky mají průchozí perforaci; CLEAN poslední změny ještě neověřené."
-    }
-  ],
-  "pulse": {
-    "lastCheckedAt": "2026-10-28T11:34:20Z",
-    "publicPreview": "mechanical-studio-preview-integration-lyra-polish-0700.html",
-    "lastPublicPreviewCommit": "c3933e34310d956836d7da6532ccd0d0aacd4486",
-    "lastPublicPreviewAt": "2026-10-28T10:11:39Z"
+  {
+   "name": "Úchyty / kamera / servis",
+   "done": 3,
+   "total": 5,
+   "note": "Rohy desky Cage: v nejhorším případě tolerancí může vůle klesnout k nule; připraveny fit kupóny (Studio 18/18, slicer OK) — fyzická zkouška je brána pro bočnice."
+  },
+  {
+   "name": "Akustické mřížky GL / GR",
+   "done": 3,
+   "total": 5,
+   "note": "Tisk + slicer PASS (GL brim ≥ 8 mm). Nově zjištěno: GL zasahuje do koruny P1 — oprava vložky probíhá; GR poloha se ověřuje."
+  },
+  {
+   "name": "P8 / optická okna",
+   "done": 3,
+   "total": 6,
+   "note": "Nejhorší případ tolerancí odhalil zakrytí rohů displeje. Lokátor displeje k FRONT (T1) namodelován; skrytý spodní držák + horní doraz ověřeny (0 mm² viditelné). Návrh hledí B-flat čeká na schválení."
+  },
+  {
+   "name": "Printability / slicer / regrese",
+   "done": 1,
+   "total": 5,
+   "note": "GL/GR PASS; P2/P5 potřebují tiskovou opěrnou plochu (návrh čeká na schválení); kompletní regrese až na finálním SHA."
+  },
+  {
+   "name": "Studio / náhled",
+   "done": 1,
+   "total": 1,
+   "note": "Domovská tlačítka LYRA POLISH-CLEAN, díly + Isolate; desktop smoke PASS (ae09d68), náhled aktualizován."
   }
+ ],
+ "snapshots": [
+  {
+   "name": "SKELETON / čelo a hledí P7",
+   "kind": "AKTUÁLNÍ SKELETON · 430a292",
+   "image": "assets/lyra-progress/2026-10-28_skeleton-front_P7_430a292.png",
+   "sourceSha": "430a292e8c84d10ada920f220da94e6b8cf9dee4",
+   "component": "LYRA/P7",
+   "milestoneAt": "2026-10-28T11:26:04+01:00",
+   "compareAfterRight": true,
+   "note": "Zdrojový render aktuální revize 430a292. Zobrazený pravý výřez = PO opravě. SKELETON schválen; sedlo P8 je stále ve vývoji."
+  },
+  {
+   "name": "SKELETON / pravý pohled ¾",
+   "kind": "AKTUÁLNÍ SKELETON · 430a292",
+   "image": "assets/lyra-progress/2026-10-28_skeleton-front34-right_P7_430a292.png",
+   "sourceSha": "430a292e8c84d10ada920f220da94e6b8cf9dee4",
+   "component": "LYRA/P7",
+   "milestoneAt": "2026-10-28T11:26:04+01:00",
+   "compareAfterRight": true,
+   "note": "Zdrojový render aktuální revize 430a292. Zobrazený pravý výřez = PO opravě. SKELETON schválen; sedlo P8 je stále ve vývoji."
+  },
+  {
+   "name": "SKELETON / levý pohled ¾",
+   "kind": "AKTUÁLNÍ SKELETON · 430a292",
+   "image": "assets/lyra-progress/2026-10-28_skeleton-front34-left_P7_430a292.png",
+   "sourceSha": "430a292e8c84d10ada920f220da94e6b8cf9dee4",
+   "component": "LYRA/P7",
+   "milestoneAt": "2026-10-28T11:26:04+01:00",
+   "compareAfterRight": true,
+   "note": "Zdrojový render aktuální revize 430a292. Zobrazený pravý výřez = PO opravě. SKELETON schválen; sedlo P8 je stále ve vývoji."
+  },
+  {
+   "name": "P7 / dolní pravý roh hledí",
+   "kind": "AKTUÁLNÍ SKELETON · 430a292",
+   "image": "assets/lyra-progress/2026-10-28_P7-corner-right_430a292.png",
+   "sourceSha": "430a292e8c84d10ada920f220da94e6b8cf9dee4",
+   "component": "P7",
+   "milestoneAt": "2026-10-28T11:26:04+01:00",
+   "compareAfterRight": true,
+   "note": "Zdrojový render aktuální revize 430a292. Zobrazený pravý výřez = PO opravě. SKELETON schválen; sedlo P8 je stále ve vývoji."
+  },
+  {
+   "name": "P7 / dolní levý roh hledí",
+   "kind": "AKTUÁLNÍ SKELETON · 430a292",
+   "image": "assets/lyra-progress/2026-10-28_P7-corner-left_430a292.png",
+   "sourceSha": "430a292e8c84d10ada920f220da94e6b8cf9dee4",
+   "component": "P7",
+   "milestoneAt": "2026-10-28T11:26:04+01:00",
+   "compareAfterRight": true,
+   "note": "Zdrojový render aktuální revize 430a292. Zobrazený pravý výřez = PO opravě. SKELETON schválen; sedlo P8 je stále ve vývoji."
+  },
+  {
+   "name": "POLISH · sestava ¾",
+   "kind": "REFERENCE / 411b9e5",
+   "image": "assets/lyra-progress/polish-front34.png",
+   "note": "Zdrojový render před čištěním, není aktuální výrobní panel."
+  },
+  {
+   "name": "POLISH · pohled zepředu",
+   "kind": "REFERENCE / 411b9e5",
+   "image": "assets/lyra-progress/polish-front.png",
+   "note": "Schválený výtvarný základ."
+  },
+  {
+   "name": "POLISH · profil",
+   "kind": "REFERENCE / 411b9e5",
+   "image": "assets/lyra-progress/polish-side.png",
+   "note": "Původní silueta před poslední úpravou hran."
+  },
+  {
+   "name": "Akustika / strana",
+   "kind": "REFERENCE / 411b9e5",
+   "image": "assets/lyra-progress/polish-acoustic.png",
+   "note": "Starý render; nová mřížka je skutečně průchozí."
+  },
+  {
+   "name": "CLEAN / geometrická evidence",
+   "kind": "WIP / ff8c192",
+   "image": "assets/lyra-progress/clean-geometry-evidence.png",
+   "note": "Výpočetní mapa úprav povrchů, nikoli aktuální SKELETON."
+  },
+  {
+   "name": "P1 / P2 · koruna a optika",
+   "kind": "SNAPSHOT PENDING",
+   "image": null,
+   "note": "Čeká se na reálný nový render dílu."
+  },
+  {
+   "name": "PF · bílá čelní část",
+   "kind": "SNAPSHOT PENDING",
+   "image": null,
+   "note": "Nový merged FRONT z výrobní geometrie."
+  },
+  {
+   "name": "P3R / P4R · bočnice",
+   "kind": "SNAPSHOT PENDING",
+   "image": null,
+   "note": "Reálné výrobní bočnice a vnitřní úchyty."
+  },
+  {
+   "name": "P5 / P7 · zátylek / hledí",
+   "kind": "SNAPSHOT PENDING",
+   "image": null,
+   "note": "Zatím bez ověřeného nového snapshotu."
+  },
+  {
+   "name": "GL · akustická vložka",
+   "kind": "SOURCE-REAL / 8e5f800",
+   "image": "assets/lyra-progress/2026-10-28_0630_gl-acoustic-insert_8e5f800.png",
+   "note": "Reálný export STL (sha 68238b3e9aac355b), tisková smlouva 21/21 a PrusaSlicer PASS bez podpor."
+  }
+ ],
+ "history": [
+  {
+   "at": "2026-10-28T16:35:00+01:00",
+   "title": "TOLERANCE HLEDÍ / B-FLAT",
+   "detail": "Nejhorší případ tolerancí: spodní rohy displeje by mohly být zakryty. Řešení T1 (lokátor k FRONT) + návrh B-flat (spodní hrana −0,25 mm, hladké rohy) předložen ke schválení; nic nezmrazeno, 0/9 PRINT RELEASE."
+  },
+  {
+   "at": "2026-10-28T16:05:00+01:00",
+   "title": "STUDIO NÁHLED ae09d68",
+   "detail": "Mechanical Studio: LYRA POLISH-CLEAN na domovské obrazovce, díly z kanonického registru; desktop smoke PASS; rychlejší přepínání pohledů."
+  },
+  {
+   "at": "2026-10-28T11:09:10.583Z",
+   "title": "AKTUÁLNÍ SKELETON / FOTO 430a292",
+   "detail": "Zveřejněno 5 skutečných renderů sestavy a rohů P7 (porovnání PŘED/PO). Navazují na schválení 11:26; výrobní progres se nemění."
+  },
+  {
+   "at": "2026-10-28T11:26:04+01:00",
+   "title": "SKELETON SCHVÁLEN",
+   "detail": "SKELETON LYRA POLISH-CLEAN schválen (430a292)."
+  },
+  {
+   "at": "2026-10-28T09:23:27+01:00",
+   "title": "SKELETON PŘEDLOŽEN",
+   "detail": "SKELETON POLISH-CLEAN se skutečnými stěnami C8 předložen ke schválení."
+  },
+  {
+   "at": "2026-10-28T07:35:07+01:00",
+   "title": "C8 VÝROBNÍ STĚNY",
+   "detail": "C8 stěny: 6/7 panelů PASS na čistém dělení; P4R čeká na opravu U1."
+  },
+  {
+   "at": "2026-10-28T07:05:54+01:00",
+   "title": "POLISH-CLEAN A DĚLENÍ PANELŮ",
+   "detail": "Čistý povrch POLISH-CLEAN a finální dělení panelů ověřeny (0 samoprotnutí, 22/22 vůle)."
+  },
+  {
+   "at": "2026-10-28T06:36:55+01:00",
+   "title": "GL/GR AKUSTICKÉ VLOŽKY",
+   "detail": "GL/GR akustické vložky: tisková smlouva 21/21, validator OK, PrusaSlicer bez podpor (4 h 10 min, 20 g)."
+  },
+  {
+   "at": "2026-10-28T06:09:12+01:00",
+   "title": "RANNÍ INTEGRACE",
+   "detail": "Nová větev integration/lyra-polish-0700 @ 3131c21: oprava zobrazení spojeného PF ve Studiu; bez PRINT RELEASE."
+  },
+  {
+   "at": "2026-10-28T05:52:00+01:00",
+   "title": "NOČNÍ HANDOFF",
+   "detail": "Oprava C8 funguje na části starších panelů, mřížky mají průchozí perforaci; CLEAN poslední změny ještě neověřené."
+  }
+ ],
+ "pulse": {
+  "lastCheckedAt": "2026-10-28T11:34:20Z",
+  "publicPreview": "mechanical-studio-preview-integration-lyra-polish-0700.html",
+  "lastPublicPreviewCommit": "c3933e34310d956836d7da6532ccd0d0aacd4486",
+  "lastPublicPreviewAt": "2026-10-28T10:11:39Z"
+ }
 }
