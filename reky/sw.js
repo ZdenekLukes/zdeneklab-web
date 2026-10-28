@@ -1,10 +1,10 @@
 'use strict';
-const CACHE='reky-offline-v5';
+const CACHE='reky-offline-v6';
 const BASE=new URL('./',self.location.href);
 const SHELL=BASE.href;
 const ASSETS=['manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png'].map(p=>new URL(p,BASE).href);
 async function isAppShell(response){
- return response&&response.ok&&(response.headers.get('content-type')||'').includes('text/html')&&(await response.clone().text()).includes('data-app-version="reky-v5"');
+ return response&&response.ok&&(response.headers.get('content-type')||'').includes('text/html')&&(await response.clone().text()).includes('data-app-version="reky-v6"');
 }
 self.addEventListener('install',event=>{
  event.waitUntil((async()=>{
