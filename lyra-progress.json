@@ -1,13 +1,13 @@
 {
   "schema": 1,
-  "updatedAt": "2026-10-28T07:35:07+01:00",
+  "updatedAt": "2026-10-28T09:23:27+01:00",
   "sprint": {
     "startsAt": "2026-10-28T06:00:00+01:00",
     "endsAt": "2026-10-28T18:00:00+01:00"
   },
   "source": {
     "branch": "integration/lyra-polish-0700",
-    "sha": "9ab353899b98719a28e40f88666bb4d1b68f8acc",
+    "sha": "23a36377331facc934ea5552e72172be04002713",
     "private": true
   },
   "release": {
@@ -15,7 +15,7 @@
     "total": 9,
     "phase": "SKELETON",
     "review": "WAIT",
-    "verdict": "Žádný nový panel LYRA POLISH zatím není PRINT RELEASE (SKELETON zatím neschválen). C8 výrobní stěny se nyní přepočítávají na finálním čistém dělení panelů."
+    "verdict": "SKELETON předložen ke schválení. Žádný nový panel LYRA POLISH není PRINT RELEASE před schválením SKELETON, Printing Contract a sliceru."
   },
   "tasks": [
     {
@@ -26,21 +26,21 @@
     },
     {
       "name": "Dělení panelů / spáry",
-      "done": 3,
+      "done": 4,
       "total": 4,
-      "note": "Finální čisté dělení vč. sloučeného PF, 0 samoprotnutí ve všech panelech; oprava rohu U1 probíhá."
+      "note": "Finální čisté dělení vč. sloučeného PF, 0 samoprotnutí ve všech panelech; oprava rohu U1 dokončena."
     },
     {
       "name": "C8 / výrobní stěny",
-      "done": 3,
+      "done": 4,
       "total": 4,
-      "note": "Na finálním čistém dělení prochází 6 ze 7 panelů (P1, P2, P5, P7, jednodílná PF, P3R) všemi kontrolami C8; P4R čeká na úpravu spodního otvoru U1; 9 sousedních spár OK (0,365–0,399 mm). Zatím neintegrováno."
+      "note": "Všech 7 panelů POLISH-CLEAN prochází C8, 12 sousedních spár OK (0,365–0,399 mm); integrováno."
     },
     {
       "name": "Úchyty / kamera / servis",
-      "done": 2,
+      "done": 3,
       "total": 4,
-      "note": "Beze změny; integrace a servisní kontrola zbývají."
+      "note": "Stanice ověřeny na čistých panelech (40 polovin), demontáže OK; zbývá vnitřní odlehčení u rohů desky Cage."
     },
     {
       "name": "Akustické mřížky GL / GR",
@@ -124,6 +124,11 @@
     }
   ],
   "history": [
+    {
+      "at": "2026-10-28T09:23:27+01:00",
+      "title": "SKELETON PŘEDLOŽEN",
+      "detail": "SKELETON POLISH-CLEAN se skutečnými stěnami C8 předložen ke schválení."
+    },
     {
       "at": "2026-10-28T07:35:07+01:00",
       "title": "C8 VÝROBNÍ STĚNY",
