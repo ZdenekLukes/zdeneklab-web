@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#182d40">
+<meta name="description" content="50 otázek ze sešitu: Země, Slunce a Měsíc. Procvičování, test a ústní zkoušení pro 9. třídu.">
+<title>Země, Slunce a Měsíc · ZdenekLab</title>
+<style>:root{--bg:#f7f6f2;--paper:#fff;--ink:#182d40;--muted:#596774;--line:#dcdfdf;--accent:#7461be;--pale:#efebf8;--green:#17634f;--red:#a53d38}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,select{font:inherit}button,a,input,select,summary{-webkit-tap-highlight-color:transparent}button{cursor:pointer}button:disabled{cursor:default;opacity:.5}a{color:inherit;text-underline-offset:4px}button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:4px}[hidden]{display:none!important}h1,h2,p{margin-top:0}h1{font-size:clamp(42px,5.8vw,70px);line-height:1.08;letter-spacing:-3px;font-weight:650;margin-bottom:24px}h1 em{font-family:Georgia,serif;font-weight:400;color:var(--accent)}h2{font-size:25px;line-height:1.35;letter-spacing:-.7px;font-weight:600;margin-bottom:12px}.topbar{max-width:1180px;padding:27px 32px;margin:auto;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}.brand{display:flex;gap:4px;align-items:center;font-size:16px;letter-spacing:1.4px;font-weight:750;text-decoration:none}.brand>span:first-child{font-weight:400}.brand-divider{margin:0 14px;color:#acb0b4}.brand .brand-small{font-size:11px;font-weight:600;letter-spacing:1.7px}.back-link{font-size:12px;color:var(--muted);text-decoration:none}main{max-width:1120px;margin:auto;padding:0 32px}.hero{display:grid;grid-template-columns:1.3fr 1fr;align-items:center;min-height:410px;gap:30px;padding:50px 0}.eyebrow{font-size:10px;letter-spacing:2px;font-weight:750;margin-bottom:16px}.tiny-star{color:var(--accent);font-size:15px;margin-right:7px}.lead{font-size:15px;line-height:1.8;color:var(--muted);max-width:510px;margin-bottom:22px}.pills{display:flex;flex-wrap:wrap;gap:8px}.pills span{font-size:10px;letter-spacing:.3px;border:1px solid var(--line);border-radius:30px;padding:4px 10px}.orbit-art{position:relative;width:100%;max-width:410px;aspect-ratio:1.25;justify-self:end}.orbit{position:absolute;border:1px solid #d8dbe2;border-radius:50%;inset:8% 7%;transform:rotate(-25deg)}.orbit-inner{inset:23% 23%;border-style:dashed}.sun{position:absolute;width:110px;aspect-ratio:1;top:33%;left:38%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe2a3,#edc477 70%);box-shadow:0 0 0 13px #f3dfb94d,0 0 0 26px #f3dfb926}.earth{position:absolute;width:57px;aspect-ratio:1;top:9%;left:21%;border-radius:50%;background:radial-gradient(ellipse at 33% 30%,#c1ddd0 0 17%,transparent 18%),radial-gradient(ellipse at 60% 60%,#76a89b 0 23%,transparent 24%),linear-gradient(105deg,#94c0cc 0,#4c8298 55%,#24465e 100%);box-shadow:8px 8px 20px #213e5814}.moon{position:absolute;width:30px;aspect-ratio:1;top:73%;left:79%;border-radius:50%;background:linear-gradient(100deg,#ded9eb 40%,#85819c 65%);box-shadow:0 0 0 9px #e6e1f140}.art-star{position:absolute;color:#9c96b3}.star-a{top:16%;left:80%}.star-b{top:70%;left:17%;font-size:14px}.art-label{position:absolute;letter-spacing:2px;font-size:8px;color:#727d88}.sun-label{left:46%;top:72%}.earth-label{top:3%;left:23%}.moon-label{top:88%;left:76%}.art-caption{position:absolute;bottom:-10px;left:15%;font-size:8px;letter-spacing:1.4px;color:#889099}.section-heading{display:flex;justify-content:space-between;align-items:end;margin:12px 0 22px}.section-heading .eyebrow{margin-bottom:8px;color:var(--muted)}.section-heading h2{margin-bottom:0}.quiet{font-size:12px;color:var(--muted)}.mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.mode-card{display:flex;flex-direction:column;text-align:left;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:24px;transition:border-color .15s,background .15s;min-height:236px}.mode-card:hover{border-color:var(--accent)}.mode-card.selected{border:2px solid var(--accent);padding:23px;background:#f3f0fa}.mode-top{display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:20px}.mode-icon{font-size:23px;color:var(--accent);line-height:1}.mode-check{border:1px solid var(--line);border-radius:50%;height:19px;width:19px;line-height:17px;text-align:center;color:transparent;font-size:12px}.selected .mode-check{background:var(--accent);color:white;border-color:var(--accent)}.mode-card strong{font-size:19px;font-weight:650;margin-bottom:7px}.mode-card>span:not(.mode-top){font-size:12px;color:var(--muted);line-height:1.75}.mode-card small{font-size:8px;letter-spacing:1.3px;margin-top:22px;font-weight:750;color:#697681}.setup{display:grid;grid-template-columns:1.2fr 1fr 1.2fr;gap:18px;align-items:end;background:#edeef0;border-radius:14px;margin-top:20px;padding:23px 24px}.field label,.catalog-body>label{display:block;font-size:11px;font-weight:650;margin-bottom:6px}.field select{width:100%;padding:12px;border:1px solid #d8dcdf;background:#fff;border-radius:7px;color:var(--ink);font-size:12px;min-height:47px}.primary,.secondary{border-radius:8px;padding:12px 20px;min-height:46px;font-size:13px;font-weight:650;line-height:1.5}.primary{background:var(--ink);color:#fff;border:1px solid var(--ink)}.primary:hover{background:#2e455b}.secondary{background:var(--paper);color:var(--ink);border:1px solid #ccd3d8}.secondary:hover{background:#f0eef7}.start{display:flex;justify-content:space-between;align-items:center}.start span{font-size:18px}.setup-note{grid-column:1/-1;font-size:11px;color:var(--muted);margin:0}.progress-section{display:flex;align-items:center;justify-content:space-between;gap:25px;padding:35px 0;border-bottom:1px solid var(--line)}.progress-section h2{font-size:18px}.progress-section p{margin-bottom:5px}.progress-section .eyebrow{font-size:8px;color:var(--muted);margin-bottom:8px}.stats{display:flex;gap:28px}.stats div{display:flex;flex-direction:column}.stats strong{font-size:25px;font-weight:550;letter-spacing:-1px}.stats span{font-size:9px;color:var(--muted)}.progress-section>.secondary{font-size:11px;white-space:nowrap}.catalog{margin-top:22px;border-bottom:1px solid var(--line);padding-bottom:18px}summary{cursor:pointer;font-weight:600;font-size:13px;padding:8px 0}.catalog>summary{display:flex;justify-content:space-between}.catalog>summary span{color:var(--accent);font-size:18px}.catalog-body{padding:16px 0}.catalog input{width:100%;border:1px solid var(--line);border-radius:8px;padding:12px;background:white;margin-bottom:20px;font-size:14px}.catalog-item{padding:12px 0;border-bottom:1px solid var(--line)}.catalog-item summary{font-size:14px}.catalog-item p{font-size:13px;margin:12px 0 0}.catalog-item .answer{color:var(--green);font-weight:650}.notes{margin-top:15px;max-width:860px}.notes summary{font-size:11px;color:var(--muted);font-weight:500}.notes p{font-size:12px;color:var(--muted);margin:10px 0}.text-button{background:none;border:0;padding:10px 0;font-size:12px;color:var(--muted);text-decoration:underline;text-underline-offset:4px;min-height:44px}.reset{font-size:10px;margin-top:15px}footer{max-width:1120px;padding:24px 32px 32px;margin:15px auto 0;display:flex;justify-content:space-between;font-size:9px;letter-spacing:1px;color:#6d7881;border-top:1px solid var(--line)}.quiz-screen{max-width:800px;min-height:75vh;margin:40px auto}.quiz-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}.badge{padding:5px 12px;border-radius:25px;background:var(--pale);color:#55478c;font-size:11px}.quiz-progress-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:7px}progress{width:100%;height:6px;border:0;border-radius:5px;display:block;overflow:hidden;background:#dfe1e5;accent-color:var(--accent)}progress::-webkit-progress-bar{background:#dfe1e5}progress::-webkit-progress-value{background:var(--accent)}.question-card{margin-top:26px;background:var(--paper);border:1px solid var(--line);padding:34px;border-radius:18px}.question-meta{display:flex;justify-content:space-between;gap:10px;font-size:10px;letter-spacing:.6px;color:var(--muted);margin-bottom:20px}.question-card h2{font-size:27px;line-height:1.4;margin-bottom:16px;outline:none}.options{display:grid;gap:10px;margin:22px 0}.option{display:flex;align-items:center;gap:14px;text-align:left;width:100%;border:1px solid #d9dee2;border-radius:9px;color:var(--ink);background:#fbfbfa;padding:14px 16px;min-height:58px;font-size:15px}.option:not(:disabled):hover{border-color:var(--accent);background:#f5f2fa}.option-letter{display:grid;place-items:center;flex:0 0 28px;width:28px;height:28px;border:1px solid #d5d9df;border-radius:6px;font-size:11px;font-weight:700;color:var(--muted)}.option:disabled{opacity:1}.option.correct{background:#edf7f1;border-color:#5c9b7c}.option.wrong{background:#fdf0ef;border-color:#c7857f}.option.chosen{border-color:var(--accent);background:var(--pale)}.option .state-label{font-size:11px;font-weight:650;display:block;margin-top:4px}.feedback{padding:20px;border-radius:10px;background:#f0f3f5;margin:20px 0}.feedback.good{background:#edf7f1}.feedback.bad{background:#fcf1ee}.feedback strong{display:block;margin-bottom:8px;font-size:15px}.feedback p{font-size:14px;margin-bottom:0}.feedback .explanation{font-size:13px;margin-top:12px;color:#485968}.button-row{display:flex;gap:10px;flex-wrap:wrap}.question-bottom{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:20px}.quiz-foot{font-size:11px;text-align:center;color:var(--muted);margin-top:20px}.results-screen{max-width:850px;padding:50px 0}.result-top{display:flex;align-items:center;justify-content:space-between;gap:30px;margin-bottom:30px}.result-top h1{font-size:44px;letter-spacing:-2px}.score-circle{flex-shrink:0;border:9px solid #ded7ee;background:#f0ebf8;width:170px;height:170px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center}.score-circle strong{font-size:36px;letter-spacing:-2px}.score-circle span{font-size:12px;color:var(--muted)}.result-actions{margin-bottom:45px}.review-item{border:1px solid var(--line);background:white;border-radius:10px;padding:16px 20px;margin:10px 0}.review-item summary{display:flex;gap:12px;align-items:flex-start;font-size:14px}.review-status{color:var(--green);white-space:nowrap}.review-item.missed .review-status{color:var(--red)}.review-item p{font-size:13px;margin:10px 0}.review-item .review-answer{color:var(--green);font-weight:650}.resume-box{margin-top:18px;border:1px solid #c9bfde;background:#f2edf9;padding:18px 23px;border-radius:10px;display:flex;justify-content:space-between;gap:15px;align-items:center;font-size:13px}.resume-box p{margin:5px 0 0;font-size:12px;color:var(--muted)}dialog{border:1px solid var(--line);border-radius:16px;padding:28px;color:var(--ink);max-width:440px;width:calc(100% - 36px)}dialog::backdrop{background:#13243580}dialog p{font-size:14px}#storage-warning{font-size:12px;background:#fff0d2;padding:15px;border-radius:8px}
+@media(max-width:950px){.progress-section{flex-wrap:wrap}.progress-section>div:first-child{width:100%}.hero{grid-template-columns:1.2fr 1fr}.orbit-art{transform:scale(.9)}.mode-card{padding:20px}.mode-card.selected{padding:19px}.setup{grid-template-columns:1fr 1fr}.start{grid-column:1/-1}.section-heading>.quiet{display:none}}
+@media(max-width:600px){.topbar{padding:20px}.brand{font-size:13px}.brand-divider{margin:0 8px}.brand .brand-small{font-size:9px}.back-link{font-size:10px}main{padding:0 20px}.hero{grid-template-columns:1fr;gap:0;padding:32px 0 26px;min-height:0;position:relative}.hero-copy{position:relative;z-index:1}.hero h1{font-size:46px;letter-spacing:-2px}.hero .lead{max-width:335px;font-size:13px;line-height:1.8;margin-bottom:17px}.orbit-art{position:absolute;top:15px;right:-10px;width:150px;opacity:.35;z-index:0;pointer-events:none}.sun{width:47px}.earth{width:24px}.moon{width:13px}.art-label,.art-caption{display:none}.pills span{font-size:9px}.eyebrow{font-size:9px}.section-heading{margin:12px 0 16px}.section-heading h2{font-size:21px}.mode-grid{grid-template-columns:1fr;gap:10px}.mode-card{position:relative;min-height:0;padding:16px 20px 16px 64px}.mode-card.selected{padding:15px 19px 15px 63px}.mode-top{position:absolute;width:calc(100% - 32px);left:16px;top:18px;margin:0}.mode-card strong{font-size:17px;margin:0 22px 5px 0}.mode-card>span:not(.mode-top){font-size:11px;line-height:1.6}.mode-card>span:not(.mode-top) br{display:none}.mode-card small{font-size:7px;margin-top:10px;letter-spacing:.8px}.mode-icon{font-size:23px}.setup{margin-top:15px;padding:17px;gap:12px;grid-template-columns:1fr}.start{grid-column:auto}.setup-note{font-size:10px}.field select{font-size:13px}.field label{font-size:10px}.progress-section{gap:20px;padding:26px 0}.stats{justify-content:space-between;gap:20px;width:100%}.stats strong{font-size:25px}.stats span{font-size:8px}.progress-section>.secondary{width:100%}.progress-section h2{font-size:18px}.desktop{display:none}.catalog>summary{font-size:12px}.quiz-screen{margin:22px auto}.quiz-toolbar{margin-bottom:20px}.question-card{padding:22px 18px;margin-top:20px;border-radius:12px}.question-card h2{font-size:22px}.question-meta{font-size:9px}.option{font-size:14px;padding:12px;gap:10px}.question-bottom{align-items:end}.question-bottom .quiet{font-size:10px}.feedback{padding:16px}.feedback p{font-size:13px}.button-row .primary,.button-row .secondary{font-size:12px;padding:11px 14px}.result-top{flex-direction:column;align-items:flex-start;gap:10px}.result-top h1{font-size:37px}.score-circle{width:140px;height:140px}.result-actions>button{flex:1 1 auto}.results-screen{padding-top:30px}.results-screen h2{font-size:20px}.review-item{padding:12px}.review-item summary{font-size:13px}.resume-box{flex-direction:column;align-items:flex-start}footer{padding:22px 20px;font-size:8px;gap:20px}footer span:last-child{text-align:right}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/">ZDENEK<span>LAB</span><span class="brand-divider">/</span><span class="brand-small">ŠKOLA</span></a><a class="back-link" href="/reky/">Řeky naslepo ↗</a></header>
+<main id="app">
+<section id="home">
+<div class="hero">
+ <div class="hero-copy"><p class="eyebrow"><span class="tiny-star">✦</span> ZEMĚPIS · 9. TŘÍDA</p><h1>Země, Slunce<br>a <em>Měsíc.</em></h1><p class="lead">Od novu k úplňku. Od rovnodennosti ke slunovratu.<br class="desktop"> Ověř si, jak dobře znáš náš kousek vesmíru.</p><div class="pills"><span>50 otázek ze sešitu</span><span>Bez přihlášení</span></div></div>
+ <div class="orbit-art" aria-hidden="true"><div class="orbit orbit-outer"></div><div class="orbit orbit-inner"></div><span class="art-star star-a">+</span><span class="art-star star-b">✦</span><div class="sun"></div><div class="earth"></div><div class="moon"></div><span class="art-label sun-label">SLUNCE</span><span class="art-label earth-label">ZEMĚ</span><span class="art-label moon-label">MĚSÍC</span><span class="art-caption">TŘI TĚLESA. SPOUSTA SOUVISLOSTÍ.</span></div>
+</div>
+<div class="section-heading"><div><p class="eyebrow">01 / VYBER SI ZPŮSOB</p><h2>Jak si to dnes vyzkoušíš?</h2></div><span class="quiet desktop">Každá správná odpověď má své proč.</span></div>
+<div class="mode-grid" role="group" aria-label="Způsob zkoušení">
+ <button class="mode-card selected" data-mode="practice" aria-pressed="true"><span class="mode-top"><span class="mode-icon">✦</span><span class="mode-check">✓</span></span><strong>Procvičování</strong><span>Vyber odpověď a hned zjisti proč. <br>Ideální na první opakování.</span><small>ODPOVĚĎ HNED PO OTÁZCE</small></button>
+ <button class="mode-card" data-mode="test" aria-pressed="false"><span class="mode-top"><span class="mode-icon">▤</span><span class="mode-check">✓</span></span><strong>Test nanečisto</strong><span>Odpovídej bez nápovědy. <br>Výsledek se dozvíš až na konci.</span><small>VÝSLEDEK NA KONCI</small></button>
+ <button class="mode-card" data-mode="oral" aria-pressed="false"><span class="mode-top"><span class="mode-icon">◌</span><span class="mode-check">✓</span></span><strong>Ústní zkoušení</strong><span>Odpověz vlastními slovy. <br>Rodič nebo ty pak ohodnotíte odpověď.</span><small>NEJDŘÍV ODPOVĚĎ NAHLAS</small></button>
+</div>
+<section class="setup" aria-label="Nastavení kola"><div class="field"><label for="topic">Téma</label><select id="topic"><option value="all">Všechna témata</option></select></div><div class="field"><label for="count">Počet otázek</label><select id="count"><option value="10">10 otázek · krátké kolo</option><option value="20">20 otázek</option><option value="50">Všechny z vybraného tématu</option></select></div><button class="primary start" id="start">Začít procvičování <span>→</span></button><p class="setup-note" id="selection-note"></p></section>
+<div id="resume-box" class="resume-box" hidden><div><strong>Máš rozehrané kolo.</strong><p id="resume-label"></p></div><div class="button-row"><button class="secondary" id="resume">Pokračovat</button><button class="text-button" id="discard">Zahodit kolo</button></div></div>
+<section class="progress-section"><div><p class="eyebrow">TVŮJ POKROK</p><h2>Malé kroky, velký přehled.</h2><p class="quiet">Ukládá se jen v tomto prohlížeči.</p></div><div class="stats"><div><strong id="seen-count">0/50</strong><span>vyzkoušených otázek</span></div><div><strong id="wrong-count">0</strong><span>otázek k zopakování</span></div><div><strong id="round-count">0</strong><span>dokončených kol</span></div></div><button class="secondary" id="review-errors">Procvičit chyby →</button></section>
+<details class="catalog"><summary>Projít všech 50 otázek a odpovědí <span>+</span></summary><div class="catalog-body"><label for="search">Najít otázku</label><input id="search" type="search" placeholder="Například: slunovrat, 27,3, zatmění…"><div id="catalog-list"></div></div></details>
+<details class="notes"><summary>O materiálech a zpřesněních</summary><p>Všech 50 otázek vychází z pěti dodaných fotografií sešitu. Čísla otázek odpovídají originálu. Formulace jsou místy zpřesněné, vysvětlení a nesprávné možnosti jsou doplněné pro procvičování.</p><p>U otázky 26 používáme zjednodušený školní model polárního dne. Otázka 46 uvádí rovníkový průměr Země. Otázka 49 výslovně rozlišuje pozorování z jednoho místa a celosvětové počty zatmění. Kalendářní data jsou přibližná.</p><p>Ověření: <a href="https://science.nasa.gov/moon/facts/" target="_blank" rel="noopener">NASA: Měsíc</a> · <a href="https://science.nasa.gov/moon/moon-phases/" target="_blank" rel="noopener">Fáze Měsíce</a> · <a href="https://eclipse.gsfc.nasa.gov/SEcat5/SEcatalog.html" target="_blank" rel="noopener">Sluneční zatmění</a> · <a href="https://eclipse.gsfc.nasa.gov/LEcat5/LEcatalog.html" target="_blank" rel="noopener">Měsíční zatmění</a> · <a href="https://www.weather.gov/lmk/seasons" target="_blank" rel="noopener">Roční období</a></p></details>
+<button class="text-button reset" id="reset">Smazat uložený pokrok</button>
+</section>
+<section id="quiz" class="quiz-screen" hidden>
+ <div class="quiz-toolbar"><button class="text-button" id="pause">← Přerušit a uložit</button><span id="mode-label" class="badge"></span></div>
+ <div class="quiz-progress-label"><span id="question-position"></span><span id="score-live"></span></div><progress id="progress" value="0" max="10" aria-label="Průběh kola"></progress>
+ <article class="question-card"><div class="question-meta"><span id="question-topic"></span><span id="source-number"></span></div><h2 id="question-text" tabindex="-1"></h2><p id="question-hint" class="quiet"></p><div id="options" class="options"></div><div id="oral-controls"><button class="primary" id="reveal">Ukázat vzorovou odpověď</button></div><div id="feedback" class="feedback" role="status" hidden></div><div id="oral-rating" class="button-row" hidden><button class="secondary" data-rate="0">Ještě neumím · 0</button><button class="secondary" data-rate="0.5">Částečně · ½</button><button class="primary" data-rate="1">Umím · 1</button></div><div class="question-bottom"><span id="action-hint" class="quiet"></span><button id="next" class="primary" hidden>Další otázka →</button></div></article>
+ <p class="quiz-foot">Nejde jen o správné písmeno. Zkus si odpověď také vysvětlit.</p>
+</section>
+<section id="results" class="results-screen" hidden><p class="eyebrow">KOLO DOKONČENO</p><div class="result-top"><div><h1 id="result-title" tabindex="-1">Hotovo.</h1><p id="result-subtitle" class="lead"></p><p id="result-kind" class="quiet"></p></div><div class="score-circle"><strong id="result-percent"></strong><span id="result-score"></span></div></div><div class="button-row result-actions"><button class="primary" id="retry">Zopakovat chyby</button><button class="secondary" id="again">Nové kolo</button><button class="text-button" id="home-button">Zpět na přehled</button></div><h2>Co už víš a co si připomenout</h2><div id="result-review"></div></section>
+<p id="storage-warning" role="status" hidden>Prohlížeč nepovolil ukládání. Zkoušení funguje, ale pokrok se po zavření nemusí zachovat.</p>
+</main><footer><span>ZDENEKLAB / ŠKOLA</span><span>Země, Slunce a Měsíc · 50 otázek</span></footer>
+<dialog id="confirm-dialog"><h2 id="confirm-title">Opravdu pokračovat?</h2><p id="confirm-text"></p><div class="button-row"><button class="secondary" id="confirm-cancel">Zrušit</button><button class="primary" id="confirm-ok">Potvrdit</button></div></dialog>
+<noscript>Pro zkoušení je potřeba zapnout JavaScript v prohlížeči.</noscript>
+<script>const DATA = [
+  {
+    "id": 1,
+    "topic": "mesic",
+    "question": "Která fáze Měsíce nastává, když je Měsíc přibližně mezi Zemí a Sluncem?",
+    "answer": "Nov",
+    "wrong": [
+      "Úplněk",
+      "První čtvrť",
+      "Poslední čtvrť"
+    ],
+    "explanation": "Osvětlená polovina Měsíce míří převážně od Země. Samotný nov ještě neznamená zatmění Slunce.",
+    "source": "01-otazky-01-12.jpg"
+  },
+  {
+    "id": 2,
+    "topic": "mesic",
+    "question": "Jaké je pořadí těles při úplňku, začneme-li Sluncem?",
+    "answer": "Slunce – Země – Měsíc",
+    "wrong": [
+      "Slunce – Měsíc – Země",
+      "Země – Slunce – Měsíc",
+      "Měsíc – Slunce – Země"
+    ],
+    "explanation": "Měsíc je na opačné straně oblohy než Slunce. Tělesa obvykle neleží přesně na jedné přímce.",
+    "source": "01-otazky-01-12.jpg"
+  },
+  {
+    "id": 3,
+    "topic": "zatmeni",
+    "question": "Kdy může nastat zatmění Slunce?",
+    "answer": "Při novu, když Měsíc zakryje Slunce",
+    "wrong": [
+      "Při každém novu",
+      "Při úplňku, když Země zastíní Měsíc",
+      "Při první čtvrti Měsíce"
+    ],
+    "explanation": "Měsíc musí být mezi Zemí a Sluncem a zároveň blízko uzlu své dráhy, aby jeho stín zasáhl Zemi.",
+    "source": "01-otazky-01-12.jpg"
+  },
+  {
+    "id": 4,
+    "topic": "zatmeni",
+    "question": "Co způsobuje zatmění Měsíce?",
+    "answer": "Měsíc vstoupí do zemského stínu",
+    "wrong": [
+      "Měsíc zakryje Slunce",
+      "Slunce vstoupí mezi Zemi a Měsíc",
+      "Země vstoupí do měsíčního stínu"
+    ],
+    "explanation": "Země se nachází mezi Sluncem a Měsícem. Zatmění Měsíce může nastat při úplňku.",
+    "source": "01-otazky-01-12.jpg"
+  },
+  {
+    "id": 5,
+    "topic": "mesic",
+    "question": "Jak dlouho trvá oběh Měsíce kolem Země vzhledem ke hvězdám?",
+    "answer": "Přibližně 27,3 dne",
+    "wrong": [
+      "Přibližně 29,5 dne",
+      "Přibližně 24 hodin",
+      "Přibližně 365,25 dne"
+    ],
+    "explanation": "To je hvězdný (siderický) měsíc. Nezaměňuj ho s dobou mezi dvěma novy.",
+    "source": "01-otazky-01-12.jpg"
+  },
+  {
+    "id": 6,
+    "topic": "mesic",
+    "question": "Proč je synodický měsíc delší než hvězdný?",
+    "answer": "Země se mezitím posune na dráze kolem Slunce",
+    "wrong": [
+      "Měsíc se při novu zastaví",
+      "Měsíc při úplňku výrazně zpomalí",
+      "Země se přestane otáčet kolem osy"
+    ],
+    "explanation": "Ke stejné fázi musí Měsíc oběhnout ještě o kousek dál. Synodický měsíc trvá asi 29,5 dne, hvězdný asi 27,3 dne.",
+    "source": "01-otazky-01-12.jpg"
+  },
+  {
+    "id": 7,
+    "topic": "zeme",
+    "question": "Za jak dlouho oběhne Země Slunce?",
+    "answer": "Přibližně 365,25 dne, tedy jeden rok",
+    "wrong": [
+      "Přibližně 24 hodin",
+      "Přibližně 29,5 dne",
+      "Přibližně 27,3 dne"
+    ],
+    "explanation": "Školní zaokrouhlení je 365 a čtvrt dne. Otočení Země kolem osy je jiný pohyb než oběh kolem Slunce.",
+    "source": "01-otazky-01-12.jpg"
+  },
+  {
+    "id": 8,
+    "topic": "vzdalenosti",
+    "question": "Jaká je přibližná střední vzdálenost Země od Slunce?",
+    "answer": "150 milionů km",
+    "wrong": [
+      "384 400 km",
+      "1,5 milionu km",
+      "150 miliard km"
+    ],
+    "explanation": "Tato vzdálenost odpovídá přibližně jedné astronomické jednotce (AU).",
+    "source": "01-otazky-01-12.jpg"
+  },
+  {
+    "id": 9,
+    "topic": "vzdalenosti",
+    "question": "Jaká je přibližná střední vzdálenost Země od Měsíce?",
+    "answer": "384 400 km",
+    "wrong": [
+      "150 milionů km",
+      "40 000 km",
+      "3 844 km"
+    ],
+    "explanation": "Hrubé školní zaokrouhlení je 400 000 km. Vzdálenost se během oběhu mění.",
+    "source": "01-otazky-01-12.jpg"
+  },
+  {
+    "id": 10,
+    "topic": "obdobi",
+    "question": "Co je hlavní příčinou střídání ročních období?",
+    "answer": "Sklon zemské osy a oběh Země kolem Slunce",
+    "wrong": [
+      "Proměnlivá vzdálenost Země od Slunce",
+      "Fáze Měsíce",
+      "Otáčení Slunce kolem osy"
+    ],
+    "explanation": "Sklon osy mění výšku Slunce i délku dne. V lednu je Země Slunci nejblíž, přesto je na severní polokouli zima.",
+    "source": "01-otazky-01-12.jpg"
+  },
+  {
+    "id": 11,
+    "topic": "zeme",
+    "question": "Kdy je Země nejblíže Slunci (v perihéliu)?",
+    "answer": "Na začátku ledna, přibližně 3. ledna",
+    "wrong": [
+      "Na začátku července",
+      "Při jarní rovnodennosti",
+      "Vždy přesně 21. prosince"
+    ],
+    "explanation": "Datum se podle roku mírně mění. Blízkost Slunce není hlavní příčinou ročních období.",
+    "source": "01-otazky-01-12.jpg"
+  },
+  {
+    "id": 12,
+    "topic": "zeme",
+    "question": "Kdy je Země nejdále od Slunce (v aféliu)?",
+    "answer": "Na začátku července, přibližně 4. července",
+    "wrong": [
+      "Na začátku ledna",
+      "Při podzimní rovnodennosti",
+      "Vždy přesně 21. června"
+    ],
+    "explanation": "Datum se podle roku mírně mění. Na severní polokouli je tou dobou léto.",
+    "source": "01-otazky-01-12.jpg"
+  },
+  {
+    "id": 13,
+    "topic": "obdobi",
+    "question": "Nad kterou rovnoběžkou je Slunce v zenitu při prosincovém slunovratu?",
+    "answer": "Nad obratníkem Kozoroha, asi 23,5° jižní šířky",
+    "wrong": [
+      "Nad obratníkem Raka, asi 23,5° severní šířky",
+      "Nad rovníkem",
+      "Nad severním polárním kruhem"
+    ],
+    "explanation": "Jde o zimní slunovrat na severní polokouli a letní na jižní.",
+    "source": "02-otazky-13-23.jpg"
+  },
+  {
+    "id": 14,
+    "topic": "obdobi",
+    "question": "Nad kterou rovnoběžkou je Slunce v zenitu při rovnodennosti?",
+    "answer": "Nad rovníkem, 0° zeměpisné šířky",
+    "wrong": [
+      "Nad obratníkem Raka",
+      "Nad obratníkem Kozoroha",
+      "Nad severním pólem"
+    ],
+    "explanation": "Při březnové i zářijové rovnodennosti má Slunce nulovou deklinaci.",
+    "source": "02-otazky-13-23.jpg"
+  },
+  {
+    "id": 15,
+    "topic": "vzdalenosti",
+    "question": "Jak dlouho letí sluneční světlo k Zemi?",
+    "answer": "Přibližně 8 minut a 20 sekund",
+    "wrong": [
+      "Přibližně 1,3 sekundy",
+      "Přibližně 8 hodin",
+      "Přibližně 1 rok"
+    ],
+    "explanation": "150 milionů km děleno přibližně 300 000 km/s je asi 500 sekund.",
+    "source": "02-otazky-13-23.jpg"
+  },
+  {
+    "id": 16,
+    "topic": "vzdalenosti",
+    "question": "Jak dlouho letí světlo od Měsíce k Zemi?",
+    "answer": "Přibližně 1,3 sekundy",
+    "wrong": [
+      "Přibližně 8 minut a 20 sekund",
+      "Přibližně 13 minut",
+      "Přibližně 0,001 sekundy"
+    ],
+    "explanation": "384 400 km děleno přibližně 300 000 km/s je asi 1,28 sekundy.",
+    "source": "02-otazky-13-23.jpg"
+  },
+  {
+    "id": 17,
+    "topic": "mesic",
+    "question": "Co je hlavní příčinou přílivu a odlivu na Zemi?",
+    "answer": "Slapové působení Měsíce, menší vliv má Slunce",
+    "wrong": [
+      "Pouze vítr na oceánech",
+      "Změny teploty mořské vody",
+      "Světlo odražené od Měsíce"
+    ],
+    "explanation": "Slapové síly vznikají rozdílným gravitačním působením na různé části Země. Působí Měsíc i Slunce.",
+    "source": "02-otazky-13-23.jpg"
+  },
+  {
+    "id": 18,
+    "topic": "mesic",
+    "question": "Kdy nastává skočný příliv, tedy největší přílivový rozdíl?",
+    "answer": "Při novu a úplňku",
+    "wrong": [
+      "Při první a poslední čtvrti",
+      "Pouze o letním slunovratu",
+      "Každé poledne bez ohledu na Měsíc"
+    ],
+    "explanation": "Slapové účinky Měsíce a Slunce se v tomto uspořádání zesilují.",
+    "source": "02-otazky-13-23.jpg"
+  },
+  {
+    "id": 19,
+    "topic": "mesic",
+    "question": "Kdy nastává hluchý příliv, tedy nejmenší přílivový rozdíl?",
+    "answer": "Při první a poslední čtvrti Měsíce",
+    "wrong": [
+      "Při novu a úplňku",
+      "Pouze při zimním slunovratu",
+      "Pouze při zatmění Slunce"
+    ],
+    "explanation": "Směry k Měsíci a ke Slunci svírají přibližně pravý úhel a jejich slapové účinky se částečně oslabují.",
+    "source": "02-otazky-13-23.jpg"
+  },
+  {
+    "id": 20,
+    "topic": "mesic",
+    "question": "Proč vidíme ze Země stále přibližně stejnou stranu Měsíce?",
+    "answer": "Otočí se kolem osy za stejnou dobu, za kterou oběhne Zemi",
+    "wrong": [
+      "Měsíc se kolem osy vůbec neotáčí",
+      "Měsíc neobíhá Zemi",
+      "Druhá strana Měsíce není nikdy osvětlená"
+    ],
+    "explanation": "Jde o vázanou rotaci. Díky drobnému zdánlivému kývání (libraci) můžeme postupně vidět i něco navíc.",
+    "source": "02-otazky-13-23.jpg"
+  },
+  {
+    "id": 21,
+    "topic": "zeme",
+    "question": "Jak dlouho trvá otočení Země kolem osy vzhledem ke hvězdám?",
+    "answer": "Přibližně 23 hodin 56 minut a 4 sekundy",
+    "wrong": [
+      "Přesně 24 hodin",
+      "Přibližně 27,3 dne",
+      "Přibližně 12 hodin"
+    ],
+    "explanation": "To je hvězdný den. Střední sluneční den, používaný v běžném čase, trvá 24 hodin.",
+    "source": "02-otazky-13-23.jpg"
+  },
+  {
+    "id": 22,
+    "topic": "obdobi",
+    "question": "O kolik je zemská osa nakloněna od kolmice k rovině oběhu Země?",
+    "answer": "Přibližně o 23,5°",
+    "wrong": [
+      "Přibližně o 66,5°",
+      "Přibližně o 5°",
+      "Přesně o 90°"
+    ],
+    "explanation": "Pozor na základ měření: k samotné rovině oběhu svírá osa úhel přibližně 66,5°.",
+    "source": "02-otazky-13-23.jpg"
+  },
+  {
+    "id": 23,
+    "topic": "obdobi",
+    "question": "Na jaké zeměpisné šířce leží obratník Kozoroha?",
+    "answer": "Asi 23,5° jižní šířky",
+    "wrong": [
+      "Asi 23,5° severní šířky",
+      "Asi 66,5° severní šířky",
+      "Na rovníku, 0°"
+    ],
+    "explanation": "V sešitě je chyták: na žádné severní šířce. Obratník Kozoroha leží na jižní polokouli.",
+    "source": "02-otazky-13-23.jpg"
+  },
+  {
+    "id": 24,
+    "topic": "zatmeni",
+    "question": "Proč nenastává zatmění při každém novu a úplňku?",
+    "answer": "Dráha Měsíce je skloněna asi o 5° k rovině oběhu Země",
+    "wrong": [
+      "Měsíc svítí vlastním světlem",
+      "Země nemá ve vesmíru stín",
+      "Slunce se při novu vypíná"
+    ],
+    "explanation": "Měsíc většinou projde nad nebo pod potřebnou přímkou. Pro zatmění musí být také poblíž uzlu dráhy.",
+    "source": "03-otazky-24-35.jpg"
+  },
+  {
+    "id": 25,
+    "topic": "zatmeni",
+    "question": "Jak velké se na obloze jeví Slunce a Měsíc?",
+    "answer": "Mají podobný úhlový průměr, asi 0,5°",
+    "wrong": [
+      "Slunce má vždy stokrát větší úhlový průměr",
+      "Měsíc má vždy desetkrát větší úhlový průměr",
+      "Obě tělesa mají úhlový průměr asi 50°"
+    ],
+    "explanation": "Podobná zdánlivá velikost umožňuje úplné zatmění Slunce. Skutečné rozměry těles se velmi liší.",
+    "source": "03-otazky-24-35.jpg"
+  },
+  {
+    "id": 26,
+    "topic": "obdobi",
+    "question": "Kde podle zjednodušeného školního modelu Slunce o letním slunovratu právě celý den nezapadne?",
+    "answer": "Na příslušném polárním kruhu, asi 66,5° šířky",
+    "wrong": [
+      "Na rovníku",
+      "Na obratníku Raka i Kozoroha celý rok",
+      "V České republice"
+    ],
+    "explanation": "Na severním polárním kruhu kolem 21. června, na jižním kolem 21. prosince. Skutečnou viditelnost ovlivňuje atmosférická refrakce, velikost slunečního kotouče a terén.",
+    "source": "03-otazky-24-35.jpg"
+  },
+  {
+    "id": 27,
+    "topic": "zeme",
+    "question": "Co je ekliptika?",
+    "answer": "Zdánlivá roční dráha Slunce po obloze",
+    "wrong": [
+      "Oběžná dráha Měsíce kolem Země",
+      "Hranice mezi dnem a nocí na Zemi",
+      "Čára spojující zemské póly"
+    ],
+    "explanation": "Odpovídá průsečnici roviny oběžné dráhy Země s nebeskou sférou.",
+    "source": "03-otazky-24-35.jpg"
+  },
+  {
+    "id": 28,
+    "topic": "zatmeni",
+    "question": "Odkud lze pozorovat zatmění Měsíce?",
+    "answer": "Z míst na noční straně Země, kde je Měsíc nad obzorem",
+    "wrong": [
+      "Pouze z úzkého pásu měsíčního stínu",
+      "Pouze ze severního pólu",
+      "Pouze z rovníku"
+    ],
+    "explanation": "Zatmění probíhá na Měsíci, takže je současně viditelné z velké části Země.",
+    "source": "03-otazky-24-35.jpg"
+  },
+  {
+    "id": 29,
+    "topic": "zatmeni",
+    "question": "Odkud lze pozorovat úplné zatmění Slunce?",
+    "answer": "Z úzkého pásu, kam dopadá plný stín Měsíce",
+    "wrong": [
+      "Z celé denní poloviny Země jako úplné",
+      "Z celé noční poloviny Země",
+      "Ze všech míst na Zemi současně"
+    ],
+    "explanation": "Mimo pás totality může být vidět částečné zatmění, nebo žádné.",
+    "source": "03-otazky-24-35.jpg"
+  },
+  {
+    "id": 30,
+    "topic": "zatmeni",
+    "question": "V jaké fázi je Měsíc při zatmění Měsíce?",
+    "answer": "V úplňku",
+    "wrong": [
+      "V novu",
+      "V první čtvrti",
+      "V poslední čtvrti"
+    ],
+    "explanation": "Země musí být mezi Sluncem a Měsícem. Ne každý úplněk ale přináší zatmění.",
+    "source": "03-otazky-24-35.jpg"
+  },
+  {
+    "id": 31,
+    "topic": "vzdalenosti",
+    "question": "Jakou rychlostí se šíří světlo ve vakuu?",
+    "answer": "Přibližně 300 000 km/s",
+    "wrong": [
+      "Přibližně 300 000 km/h",
+      "Přibližně 340 m/s",
+      "Přibližně 3 000 km/s"
+    ],
+    "explanation": "Přesná hodnota je 299 792 458 m/s. Důležité jsou i správné jednotky.",
+    "source": "03-otazky-24-35.jpg"
+  },
+  {
+    "id": 32,
+    "topic": "vzdalenosti",
+    "question": "Co je světelný rok?",
+    "answer": "Vzdálenost, kterou světlo ve vakuu urazí za jeden rok",
+    "wrong": [
+      "Doba oběhu Země kolem Slunce",
+      "Doba letu světla ze Slunce na Zemi",
+      "Vzdálenost Země od Měsíce"
+    ],
+    "explanation": "Jde o jednotku vzdálenosti, asi 9,46 bilionu km, nikoli o jednotku času.",
+    "source": "03-otazky-24-35.jpg"
+  },
+  {
+    "id": 33,
+    "topic": "mesic",
+    "question": "Proč vidíme Měsíc na obloze?",
+    "answer": "Odráží sluneční světlo",
+    "wrong": [
+      "Svítí díky vlastním jaderným reakcím",
+      "Osvětlují ho pouze hvězdy mimo Slunce",
+      "Je stále rozžhavený jako Slunce"
+    ],
+    "explanation": "Měsíc sám nesvítí jako hvězda. Vidíme sluneční světlo odražené jeho povrchem.",
+    "source": "03-otazky-24-35.jpg"
+  },
+  {
+    "id": 34,
+    "topic": "obdobi",
+    "question": "Kdy nastává zimní slunovrat na severní polokouli?",
+    "answer": "Přibližně 21. nebo 22. prosince",
+    "wrong": [
+      "Přibližně 20. nebo 21. března",
+      "Přibližně 21. června",
+      "Přibližně 22. nebo 23. září"
+    ],
+    "explanation": "Datum a čas se rok od roku mírně mění. Na jižní polokouli je tou dobou letní slunovrat.",
+    "source": "03-otazky-24-35.jpg"
+  },
+  {
+    "id": 35,
+    "topic": "obdobi",
+    "question": "Kdy je v České republice nejdelší noc?",
+    "answer": "Při zimním slunovratu, kolem 21. prosince",
+    "wrong": [
+      "Při letním slunovratu",
+      "Při jarní rovnodennosti",
+      "Když je Země v aféliu"
+    ],
+    "explanation": "Severní polokoule je nejvíce odkloněna od Slunce. Den je nejkratší.",
+    "source": "03-otazky-24-35.jpg"
+  },
+  {
+    "id": 36,
+    "topic": "obdobi",
+    "question": "Kdy je jarní rovnodennost na severní polokouli a kde je Slunce v zenitu?",
+    "answer": "Přibližně 20. nebo 21. března, nad rovníkem",
+    "wrong": [
+      "Přibližně 21. června, nad obratníkem Raka",
+      "Přibližně 21. prosince, nad obratníkem Kozoroha",
+      "Přibližně 22. září, nad severním pólem"
+    ],
+    "explanation": "Jde o školní přibližné datum. Konkrétní den závisí na roce a časovém pásmu.",
+    "source": "04-otazky-36-47.jpg"
+  },
+  {
+    "id": 37,
+    "topic": "obdobi",
+    "question": "Nad kterou rovnoběžkou je Slunce v zenitu při červnovém slunovratu?",
+    "answer": "Nad obratníkem Raka, asi 23,5° severní šířky",
+    "wrong": [
+      "Nad obratníkem Kozoroha",
+      "Nad rovníkem",
+      "Nad severním polárním kruhem"
+    ],
+    "explanation": "Jde o letní slunovrat na severní polokouli a zimní na jižní.",
+    "source": "04-otazky-36-47.jpg"
+  },
+  {
+    "id": 38,
+    "topic": "obdobi",
+    "question": "Kde na Zemi může být Slunce přímo v nadhlavníku?",
+    "answer": "Mezi obratníky Raka a Kozoroha včetně obou obratníků",
+    "wrong": [
+      "Na celé severní polokouli",
+      "Pouze na rovníku",
+      "Pouze v polárních oblastech"
+    ],
+    "explanation": "Slunce může být v zenitu jen v tropickém pásu. Česká republika v něm neleží.",
+    "source": "04-otazky-36-47.jpg"
+  },
+  {
+    "id": 39,
+    "topic": "mesic",
+    "question": "Jak dlouho trvá měsíční den od jednoho východu Slunce do dalšího?",
+    "answer": "Přibližně 29,5 pozemského dne",
+    "wrong": [
+      "Přibližně 27,3 pozemského dne",
+      "Přesně 24 hodin",
+      "Přibližně 365,25 dne"
+    ],
+    "explanation": "Jde o celý sluneční den na Měsíci, tedy osvětlenou i temnou část dohromady.",
+    "source": "04-otazky-36-47.jpg"
+  },
+  {
+    "id": 40,
+    "topic": "zeme",
+    "question": "Jakým směrem se Země otáčí při pohledu shora nad severním pólem?",
+    "answer": "Proti směru hodinových ručiček",
+    "wrong": [
+      "Po směru hodinových ručiček",
+      "Směr se mění podle ročního období",
+      "Země se kolem osy neotáčí"
+    ],
+    "explanation": "Jde o otáčení od západu k východu. Při pohledu od jižního pólu se smysl jeví opačně.",
+    "source": "04-otazky-36-47.jpg"
+  },
+  {
+    "id": 41,
+    "topic": "zatmeni",
+    "question": "V jaké fázi je Měsíc při zatmění Slunce?",
+    "answer": "V novu",
+    "wrong": [
+      "V úplňku",
+      "V první čtvrti",
+      "V poslední čtvrti"
+    ],
+    "explanation": "Měsíc je mezi Zemí a Sluncem. Nov je nutná, ale nikoli jediná podmínka.",
+    "source": "04-otazky-36-47.jpg"
+  },
+  {
+    "id": 42,
+    "topic": "obdobi",
+    "question": "Co je zenit neboli nadhlavník?",
+    "answer": "Bod na obloze přímo nad hlavou pozorovatele",
+    "wrong": [
+      "Bod přímo pod nohama pozorovatele",
+      "Místo východu Slunce",
+      "Severní nebeský pól"
+    ],
+    "explanation": "Protější bod pod pozorovatelem se nazývá nadir.",
+    "source": "04-otazky-36-47.jpg"
+  },
+  {
+    "id": 43,
+    "topic": "obdobi",
+    "question": "Proč Slunce v České republice nikdy nestojí v zenitu?",
+    "answer": "Česko leží mimo pás mezi obratníky",
+    "wrong": [
+      "Česko leží na jižní polokouli",
+      "Zemská osa není nakloněná",
+      "Slunce je od Česka příliš daleko"
+    ],
+    "explanation": "Naše zeměpisná šířka je přibližně 49–51° severně, tedy více než 23,5°.",
+    "source": "04-otazky-36-47.jpg"
+  },
+  {
+    "id": 44,
+    "topic": "obdobi",
+    "question": "Kdy je na severní polokouli nejdelší den?",
+    "answer": "Při letním slunovratu, kolem 21. června",
+    "wrong": [
+      "Při zimním slunovratu",
+      "Při podzimní rovnodennosti",
+      "Na začátku ledna"
+    ],
+    "explanation": "Pro naše zeměpisné šířky je tehdy doba mezi východem a západem Slunce nejdelší.",
+    "source": "04-otazky-36-47.jpg"
+  },
+  {
+    "id": 45,
+    "topic": "zeme",
+    "question": "Jaký tvar má dráha Země kolem Slunce?",
+    "answer": "Elipsu, která se velmi podobá kružnici",
+    "wrong": [
+      "Přesnou kružnici se Zemí ve středu",
+      "Velmi protáhlou parabolu",
+      "Spirálu"
+    ],
+    "explanation": "Slunce leží v jednom ohnisku elipsy. Eliptická dráha způsobuje menší změny vzdálenosti během roku.",
+    "source": "04-otazky-36-47.jpg"
+  },
+  {
+    "id": 46,
+    "topic": "zeme",
+    "question": "Jaký je přibližný rovníkový průměr Země?",
+    "answer": "12 756 km",
+    "wrong": [
+      "6 378 km",
+      "40 000 km",
+      "384 400 km"
+    ],
+    "explanation": "Sešit uvádí 12 756 km, což je rovníkový průměr. Střední průměr je asi 12 742 km; Země je u pólů mírně zploštělá.",
+    "source": "04-otazky-36-47.jpg"
+  },
+  {
+    "id": 47,
+    "topic": "mesic",
+    "question": "Proč má Měsíc fáze?",
+    "answer": "Při oběhu vidíme různou část jeho osvětlené poloviny",
+    "wrong": [
+      "Zemský stín ho každý měsíc postupně zakrývá",
+      "Měsíc pravidelně mění svůj tvar",
+      "Slunce každý měsíc mění jas"
+    ],
+    "explanation": "Fáze vznikají změnou vzájemné polohy Slunce, Země a Měsíce. Zemský stín patří k zatmění, ne k běžným fázím.",
+    "source": "04-otazky-36-47.jpg"
+  },
+  {
+    "id": 48,
+    "topic": "obdobi",
+    "question": "Kdy začíná astronomický podzim na severní polokouli?",
+    "answer": "Podzimní rovnodenností, přibližně 22. nebo 23. září",
+    "wrong": [
+      "Vždy 1. září",
+      "Letním slunovratem kolem 21. června",
+      "Zimním slunovratem kolem 21. prosince"
+    ],
+    "explanation": "Meteorologický podzim začíná 1. září. Otázka se ptá na astronomický podzim.",
+    "source": "05-otazky-48-50.jpg"
+  },
+  {
+    "id": 49,
+    "topic": "zatmeni",
+    "question": "Které zatmění můžeme dlouhodobě častěji pozorovat z jednoho místa na Zemi?",
+    "answer": "Zatmění Měsíce",
+    "wrong": [
+      "Úplné zatmění Slunce",
+      "Obě vždy stejně často",
+      "Záleží pouze na ročním období"
+    ],
+    "explanation": "Zatmění Měsíce je vidět z větší části Země. Celosvětové počty jsou jiná otázka: slunečních je více než částečných a úplných měsíčních dohromady; po přidání polostínových je měsíčních mírně více (katalog NASA za 5 000 let).",
+    "source": "05-otazky-48-50.jpg"
+  },
+  {
+    "id": 50,
+    "topic": "zeme",
+    "question": "Jaký je přibližný obvod Země?",
+    "answer": "40 000 km",
+    "wrong": [
+      "12 756 km",
+      "6 378 km",
+      "400 000 km"
+    ],
+    "explanation": "Jde o zaokrouhlení. Rovníkový obvod je asi 40 075 km a po poledníku přibližně 40 008 km.",
+    "source": "05-otazky-48-50.jpg"
+  }
+];
+'use strict';
+const TOPICS = {mesic:'Měsíc a příliv',zatmeni:'Zatmění',obdobi:'Roční období a obloha',zeme:'Země a její pohyby',vzdalenosti:'Vzdálenosti a světlo'};
+const MODES = {practice:'Procvičování',test:'Test nanečisto',oral:'Ústní zkoušení'};
+const KEY = 'zdeneklab-astronomie-v1';
+const $ = id => document.getElementById(id);
+const esc = text => String(text).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const byId = id => DATA.find(q => q.id === id);
+const emptyState = () => ({version:1, seen:[], wrong:[], rounds:0, active:null});
+function shuffle(items, random = Math.random) { const a = [...items]; for(let i=a.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; }
+function makeRound(pool, mode, count) { return {mode,questions:shuffle(pool).slice(0,count).map(q=>({id:q.id,choices:shuffle([q.answer,...q.wrong])})),answers:[],index:0,revealed:false}; }
+function roundScore(round) { return round.answers.reduce((sum,a)=>sum+a.score,0); }
+function validActive(r){
+ if(!r || !MODES[r.mode] || !Array.isArray(r.questions) || !r.questions.length || r.questions.length>50 || !Array.isArray(r.answers)) return false;
+ if(!Number.isInteger(r.index)||r.index<0||r.index>=r.questions.length||typeof r.revealed!=='boolean') return false;
+ if(r.answers.length<r.index||r.answers.length>r.index+1) return false;
+ if(new Set(r.questions.map(q=>q.id)).size!==r.questions.length) return false;
+ if(!r.questions.every(item=>{const q=byId(item.id);return q&&Array.isArray(item.choices)&&item.choices.length===4&&new Set(item.choices).size===4&&item.choices.every(x=>[q.answer,...q.wrong].includes(x));})) return false;
+ return r.answers.every((a,i)=>{const q=byId(r.questions[i].id);return a && a.id===q.id && [0,.5,1].includes(a.score) && (r.mode==='oral' ? a.chosen===null : r.questions[i].choices.includes(a.chosen)&&a.score===(a.chosen===q.answer?1:0));});
+}
+let state=emptyState(), mode='practice', current=null, lastRound=null, confirmAction=null;
+try { const raw=JSON.parse(localStorage.getItem(KEY)||'null'); if(raw&&raw.version===1){state.seen=Array.isArray(raw.seen)?[...new Set(raw.seen.filter(id=>byId(id)))]:[];state.wrong=Array.isArray(raw.wrong)?[...new Set(raw.wrong.filter(id=>byId(id)))]:[];state.rounds=Number.isInteger(raw.rounds)&&raw.rounds>=0?raw.rounds:0;state.active=validActive(raw.active)?raw.active:null;} }catch{$('storage-warning').hidden=false;}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch{$('storage-warning').hidden=false;}}
+function show(screen){for(const name of ['home','quiz','results'])$(name).hidden=name!==screen;window.scrollTo({top:0,behavior:'instant'});}
+function confirmChange(title,text,action){confirmAction=action;$('confirm-title').textContent=title;$('confirm-text').textContent=text;$('confirm-dialog').showModal();}
+$('confirm-cancel').onclick=()=>{$('confirm-dialog').close();confirmAction=null;};
+$('confirm-ok').onclick=()=>{const action=confirmAction;confirmAction=null;$('confirm-dialog').close();if(action)action();};
+$('confirm-dialog').addEventListener('cancel',()=>{confirmAction=null;});
+function topicPool(){const topic=$('topic').value;return DATA.filter(q=>topic==='all'||q.topic===topic);}
+function updateSetup(){const n=Math.min(Number($('count').value),topicPool().length);$('selection-note').textContent=`V tomto kole: ${n} ${n===1?'otázka':n<5?'otázky':'otázek'} · náhodné pořadí${mode==='oral'?' · hodnocení 0 / ½ / 1 bod':' · čtyři možnosti u každé otázky'}.`;$('start').innerHTML=`${mode==='practice'?'Začít procvičování':mode==='test'?'Spustit test':'Začít zkoušení'} <span>→</span>`;}
+function setMode(value){mode=value;document.querySelectorAll('[data-mode]').forEach(b=>{const selected=b.dataset.mode===mode;b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',String(selected));});updateSetup();}
+Object.entries(TOPICS).forEach(([value,label])=>{const option=document.createElement('option');option.value=value;option.textContent=`${label} (${DATA.filter(q=>q.topic===value).length})`;$('topic').append(option);});
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+$('topic').onchange=updateSetup;$('count').onchange=updateSetup;
+function home(){show('home');$('seen-count').textContent=`${state.seen.length}/50`;$('wrong-count').textContent=state.wrong.length;$('round-count').textContent=state.rounds;$('review-errors').disabled=!state.wrong.length;$('resume-box').hidden=!state.active;if(state.active)$('resume-label').textContent=`${MODES[state.active.mode]} · zodpovězeno ${state.active.answers.length} z ${state.active.questions.length}`;updateSetup();}
+function startRound(pool=topicPool(), selectedMode=mode, count=Number($('count').value)){
+ if(!pool.length)return;
+ const begin=()=>{current=makeRound(pool,selectedMode,count);state.active=current;save();show('quiz');renderQuestion();};
+ if(state.active)confirmChange('Začít nové kolo?','Rozehrané kolo se nahradí novým. Už uložený pokrok zůstane.',begin);else begin();
+}
+$('start').onclick=()=>startRound();
+$('review-errors').onclick=()=>startRound(DATA.filter(q=>state.wrong.includes(q.id)),'practice',50);
+$('resume').onclick=()=>{current=state.active;show('quiz');renderQuestion();};
+$('discard').onclick=()=>confirmChange('Zahodit rozehrané kolo?','Dosavadní pokrok zůstane. Rozehrané kolo už nepůjde obnovit.',()=>{state.active=null;current=null;save();home();});
+$('pause').onclick=()=>{save();home();};
+$('reset').onclick=()=>confirmChange('Smazat uložený pokrok?','Smažou se chyby, přehled vyzkoušených otázek, počet kol i rozehrané kolo v tomto prohlížeči.',()=>{state=emptyState();current=null;lastRound=null;save();home();});
+function renderQuestion(){
+ const item=current.questions[current.index],q=byId(item.id),answer=current.answers[current.index];
+ $('mode-label').textContent=MODES[current.mode];$('question-position').textContent=`Otázka ${current.index+1} z ${current.questions.length}`;$('progress').max=current.questions.length;$('progress').value=current.answers.length;
+ $('score-live').textContent=current.mode==='test'?'Výsledek až na konci':`Body: ${roundScore(current).toLocaleString('cs-CZ')}`;
+ $('question-topic').textContent=TOPICS[q.topic];$('source-number').textContent=`ZE SEŠITU #${q.id}`;$('question-text').textContent=q.question;
+ $('question-hint').textContent=current.mode==='oral'?'Odpověz nahlas vlastními slovy. Potom odkryj vzor a porovnej hlavní myšlenku.':'Vyber jednu správnou odpověď.';
+ $('options').innerHTML='';$('options').hidden=current.mode==='oral';$('oral-controls').hidden=current.mode!=='oral'||current.revealed||!!answer;$('oral-rating').hidden=true;$('feedback').hidden=true;$('feedback').className='feedback';$('next').hidden=!answer;
+ $('next').textContent=current.index===current.questions.length-1?'Dokončit kolo →':'Další otázka →';
+ $('action-hint').textContent=answer?(current.mode==='test'?'Odpověď uložena.':'Odpověď je započítaná.'):(current.mode==='oral'?'Bez nápovědy a bez možností.':'');
+ if(current.mode!=='oral')item.choices.forEach((choice,i)=>{
+  const button=document.createElement('button');button.type='button';button.className='option';button.disabled=!!answer;
+  let status='';if(answer){if(current.mode==='test'){if(choice===answer.chosen){button.classList.add('chosen');status='Vybraná odpověď';}}else if(choice===q.answer){button.classList.add('correct');status='✓ Správná odpověď';}else if(choice===answer.chosen){button.classList.add('wrong');status='✕ Tvoje odpověď';}}
+  button.innerHTML=`<span class="option-letter">${'ABCD'[i]}</span><span>${esc(choice)}${status?`<span class="state-label">${status}</span>`:''}</span>`;
+  button.onclick=()=>record(choice,choice===q.answer?1:0);$('options').append(button);
+ });
+ if(current.mode==='oral'&&(current.revealed||answer)){renderFeedback(q,null);$('oral-rating').hidden=!!answer;}
+ else if(answer&&current.mode==='practice')renderFeedback(q,answer.score===1);
+ $('question-text').focus({preventScroll:true});
+}
+function renderFeedback(q,correct){$('feedback').hidden=false;$('feedback').className=`feedback${correct===null?'':correct?' good':' bad'}`;$('feedback').innerHTML=`<strong>${correct===null?'Vzorová odpověď':correct?'✓ Správně.':'Ještě si to připomeň.'}</strong><p>${esc(q.answer)}</p><p class="explanation">${esc(q.explanation)}</p>`;}
+function record(chosen,score){
+ if(!current||current.answers[current.index])return;
+ const id=current.questions[current.index].id;
+ current.answers.push({id,chosen,score});
+ // In test mode, do not expose correctness through stored progress until finishing.
+ if(current.mode!=='test')applyAnswer({id,score});
+ state.active=current;save();renderQuestion();
+}
+function applyAnswer(a){if(!state.seen.includes(a.id))state.seen.push(a.id);if(a.score<1){if(!state.wrong.includes(a.id))state.wrong.push(a.id);}else state.wrong=state.wrong.filter(id=>id!==a.id);}
+$('reveal').onclick=()=>{if(!current||current.mode!=='oral')return;current.revealed=true;save();renderQuestion();};
+document.querySelectorAll('[data-rate]').forEach(b=>b.onclick=()=>{if(current?.mode==='oral'&&current.revealed)record(null,Number(b.dataset.rate));});
+$('next').onclick=()=>{if(!current||!current.answers[current.index])return;if(current.index+1===current.questions.length){finish();return;}current.index++;current.revealed=false;save();renderQuestion();};
+function finish(){
+ if(!current||current.answers.length!==current.questions.length)return;
+ if(current.mode==='test')current.answers.forEach(applyAnswer);
+ state.rounds++;lastRound=current;current=null;state.active=null;save();renderResults();
+}
+function renderResults(){
+ const r=lastRound,score=roundScore(r),percent=Math.round(score/r.questions.length*100),missed=r.answers.filter(a=>a.score<1);
+ show('results');$('result-title').textContent=percent===100?'Všechno sedí.':percent>=80?'Máš dobrý přehled.':percent>=50?'Základy už máš.':'Pojďme to upevnit.';
+ $('result-subtitle').textContent=missed.length?`${missed.length} ${missed.length===1?'otázka čeká':missed.length<5?'otázky čekají':'otázek čeká'} na zopakování. Podívej se na vysvětlení a zkus je znovu.`:'Zvládnuté celé kolo. Příště si zkus odpovědi vybavit nahlas bez možností.';
+ $('result-kind').textContent=`${MODES[r.mode]}${r.mode==='oral'?' · hodnocení rodičem nebo vlastní sebehodnocení':' · 1 bod za správnou odpověď'}. Nejde o oficiální školní známku.`;
+ $('result-percent').textContent=`${percent} %`;$('result-score').textContent=`${score.toLocaleString('cs-CZ')} z ${r.questions.length} bodů`;$('retry').disabled=!missed.length;
+ $('result-review').innerHTML=r.answers.map((a,i)=>{const q=byId(a.id);return `<details class="review-item${a.score<1?' missed':''}" ${a.score<1?'open':''}><summary><span class="review-status">${a.score===1?'✓':a.score===.5?'½':'✕'}</span><span>${i+1}. ${esc(q.question)} <small class="quiet">(sešit #${q.id})</small></span></summary><p>${r.mode==='oral'?`Hodnocení: ${a.score===1?'Umím':a.score===.5?'Částečně':'Ještě neumím'}`:`Tvoje odpověď: ${esc(a.chosen)}`}</p><p class="review-answer">Správně: ${esc(q.answer)}</p><p>${esc(q.explanation)}</p></details>`;}).join('');
+ $('result-title').focus({preventScroll:true});
+}
+$('retry').onclick=()=>{if(lastRound)startRound(lastRound.answers.filter(a=>a.score<1).map(a=>byId(a.id)),lastRound.mode==='oral'?'oral':'practice',50);};
+$('again').onclick=()=>{if(lastRound)startRound(lastRound.questions.map(item=>byId(item.id)),lastRound.mode,lastRound.questions.length);};
+$('home-button').onclick=home;
+function normalize(text){return text.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();}
+function catalog(){const query=normalize($('search').value.trim()),list=DATA.filter(q=>normalize(`${q.id} ${q.question} ${q.answer} ${q.explanation}`).includes(query));$('catalog-list').innerHTML=list.length?list.map(q=>`<details class="catalog-item"><summary><span class="quiet">#${q.id}</span> ${esc(q.question)}</summary><p class="answer">${esc(q.answer)}</p><p>${esc(q.explanation)}</p><p class="quiet">${esc(TOPICS[q.topic])} · ${esc(q.source)}</p></details>`).join(''):'<p class="quiet">Žádná otázka neodpovídá hledání.</p>';}
+$('search').oninput=catalog;
+catalog();home();
+</script>
+</body></html>
