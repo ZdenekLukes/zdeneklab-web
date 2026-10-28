@@ -1,21 +1,21 @@
 {
   "schema": 1,
-  "updatedAt": "2026-10-28T09:23:27+01:00",
+  "updatedAt": "2026-10-28T11:26:04+01:00",
   "sprint": {
     "startsAt": "2026-10-28T06:00:00+01:00",
     "endsAt": "2026-10-28T18:00:00+01:00"
   },
   "source": {
     "branch": "integration/lyra-polish-0700",
-    "sha": "23a36377331facc934ea5552e72172be04002713",
+    "sha": "430a292e8c84d10ada920f220da94e6b8cf9dee4",
     "private": true
   },
   "release": {
     "ready": 0,
     "total": 9,
-    "phase": "SKELETON",
-    "review": "WAIT",
-    "verdict": "SKELETON předložen ke schválení. Žádný nový panel LYRA POLISH není PRINT RELEASE před schválením SKELETON, Printing Contract a sliceru."
+    "phase": "SKELETON → DETAIL",
+    "review": "APPROVED (SKELETON 430a292)",
+    "verdict": "SKELETON schválen; žádný skořepinový díl zatím není PRINT RELEASE. P8 sedlo (varianta B2) se zpracovává; P8 a kamerová okna NOT ORDER READY."
   },
   "tasks": [
     {
@@ -34,7 +34,7 @@
       "name": "C8 / výrobní stěny",
       "done": 4,
       "total": 4,
-      "note": "Všech 7 panelů POLISH-CLEAN prochází C8, 12 sousedních spár OK (0,365–0,399 mm); integrováno."
+      "note": "28c: 7 panelů + 12 spár PASS, Cage odlehčení ≥ 0,316 mm, R3d.1 identické."
     },
     {
       "name": "Úchyty / kamera / servis",
@@ -50,9 +50,9 @@
     },
     {
       "name": "P8 / optická okna",
-      "done": 1,
+      "done": 2,
       "total": 4,
-      "note": "Beze změny; vnitřní sedlo a optika podmíněné, výkresy neobjednávat (NOT ORDER READY)."
+      "note": "Uživatel zvolil B2 (P8 o 1,25 mm hlouběji, minimální skrytý ořez, dolní rohy průhledu +1,6 mm); probíhá."
     },
     {
       "name": "Printability / slicer / regrese",
@@ -124,6 +124,11 @@
     }
   ],
   "history": [
+    {
+      "at": "2026-10-28T11:26:04+01:00",
+      "title": "SKELETON SCHVÁLEN",
+      "detail": "SKELETON LYRA POLISH-CLEAN schválen (430a292)."
+    },
     {
       "at": "2026-10-28T09:23:27+01:00",
       "title": "SKELETON PŘEDLOŽEN",
