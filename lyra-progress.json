@@ -1,13 +1,13 @@
 {
  "schema": 1,
- "updatedAt": "2026-10-28T21:16:00+01:00",
+ "updatedAt": "2026-10-29T02:00:00+01:00",
  "sprint": {
   "startsAt": "2026-10-28T06:00:00+01:00",
   "endsAt": "2026-10-28T18:00:00+01:00"
  },
  "source": {
   "branch": "integration/lyra-polish-0700",
-  "sha": "ae09d68",
+  "sha": "bb685f1",
   "private": true
  },
  "release": {
@@ -15,22 +15,22 @@
   "total": 9,
   "phase": "DETAIL (výroba)",
   "review": "SKELETON schválen (430a292); hledí B-flat vizuálně přijato, čeká na ověření",
-  "verdict": "Žádný díl zatím není PRINT RELEASE (0/9). BLOKÁTORY: P8 — spodní zadní doraz + pružiny se ještě navrhují, hledí NEZMRAZENO; finální C8 přestavba P1/P7/PF; kolíky koruny P2 se přestavují; P3R/P4R — slučování stanic běží, fit celé sestavy stále chybí (rohové kupóny Cage fyzicky OK, ale to nestačí); GL/GR — tisková smlouva 20/21 (zbývá overhang v deklarované orientaci, čeká na uživatelský 3MF), skryté úchyty šroubů navrženy ale ještě NEsloučeny do P3R/P4R; povinná kompletní regrese na finálním SHA. P5 (zátylek) je zmrazen jako uživatelský ZKUŠEBNÍ TISK (branch codex/lyra-p5-trial @ 44795e0) — to NENÍ PRINT RELEASE; vizuální kontrola v Mechanical Studiu je blokovaná chybou zobrazení (ne geometrie), orientace/podpory čekají na uživatele v PrusaSlicer, formální release až po finální regresi. P8 a kamerová okna NOT ORDER READY."
+  "verdict": "Žádný díl zatím není PRINT RELEASE (0/9). BLOKÁTORY: P8 — spodní zadní doraz + pružiny se ještě navrhují (0,51 N vs. požadovaných 0,84 N), hledí NEZMRAZENO; P1/P7 — sweep odhalil kolizi při odstraňování modulu koruny (malá, na straně hledí), P1 ještě chybí dosedací kapsa pro P8 — oba čekají na zmrazení hledí; P3R/P4R — stanice bočního krytu (sl_up) stále nedosahuje ≥0,9 mm stěny za exteriérem (nejlépe 0,87/0,88 mm, nebo 1,19 mm jen s 1,3 mm³ zapuštění); GL/GR — tisková smlouva 20/21 (zbývá overhang v deklarované orientaci, čeká na uživatelský 3MF), skryté úchyty šroubů navrženy ale ještě NEsloučeny do P3R/P4R; povinná kompletní regrese na finálním SHA. P5 (zátylek) je zmrazen jako uživatelský ZKUŠEBNÍ TISK (zdroj bb685f1, geometrie 44795e0) — plný C8 test 88/88 PASS, stanice 14/14 PASS, náhled ve Studiu OPRAVEN; fyzický zkušební tisk právě probíhá u uživatele — to NENÍ PRINT RELEASE, formální release čeká na finální regresi. P2 (čelo s kamerou) je připraveno k uživatelské vizuální kontrole (USER PRINT TRIAL, NE PRINT RELEASE): C8 15/15, C8-STATIONS PASS, sousední páry P1|P2 0,365 mm a P2|P7 0,388 mm, 0 mm³ vůči P1/P7/PF/P3R/P4R a Cage, veškerý hardware 0 mm³, koruna se odstraňuje čistě při 25/30/35°; otevřené zjištění: přísná kontrola štěrbin na sloučeném STL hlásí 2 vnitřní rohy (~55°, ~10 mm) kde se ramena kolíku setkávají se stěnou (kontrola dle smlouvy ve tvaru PASS) — rozhodnutí čeká, stejný nález je i na STL P5. P8 a kamerová okna NOT ORDER READY."
  },
  "firstPrintablePath": {
   "title": "Cesta k prvnímu tisknutelnému dílu",
   "component": "P5 (zátylek)",
-  "source": "codex/lyra-p5-trial @ 44795e0",
-  "asOf": "2026-10-28T21:15:00+01:00",
-  "statement": "P5 STL pro zkušební tisk existuje. Doporučení: tisknout až po vizuální kontrole v Mechanical Studiu.",
-  "distance": "Zbývá: dokončit běžící plný C8 test, opravit vizuální náhled sestavy ve Studiu, získat uživatelské schválení vzhledu, zvolit orientaci a podpory v PrusaSlicer (3MF), provést zkušební tisk — a teprve poté formální PRINT RELEASE po finální kompletní regresi.",
+  "source": "integration/lyra-polish-0700 @ bb685f1 (geometrie 44795e0)",
+  "asOf": "2026-10-29T02:00:00+01:00",
+  "statement": "P5 STL pro zkušební tisk existuje, plný C8 test je 88/88 PASS a náhled ve Studiu je opravený. Fyzický zkušební tisk právě probíhá u uživatele.",
+  "distance": "Zbývá: dokončit fyzický zkušební tisk, získat uživatelské schválení vzhledu a kvality tisku, zvolit finální orientaci a podpory v PrusaSlicer (3MF) — a teprve poté formální PRINT RELEASE po finální kompletní regresi na finálním SHA.",
   "steps": [
    {"status": "done", "text": "Geometrie zmrazena jako USER PRINT TRIAL (jedno těleso, magnetové stanice pol_om_l/r, odstup od exteriéru 1,10 / 1,14 mm)."},
    {"status": "done", "text": "Montážní a kolizní kontroly: Cage 0 mm³ (mezera 1,268 mm), P1/P3R/P4R a hardware 0 mm³, demontáž volná."},
    {"status": "done", "text": "Fokusovaný test stanic P5 14/14 PASS (ověřeno znovu na čisté kopii)."},
-   {"status": "inprogress", "text": "Plný C8 test na 44795e0 běží — ve 21:15 mezivýsledek 67 PASS / 0 FAIL (NENÍ konečný výsledek)."},
-   {"status": "blocked", "text": "Vizuální kontrola P5 v Mechanical Studiu BLOKOVÁNA: náhled sestavy zobrazuje panely posunuté (chyba umístění v UI, ne v geometrii P5); oprava probíhá."},
-   {"status": "pending", "text": "Uživatelské schválení vzhledu → uživatel volí orientaci a podpěry v PrusaSlicer (3MF) → zkušební tisk."},
+   {"status": "done", "text": "Plný C8 test na 44795e0 dokončen — 88 PASS / 0 FAIL."},
+   {"status": "done", "text": "Vizuální kontrola P5 v Mechanical Studiu OPRAVENA: náhled sestavy v celé hlavě + Cage je nyní správný."},
+   {"status": "inprogress", "text": "Fyzický zkušební tisk P5 právě probíhá u uživatele; orientace/podpory voleny v PrusaSlicer."},
    {"status": "pending", "text": "Formální PRINT RELEASE až po finální kompletní regresi na finálním SHA."}
   ]
  },
@@ -51,13 +51,13 @@
    "name": "C8 / výrobní stěny",
    "done": 4,
    "total": 5,
-   "note": "Plný C8 smoke 83/0 (oprava fixtur). Zbývá finální přestavba P1/P7/PF a výplň sedla na zmrazeném hledí."
+   "note": "P5 plný C8 test dokončen 88/88 PASS; P2 (čelo s kamerou) C8 15/15 a C8-STATIONS PASS. Zbývá finální přestavba P1/P7/PF (sweep odhalil malou kolizi při odstraňování koruny na straně hledí) a výplň sedla P8 na zmrazeném hledí."
   },
   {
    "name": "Úchyty / kamera / servis",
    "done": 4,
    "total": 5,
-   "note": "Fyzické Cage-rohové kupóny P3R/P4R sedí (~0,5 mm celkové vůle); slučování magnetových stanic do P3R/P4R běží; fit celé sestavy ještě neověřen → bočnice zůstávají blokované pro PRINT RELEASE. GL/GR mají 6 skrytých úchytů šroubů navrženo (≥1,07 mm od exteriéru), ale ještě NEsloučeno do P3R/P4R — zkušební vložky tak zatím nemají do čeho se přišroubovat; test vedená dírka (pilot hole) exportován. Souběžně: P5 (zátylek) geometricky zmrazen jako uživatelský ZKUŠEBNÍ TISK (codex/lyra-p5-trial @ 44795e0) — jeden exact-union shell s oběma magnetovými stanicemi (pol_om_l/r, min. mezera k povrchu 1,10 / 1,14 mm, požadováno ≥0,9), 0 mm³ s Cage (mezera 1,268 mm) i s P1/P3R/P4R a hardwarem, čistá cesta demontáže; ložiskový smoke 14/14 PASS (ověřeno znovu na čisté kopii 44795e0). Vizuální kontrola ve Studiu blokovaná chybou zobrazení (oprava probíhá); orientace/podpory čekají na uživatele v PrusaSlicer; formální PRINT RELEASE až po finální regresi."
+   "note": "Fyzické Cage-rohové kupóny P3R/P4R sedí (~0,5 mm celkové vůle); stanice bočního krytu (sl_up) stále nedosahuje požadované ≥0,9 mm stěny za exteriérem (nejlépe 0,87/0,88 mm, nebo 1,19 mm jen s 1,3 mm³ zapuštění) → P3R/P4R zůstávají blokované pro PRINT RELEASE. GL/GR mají 6 skrytých úchytů šroubů navrženo (≥1,07 mm od exteriéru), ale ještě NEsloučeno do P3R/P4R — zkušební vložky tak zatím nemají do čeho se přišroubovat; test vedená dírka (pilot hole) exportován. P2 (čelo s kamerou) připraveno k uživatelské vizuální kontrole jako USER PRINT TRIAL: jeden exact-union shell vč. korunních kolíků pol_cr_l/r (odstup od exteriéru 1,04 / 1,03 mm), C8 15/15, C8-STATIONS PASS, sousední páry P1|P2 0,365 mm a P2|P7 0,388 mm, 0 mm³ vůči P1/P7/PF/P3R/P4R/Cage a veškerému hardwaru, koruna se odstraňuje čistě při 25/30/35°, Studio smoke ALL PASS; otevřené zjištění — přísná kontrola štěrbin hlásí 2 vnitřní rohy (~55°, ~10 mm) u ramen kolíku (i na STL P5), rozhodnutí čeká. Souběžně: P5 (zátylek) zmrazen jako uživatelský ZKUŠEBNÍ TISK (zdroj bb685f1, geometrie 44795e0) — plný C8 test 88/88 PASS, stanice 14/14 PASS, 0 mm³ s Cage/P1/P3R/P4R/hardwarem; vizuální kontrola ve Studiu OPRAVENA; fyzický zkušební tisk právě probíhá u uživatele; formální PRINT RELEASE až po finální regresi."
   },
   {
    "name": "Akustické mřížky GL / GR",
@@ -75,7 +75,7 @@
    "name": "Printability / slicer / regrese",
    "done": 1,
    "total": 5,
-   "note": "GL/GR tisková smlouva 20/21 (overhang v orientaci čeká na uživatelský 3MF). P5 plný C8 test běží (mezivýsledek 67 PASS / 0 FAIL ve 21:15, není konečný). P2/P5 potřebují tiskovou opěrnou plochu / orientaci (čeká na uživatele); kompletní regrese povinná na finálním SHA před release."
+   "note": "GL/GR tisková smlouva 20/21 (overhang v orientaci čeká na uživatelský 3MF). P5 plný C8 test DOKONČEN 88/88 PASS, náhled ve Studiu opraven, fyzický zkušební tisk probíhá u uživatele. P2 C8 15/15 + C8-STATIONS PASS, Studio smoke ALL PASS, připraveno k uživatelské vizuální kontrole. P2/P5 stále potřebují finální orientaci/podpory v PrusaSlicer (uživatel) a kompletní regresi povinnou na finálním SHA před release."
   },
   {
    "name": "Studio / náhled",
@@ -203,6 +203,11 @@
   }
  ],
  "history": [
+  {
+   "at": "2026-10-29T02:00:00+01:00",
+   "title": "NOC 02:00 — P2 PŘIPRAVEN KE KONTROLE",
+   "detail": "Integrační větev integration/lyra-polish-0700 je nyní na bb685f1 (zahrnuje P5 zkušební geometrii 44795e0, opravu umístění ve Studiu f73279a s kontrolou umístění P10 = 0,0000 mm, a P2 zkušební geometrii bb685f1). P5 (zátylek): plný C8 test na 44795e0 dokončen 88 PASS / 0 FAIL, test stanic 14/14 PASS, náhled P5 v celé hlavě + Cage ve Studiu je nyní správný; fyzický uživatelský zkušební tisk P5 právě probíhá (NENÍ PRINT RELEASE, čeká na finální regresi). P2 (čelo, nese kameru): připraven k uživatelské vizuální kontrole jako USER PRINT TRIAL (NE PRINT RELEASE) — jeden exact-union shell vč. korunních kolíků pol_cr_l/r (odstup od exteriéru 1,04 / 1,03 mm), C8 15/15, C8-STATIONS PASS, sousední páry P1|P2 0,365 mm a P2|P7 0,388 mm, 0 mm³ vůči P1/P7/PF/P3R/P4R a Cage, veškerý hardware 0 mm³, koruna se odstraňuje čistě při 25/30/35°, Studio browser smoke ALL PASS; otevřené zjištění — přísná kontrola štěrbin na sloučeném STL hlásí 2 vnitřní rohy (~55°, ~10 mm) kde se ramena kolíku setkávají se stěnou (kontrola dle smlouvy PASS), rozhodnutí čeká, stejný nález je i na STL P5; orientace/podpory u uživatele v PrusaSlicer. P3R/P4R stále blokovány (stanice sl_up nedosahuje ≥0,9 mm stěny za exteriérem). P1/P7: sweep odhalil kolizi při odstraňování modulu koruny (malá, na straně hledí), P1 ještě chybí dosedací kapsa P8 — obojí čeká na zmrazení hledí. P8 nezmrazeno, pružiny 0,51 N vs. požadovaných 0,84 N, čeká na uživatelské rozhodnutí. Release 0/9."
+  },
   {
    "at": "2026-10-28T21:15:00+01:00",
    "title": "STAV 21:15 — P5 PŘED VIZUÁLNÍ KONTROLOU",
