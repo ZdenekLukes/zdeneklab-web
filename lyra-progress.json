@@ -10,6 +10,40 @@
   "sha": "ce6a4e0",
   "private": true
  },
+ "board": {
+  "asOf": "2026-10-29T14:00:00+01:00",
+  "integration": "b506e9d",
+  "prints": [
+   {"part": "Kamerový výřez P2 v2", "status": "ČEKÁ: geometrie D v2 → 3MF", "purpose": "vinětace (den) + IR prosvit (noc)"},
+   {"part": "GL, GR vložky", "status": "PŘIPRAVENO (STL), 3MF ne", "purpose": "tvar, lícování, akustika (bez šroubů)"},
+   {"part": "Výřez předvrtání šroubů GL/GR", "status": "PŘIPRAVENO (STL)", "purpose": "výběr průměru předvrtání"},
+   {"part": "P5 finální kandidát", "status": "ČEKÁ: tvé rozhodnutí + 3MF (běží)", "purpose": "finální zátylek"},
+   {"part": "P2 finální", "status": "ČEKÁ: test kamery, D v2, souměrnost čela", "purpose": "finální čelo"},
+   {"part": "P3R / P4R", "status": "VE VÝVOJI", "purpose": "bočnice"},
+   {"part": "Rohy Cage (kupóny)", "status": "HOTOVO", "purpose": "sedí, vůle ~0,5 mm — lícování bočnic"},
+   {"part": "P5 FROZEN", "status": "VYTIŠTĚNO", "purpose": "nálitky bez materiálu (chyba exportéru) — tvar, lícování skořepiny"}
+  ],
+  "agents": [
+   {"agent": "PRINT-PREP", "work": "ověřený optimalizovaný 3MF pro P5, potom kamerový výřez v2"},
+   {"agent": "P2", "work": "geometrie D v2 (zapuštění uvnitř krytu), výřez v2"},
+   {"agent": "Povrch", "work": "analýza asymetrie čela (hřbet vpravo)"},
+   {"agent": "P3R/P4R", "work": "jazýček bočnice sl_up, stanice, úchyty GL/GR"},
+   {"agent": "Studio", "work": "hotovo (pohled fyzické hlavy, stahování) — nečinný"},
+   {"agent": "P8", "work": "zastaven — čeká na tebe"}
+  ],
+  "waitingForUser": [
+   "P8: předpětí 0,51 vs 0,84 N · černý pás masky ze ¾ · riziko nadzvednutí",
+   "P5: tisknout finálního kandidáta? (po kontrole výtisku P5 FROZEN) · vadí 2 vlasové štěrbiny 0,09 mm²?",
+   "Podstavec: je opravdu vytištěný celý? U-bracket V1 nebo V2?",
+   "Exportér: souhlas s tolerancí pojistky 1e-3 mm³",
+   "(volitelně) online hosting STL/3MF"
+  ],
+  "blockers": [
+   "P1 / P7 / PF: čekají na zmrazení hledí (P8)",
+   "P3R / P4R: jazýček sl_up (stěna < 0,9 mm)",
+   "Release: 0/9 PRINT RELEASE — finální regrese až na finálním SHA"
+  ]
+ },
  "release": {
   "ready": 0,
   "total": 9,

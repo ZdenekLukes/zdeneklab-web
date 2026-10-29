@@ -23,6 +23,7 @@ h1{font-size:clamp(42px,6.6vw,80px);letter-spacing:-.065em;line-height:.95;margi
 .links{display:flex;flex-wrap:wrap;gap:10px;margin:17px 0 0}.links a{border:1px solid #456579;color:var(--cyan);font-size:11px;font-weight:700;padding:10px 12px;border-radius:4px}
 .timeline{margin:0;padding:0 0 0 14px;list-style:none}.timeline li{border-left:2px solid #466778;padding:0 0 15px 13px;position:relative}.timeline li:before{content:"";position:absolute;left:-5px;top:3px;width:8px;height:8px;background:var(--cyan);border-radius:50%}.when{font:650 10px ui-monospace,monospace;color:var(--cyan)}.detail{font-size:11px;color:var(--muted);margin-top:3px}
 .pathlist{margin:0;padding:0;list-style:none}.pathlist li{border-top:1px solid var(--line);padding:9px 0;font-size:11.5px;display:flex;gap:10px;align-items:flex-start}.pathlist li:first-child{border-top:none}.pmark{font:700 12px ui-monospace,monospace;flex:0 0 auto;width:16px;text-align:center}.pmark.done{color:var(--green)}.pmark.inprogress{color:var(--cyan)}.pmark.blocked{color:#e8788a}.pmark.pending{color:var(--muted)}.ptext{color:var(--fg)}
+.board{margin-bottom:22px}.board .sect{margin-bottom:10px}.board-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.board-box{min-width:0}.board-box h3{font-size:11px;letter-spacing:.04em;color:var(--cyan);margin:0 0 8px;text-transform:uppercase}.board-scroll{max-width:100%;overflow-x:auto}table.board-table{width:100%;border-collapse:collapse;font-size:11px}table.board-table th{text-align:left;color:var(--muted);font:600 10px ui-monospace,monospace;text-transform:uppercase;letter-spacing:.03em;padding:4px 8px 6px 0;border-bottom:1px solid var(--line);white-space:nowrap}table.board-table td{padding:6px 8px 6px 0;border-bottom:1px solid #1d2a34;vertical-align:top}table.board-table td.st{color:var(--gold);font-weight:700;white-space:nowrap}ul.board-list{margin:0;padding:0;list-style:none;font-size:11.5px}ul.board-list li{border-top:1px solid #1d2a34;padding:6px 0;color:var(--fg)}ul.board-list li:first-child{border-top:none}@media(max-width:700px){.board-grid{grid-template-columns:1fr}}
 .hint{font-size:10.5px;color:var(--muted);margin:13px 0 0}.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding-top:16px;margin-top:28px;color:var(--muted);font:550 10px ui-monospace,monospace}
 @media(max-width:860px){.cols{grid-template-columns:1fr}.source{text-align:left}.metrics{grid-template-columns:repeat(2,1fr)}}@media(max-width:530px){.wrap{width:calc(100% - 26px)}.panel{padding:14px}.metrics{gap:7px}.metric{padding:12px}.gallery{gap:8px}.shot figcaption{padding:9px}.brand{letter-spacing:.08em}h1{font-size:41px}}
 </style></head><body>
@@ -31,6 +32,13 @@ h1{font-size:clamp(42px,6.6vw,80px);letter-spacing:-.065em;line-height:.95;margi
 <div class="kicker">AI HEAD / ROBOTIC SKULL / 28 OCT 2026 / WORK IN PROGRESS</div>
 <div class="head"><div><h1>LYRA <b>BUILD LOG</b></h1><p class="lead">POLISH-CLEAN / 12hodinový konstrukční sprint. Stručný stav úkolů a pravé snímky geometrie. Pro video a prezentaci AI HEAD 2026.</p></div>
 <div class="source"><div id="stamp">Načítám poslední ověřený stav…</div><div id="src">Integrace / SHA —</div><div>ZDROJ: AI_HEAD / MECHANICAL STUDIO</div></div></div>
+<section class="panel board" id="boardWrap" hidden><div class="sect"><h2>Řídicí panel</h2><small id="boardAsOf">Stav k: —</small></div>
+<div class="board-grid">
+<div class="board-box"><h3>Zkušební tisk</h3><div class="board-scroll"><table class="board-table"><thead><tr><th>Díl</th><th>Stav</th><th>Účel</th></tr></thead><tbody id="boardPrints"></tbody></table></div></div>
+<div class="board-box"><h3>Agenti</h3><div class="board-scroll"><table class="board-table"><thead><tr><th>Agent</th><th>Práce</th></tr></thead><tbody id="boardAgents"></tbody></table></div></div>
+<div class="board-box"><h3>Čeká se na tebe</h3><ul class="board-list" id="boardWaiting"></ul></div>
+<div class="board-box"><h3>Blokátory</h3><ul class="board-list" id="boardBlockers"></ul></div>
+</div></section>
 <div class="metrics"><div class="metric"><div class="value gold" id="ready">0 / 9</div><div class="cap">Nové díly PRINT READY</div></div><div class="metric"><div class="value blue" id="timeleft">12 h</div><div class="cap">Sprint do 18:00</div></div><div class="metric"><div class="value" id="phase">SKELETON</div><div class="cap">Fáze modelu</div></div><div class="metric"><div class="value gold" id="review">WAIT</div><div class="cap">Schválení geometrie</div></div></div>
 <div class="cols"><div>
 <section class="panel" id="fppWrap" hidden><div class="sect"><h2 id="fppTitle">Cesta k prvnímu tisknutelnému dílu</h2><small id="fppSource">ZDROJ —</small></div><p class="note" id="fppStatement"></p><ol class="pathlist" id="fppSteps"></ol><p class="hint" id="fppDistance"></p></section>
@@ -45,6 +53,18 @@ const every=1800000;const byId=id=>document.getElementById(id);
 const when=iso=>new Date(iso).toLocaleString("cs-CZ",{timeZone:"Europe/Prague",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
 const node=(p,tag,cls,txt)=>{const x=document.createElement(tag);if(cls)x.className=cls;if(txt!==undefined)x.textContent=txt;p.appendChild(x);return x};
 function render(d){
+const board=d.board;const boardWrap=byId("boardWrap");
+if(board){boardWrap.hidden=false;
+byId("boardAsOf").textContent="Stav k: "+when(board.asOf)+(board.integration?" · integrace "+board.integration:"");
+const bp=byId("boardPrints");bp.replaceChildren();
+for(const p of (board.prints||[])){const tr=node(bp,"tr");node(tr,"td","",p.part);node(tr,"td","st",p.status);node(tr,"td","",p.purpose);}
+const ba=byId("boardAgents");ba.replaceChildren();
+for(const a of (board.agents||[])){const tr=node(ba,"tr");node(tr,"td","",a.agent);node(tr,"td","",a.work);}
+const bw=byId("boardWaiting");bw.replaceChildren();
+for(const w of (board.waitingForUser||[])){node(bw,"li","",w);}
+const bb=byId("boardBlockers");bb.replaceChildren();
+for(const b of (board.blockers||[])){node(bb,"li","",b);}
+}else{boardWrap.hidden=true;}
 byId("stamp").textContent="Ověřený stav "+when(d.updatedAt);
 byId("src").textContent="SOURCE "+d.source.sha.slice(0,9);
 byId("ready").textContent=d.release.ready+" / "+d.release.total;
