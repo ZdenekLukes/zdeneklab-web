@@ -1,0 +1,11 @@
+{
+  "repository": "ZdenekLukes/skola",
+  "path": "chemie/index.html",
+  "commit": "d7f0e6b087c3908ca653e6aaab85861d3c909a36",
+  "questions": 64,
+  "materials": [
+    "chemie/cloud1.pdf",
+    "chemie/cloud2.pdf",
+    "chemie/cloud3.pdf"
+  ]
+}

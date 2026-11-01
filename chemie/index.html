@@ -1,0 +1,1047 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#182d40">
+<meta name="description" content="64 otázek ze 3 podkladů: Chemie: reakce, vazby a roztoky. Procvičování, test a ústní zkoušení pro 9. třídu.">
+<title>Chemie: reakce, vazby a roztoky · ZdenekLab</title>
+<style>:root{--bg:#f7f6f2;--paper:#fff;--ink:#182d40;--muted:#596774;--line:#dcdfdf;--accent:#7461be;--pale:#efebf8;--green:#17634f;--red:#a53d38}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,select{font:inherit}button,a,input,select,summary{-webkit-tap-highlight-color:transparent}button{cursor:pointer}button:disabled{cursor:default;opacity:.5}a{color:inherit;text-underline-offset:4px}button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:4px}[hidden]{display:none!important}h1,h2,p{margin-top:0}h1{font-size:clamp(42px,5.8vw,70px);line-height:1.08;letter-spacing:-3px;font-weight:650;margin-bottom:24px}h1 em{font-family:Georgia,serif;font-weight:400;color:var(--accent)}h2{font-size:25px;line-height:1.35;letter-spacing:-.7px;font-weight:600;margin-bottom:12px}.topbar{max-width:1180px;padding:27px 32px;margin:auto;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}.brand{display:flex;gap:4px;align-items:center;font-size:16px;letter-spacing:1.4px;font-weight:750;text-decoration:none}.brand>span:first-child{font-weight:400}.brand-divider{margin:0 14px;color:#acb0b4}.brand .brand-small{font-size:11px;font-weight:600;letter-spacing:1.7px}.back-link{font-size:12px;color:var(--muted);text-decoration:none}main{max-width:1120px;margin:auto;padding:0 32px}.hero{display:grid;grid-template-columns:1.3fr 1fr;align-items:center;min-height:410px;gap:30px;padding:50px 0}.eyebrow{font-size:10px;letter-spacing:2px;font-weight:750;margin-bottom:16px}.tiny-star{color:var(--accent);font-size:15px;margin-right:7px}.lead{font-size:15px;line-height:1.8;color:var(--muted);max-width:510px;margin-bottom:22px}.pills{display:flex;flex-wrap:wrap;gap:8px}.pills span{font-size:10px;letter-spacing:.3px;border:1px solid var(--line);border-radius:30px;padding:4px 10px}.orbit-art{position:relative;width:100%;max-width:410px;aspect-ratio:1.25;justify-self:end}.orbit{position:absolute;border:1px solid #d8dbe2;border-radius:50%;inset:8% 7%;transform:rotate(-25deg)}.orbit-inner{inset:23% 23%;border-style:dashed}.sun{position:absolute;width:110px;aspect-ratio:1;top:33%;left:38%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe2a3,#edc477 70%);box-shadow:0 0 0 13px #f3dfb94d,0 0 0 26px #f3dfb926}.earth{position:absolute;width:57px;aspect-ratio:1;top:9%;left:21%;border-radius:50%;background:radial-gradient(ellipse at 33% 30%,#c1ddd0 0 17%,transparent 18%),radial-gradient(ellipse at 60% 60%,#76a89b 0 23%,transparent 24%),linear-gradient(105deg,#94c0cc 0,#4c8298 55%,#24465e 100%);box-shadow:8px 8px 20px #213e5814}.moon{position:absolute;width:30px;aspect-ratio:1;top:73%;left:79%;border-radius:50%;background:linear-gradient(100deg,#ded9eb 40%,#85819c 65%);box-shadow:0 0 0 9px #e6e1f140}.art-star{position:absolute;color:#9c96b3}.star-a{top:16%;left:80%}.star-b{top:70%;left:17%;font-size:14px}.art-label{position:absolute;letter-spacing:2px;font-size:8px;color:#727d88}.sun-label{left:46%;top:72%}.earth-label{top:3%;left:23%}.moon-label{top:88%;left:76%}.art-caption{position:absolute;bottom:-10px;left:15%;font-size:8px;letter-spacing:1.4px;color:#889099}.section-heading{display:flex;justify-content:space-between;align-items:end;margin:12px 0 22px}.section-heading .eyebrow{margin-bottom:8px;color:var(--muted)}.section-heading h2{margin-bottom:0}.quiet{font-size:12px;color:var(--muted)}.mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.mode-card{display:flex;flex-direction:column;text-align:left;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:24px;transition:border-color .15s,background .15s;min-height:236px}.mode-card:hover{border-color:var(--accent)}.mode-card.selected{border:2px solid var(--accent);padding:23px;background:#f3f0fa}.mode-top{display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:20px}.mode-icon{font-size:23px;color:var(--accent);line-height:1}.mode-check{border:1px solid var(--line);border-radius:50%;height:19px;width:19px;line-height:17px;text-align:center;color:transparent;font-size:12px}.selected .mode-check{background:var(--accent);color:white;border-color:var(--accent)}.mode-card strong{font-size:19px;font-weight:650;margin-bottom:7px}.mode-card>span:not(.mode-top){font-size:12px;color:var(--muted);line-height:1.75}.mode-card small{font-size:8px;letter-spacing:1.3px;margin-top:22px;font-weight:750;color:#697681}.setup{display:grid;grid-template-columns:1.2fr 1fr 1.2fr;gap:18px;align-items:end;background:#edeef0;border-radius:14px;margin-top:20px;padding:23px 24px}.field label,.catalog-body>label{display:block;font-size:11px;font-weight:650;margin-bottom:6px}.field select{width:100%;padding:12px;border:1px solid #d8dcdf;background:#fff;border-radius:7px;color:var(--ink);font-size:12px;min-height:47px}.primary,.secondary{border-radius:8px;padding:12px 20px;min-height:46px;font-size:13px;font-weight:650;line-height:1.5}.primary{background:var(--ink);color:#fff;border:1px solid var(--ink)}.primary:hover{background:#2e455b}.secondary{background:var(--paper);color:var(--ink);border:1px solid #ccd3d8}.secondary:hover{background:#f0eef7}.start{display:flex;justify-content:space-between;align-items:center}.start span{font-size:18px}.setup-note{grid-column:1/-1;font-size:11px;color:var(--muted);margin:0}.progress-section{display:flex;align-items:center;justify-content:space-between;gap:25px;padding:35px 0;border-bottom:1px solid var(--line)}.progress-section h2{font-size:18px}.progress-section p{margin-bottom:5px}.progress-section .eyebrow{font-size:8px;color:var(--muted);margin-bottom:8px}.stats{display:flex;gap:28px}.stats div{display:flex;flex-direction:column}.stats strong{font-size:25px;font-weight:550;letter-spacing:-1px}.stats span{font-size:9px;color:var(--muted)}.progress-section>.secondary{font-size:11px;white-space:nowrap}.catalog{margin-top:22px;border-bottom:1px solid var(--line);padding-bottom:18px}summary{cursor:pointer;font-weight:600;font-size:13px;padding:8px 0}.catalog>summary{display:flex;justify-content:space-between}.catalog>summary span{color:var(--accent);font-size:18px}.catalog-body{padding:16px 0}.catalog input{width:100%;border:1px solid var(--line);border-radius:8px;padding:12px;background:white;margin-bottom:20px;font-size:14px}.catalog-item{padding:12px 0;border-bottom:1px solid var(--line)}.catalog-item summary{font-size:14px}.catalog-item p{font-size:13px;margin:12px 0 0}.catalog-item .answer{color:var(--green);font-weight:650}.notes{margin-top:15px;max-width:860px}.notes summary{font-size:11px;color:var(--muted);font-weight:500}.notes p{font-size:12px;color:var(--muted);margin:10px 0}.text-button{background:none;border:0;padding:10px 0;font-size:12px;color:var(--muted);text-decoration:underline;text-underline-offset:4px;min-height:44px}.reset{font-size:10px;margin-top:15px}footer{max-width:1120px;padding:24px 32px 32px;margin:15px auto 0;display:flex;justify-content:space-between;font-size:9px;letter-spacing:1px;color:#6d7881;border-top:1px solid var(--line)}.quiz-screen{max-width:800px;min-height:75vh;margin:40px auto}.quiz-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}.badge{padding:5px 12px;border-radius:25px;background:var(--pale);color:#55478c;font-size:11px}.quiz-progress-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:7px}progress{width:100%;height:6px;border:0;border-radius:5px;display:block;overflow:hidden;background:#dfe1e5;accent-color:var(--accent)}progress::-webkit-progress-bar{background:#dfe1e5}progress::-webkit-progress-value{background:var(--accent)}.question-card{margin-top:26px;background:var(--paper);border:1px solid var(--line);padding:34px;border-radius:18px}.question-meta{display:flex;justify-content:space-between;gap:10px;font-size:10px;letter-spacing:.6px;color:var(--muted);margin-bottom:20px}.question-card h2{font-size:27px;line-height:1.4;margin-bottom:16px;outline:none}.options{display:grid;gap:10px;margin:22px 0}.option{display:flex;align-items:center;gap:14px;text-align:left;width:100%;border:1px solid #d9dee2;border-radius:9px;color:var(--ink);background:#fbfbfa;padding:14px 16px;min-height:58px;font-size:15px}.option:not(:disabled):hover{border-color:var(--accent);background:#f5f2fa}.option-letter{display:grid;place-items:center;flex:0 0 28px;width:28px;height:28px;border:1px solid #d5d9df;border-radius:6px;font-size:11px;font-weight:700;color:var(--muted)}.option:disabled{opacity:1}.option.correct{background:#edf7f1;border-color:#5c9b7c}.option.wrong{background:#fdf0ef;border-color:#c7857f}.option.chosen{border-color:var(--accent);background:var(--pale)}.option .state-label{font-size:11px;font-weight:650;display:block;margin-top:4px}.feedback{padding:20px;border-radius:10px;background:#f0f3f5;margin:20px 0}.feedback.good{background:#edf7f1}.feedback.bad{background:#fcf1ee}.feedback strong{display:block;margin-bottom:8px;font-size:15px}.feedback p{font-size:14px;margin-bottom:0}.feedback .explanation{font-size:13px;margin-top:12px;color:#485968}.button-row{display:flex;gap:10px;flex-wrap:wrap}.question-bottom{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:20px}.quiz-foot{font-size:11px;text-align:center;color:var(--muted);margin-top:20px}.results-screen{max-width:850px;padding:50px 0}.result-top{display:flex;align-items:center;justify-content:space-between;gap:30px;margin-bottom:30px}.result-top h1{font-size:44px;letter-spacing:-2px}.score-circle{flex-shrink:0;border:9px solid #ded7ee;background:#f0ebf8;width:170px;height:170px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center}.score-circle strong{font-size:36px;letter-spacing:-2px}.score-circle span{font-size:12px;color:var(--muted)}.result-actions{margin-bottom:45px}.review-item{border:1px solid var(--line);background:white;border-radius:10px;padding:16px 20px;margin:10px 0}.review-item summary{display:flex;gap:12px;align-items:flex-start;font-size:14px}.review-status{color:var(--green);white-space:nowrap}.review-item.missed .review-status{color:var(--red)}.review-item p{font-size:13px;margin:10px 0}.review-item .review-answer{color:var(--green);font-weight:650}.resume-box{margin-top:18px;border:1px solid #c9bfde;background:#f2edf9;padding:18px 23px;border-radius:10px;display:flex;justify-content:space-between;gap:15px;align-items:center;font-size:13px}.resume-box p{margin:5px 0 0;font-size:12px;color:var(--muted)}dialog{border:1px solid var(--line);border-radius:16px;padding:28px;color:var(--ink);max-width:440px;width:calc(100% - 36px)}dialog::backdrop{background:#13243580}dialog p{font-size:14px}#storage-warning{font-size:12px;background:#fff0d2;padding:15px;border-radius:8px}
+@media(max-width:950px){.progress-section{flex-wrap:wrap}.progress-section>div:first-child{width:100%}.hero{grid-template-columns:1.2fr 1fr}.orbit-art{transform:scale(.9)}.mode-card{padding:20px}.mode-card.selected{padding:19px}.setup{grid-template-columns:1fr 1fr}.start{grid-column:1/-1}.section-heading>.quiet{display:none}}
+@media(max-width:600px){.topbar{padding:20px}.brand{font-size:13px}.brand-divider{margin:0 8px}.brand .brand-small{font-size:9px}.back-link{font-size:10px}main{padding:0 20px}.hero{grid-template-columns:1fr;gap:0;padding:32px 0 26px;min-height:0;position:relative}.hero-copy{position:relative;z-index:1}.hero h1{font-size:46px;letter-spacing:-2px}.hero .lead{max-width:335px;font-size:13px;line-height:1.8;margin-bottom:17px}.orbit-art{position:absolute;top:15px;right:-10px;width:150px;opacity:.35;z-index:0;pointer-events:none}.sun{width:47px}.earth{width:24px}.moon{width:13px}.art-label,.art-caption{display:none}.pills span{font-size:9px}.eyebrow{font-size:9px}.section-heading{margin:12px 0 16px}.section-heading h2{font-size:21px}.mode-grid{grid-template-columns:1fr;gap:10px}.mode-card{position:relative;min-height:0;padding:16px 20px 16px 64px}.mode-card.selected{padding:15px 19px 15px 63px}.mode-top{position:absolute;width:calc(100% - 32px);left:16px;top:18px;margin:0}.mode-card strong{font-size:17px;margin:0 22px 5px 0}.mode-card>span:not(.mode-top){font-size:11px;line-height:1.6}.mode-card>span:not(.mode-top) br{display:none}.mode-card small{font-size:7px;margin-top:10px;letter-spacing:.8px}.mode-icon{font-size:23px}.setup{margin-top:15px;padding:17px;gap:12px;grid-template-columns:1fr}.start{grid-column:auto}.setup-note{font-size:10px}.field select{font-size:13px}.field label{font-size:10px}.progress-section{gap:20px;padding:26px 0}.stats{justify-content:space-between;gap:20px;width:100%}.stats strong{font-size:25px}.stats span{font-size:8px}.progress-section>.secondary{width:100%}.progress-section h2{font-size:18px}.desktop{display:none}.catalog>summary{font-size:12px}.quiz-screen{margin:22px auto}.quiz-toolbar{margin-bottom:20px}.question-card{padding:22px 18px;margin-top:20px;border-radius:12px}.question-card h2{font-size:22px}.question-meta{font-size:9px}.option{font-size:14px;padding:12px;gap:10px}.question-bottom{align-items:end}.question-bottom .quiet{font-size:10px}.feedback{padding:16px}.feedback p{font-size:13px}.button-row .primary,.button-row .secondary{font-size:12px;padding:11px 14px}.result-top{flex-direction:column;align-items:flex-start;gap:10px}.result-top h1{font-size:37px}.score-circle{width:140px;height:140px}.result-actions>button{flex:1 1 auto}.results-screen{padding-top:30px}.results-screen h2{font-size:20px}.review-item{padding:12px}.review-item summary{font-size:13px}.resume-box{flex-direction:column;align-items:flex-start}footer{padding:22px 20px;font-size:8px;gap:20px}footer span:last-child{text-align:right}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+</style>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/">ZDENEK<span>LAB</span><span class="brand-divider">/</span><span class="brand-small">ŠKOLA</span></a><a class="back-link" href="/astronomie/">Astronomie ↗</a></header>
+<main id="app">
+<section id="home">
+<div class="hero">
+ <div class="hero-copy"><p class="eyebrow"><span class="tiny-star">✦</span> CHEMIE · 9. TŘÍDA</p><h1>Atomy, vazby<br>a <em>reakce.</em></h1><p class="lead">Od atomu k molekule. Od reakce k výpočtu roztoku.<br class="desktop"> Zopakuj si učivo z dodaných školních materiálů.</p><div class="pills"><span>64 otázek ze 3 podkladů</span><span>Bez přihlášení</span></div></div>
+ <div class="orbit-art" aria-hidden="true"><svg viewBox="0 0 410 328" width="100%" height="100%"><circle cx="208" cy="163" r="126" fill="none" stroke="#dcdfdf"/><circle cx="208" cy="163" r="96" fill="none" stroke="#dcdfdf" stroke-dasharray="4 7"/><path d="M126 202 L208 100 L290 202" fill="none" stroke="#b1a6d4" stroke-width="16" stroke-linecap="round"/><circle cx="208" cy="100" r="49" fill="#d6cdee"/><circle cx="126" cy="202" r="33" fill="#d3e7de"/><circle cx="290" cy="202" r="33" fill="#d3e7de"/><g fill="#182d40" font-family="system-ui,sans-serif" font-size="29" text-anchor="middle"><text x="208" y="110">O</text><text x="126" y="212">H</text><text x="290" y="212">H</text></g><text x="208" y="277" text-anchor="middle" fill="#596774" font-family="system-ui,sans-serif" font-size="10" letter-spacing="2">H₂O · DVĚ JEDNODUCHÉ VAZBY</text></svg></div>
+</div>
+<div class="section-heading"><div><p class="eyebrow">01 / VYBER SI ZPŮSOB</p><h2>Jak si to dnes vyzkoušíš?</h2></div><span class="quiet desktop">Každá správná odpověď má své proč.</span></div>
+<div class="mode-grid" role="group" aria-label="Způsob zkoušení">
+ <button class="mode-card selected" data-mode="practice" aria-pressed="true"><span class="mode-top"><span class="mode-icon">✦</span><span class="mode-check">✓</span></span><strong>Procvičování</strong><span>Vyber odpověď a hned zjisti proč. <br>Ideální na první opakování.</span><small>ODPOVĚĎ HNED PO OTÁZCE</small></button>
+ <button class="mode-card" data-mode="test" aria-pressed="false"><span class="mode-top"><span class="mode-icon">▤</span><span class="mode-check">✓</span></span><strong>Test nanečisto</strong><span>Odpovídej bez nápovědy. <br>Výsledek se dozvíš až na konci.</span><small>VÝSLEDEK NA KONCI</small></button>
+ <button class="mode-card" data-mode="oral" aria-pressed="false"><span class="mode-top"><span class="mode-icon">◌</span><span class="mode-check">✓</span></span><strong>Ústní zkoušení</strong><span>Odpověz vlastními slovy. <br>Rodič nebo ty pak ohodnotíte odpověď.</span><small>NEJDŘÍV ODPOVĚĎ NAHLAS</small></button>
+</div>
+<section class="setup" aria-label="Nastavení kola"><div class="field"><label for="topic">Téma</label><select id="topic"><option value="all">Všechna témata</option></select></div><div class="field"><label for="count">Počet otázek</label><select id="count"><option value="10">10 otázek · krátké kolo</option><option value="20">20 otázek</option><option value="64">Všechny z vybraného tématu</option></select></div><button class="primary start" id="start">Začít procvičování <span>→</span></button><p class="setup-note" id="selection-note"></p></section>
+<div id="resume-box" class="resume-box" hidden><div><strong>Máš rozehrané kolo.</strong><p id="resume-label"></p></div><div class="button-row"><button class="secondary" id="resume">Pokračovat</button><button class="text-button" id="discard">Zahodit kolo</button></div></div>
+<section class="progress-section"><div><p class="eyebrow">TVŮJ POKROK</p><h2>Malé kroky, velký přehled.</h2><p class="quiet">Ukládá se jen v tomto prohlížeči.</p></div><div class="stats"><div><strong id="seen-count">0/64</strong><span>vyzkoušených otázek</span></div><div><strong id="wrong-count">0</strong><span>otázek k zopakování</span></div><div><strong id="round-count">0</strong><span>dokončených kol</span></div></div><button class="secondary" id="review-errors">Procvičit chyby →</button></section>
+<details class="catalog"><summary>Projít všech 64 otázek a odpovědí <span>+</span></summary><div class="catalog-body"><label for="search">Najít otázku</label><input id="search" type="search" placeholder="Například: kation, katalyzátor, hmotnostní zlomek…"><div id="catalog-list"></div></div></details>
+<details class="notes"><summary>Podklady a opravy nepřesností</summary><p>64 otázek vychází ze tří školních prezentací: <a href="https://github.com/ZdenekLukes/skola/blob/main/chemie/cloud1.pdf" target="_blank" rel="noopener">Chemická reakce (cloud1)</a>, <a href="https://github.com/ZdenekLukes/skola/blob/main/chemie/cloud2.pdf" target="_blank" rel="noopener">Atom, molekula a vazba (cloud2)</a> a <a href="https://github.com/ZdenekLukes/skola/blob/main/chemie/cloud3.pdf" target="_blank" rel="noopener">Roztoky a výpočty (cloud3)</a>. Otázky a početní příklady jsou vytvořené pro procvičování; nejde o doslovný přepis. Zdrojová stránka je uvedena v přehledu u každé otázky.</p><p>Upřesnění: atom má vnitřní stavbu; atomy jednoho prvku mohou mít různou hmotnost (izotopy). Molekula prvku není sloučenina. V N₂ je trojná vazba N≡N. Rozhoduje rozdíl elektronegativit; hranice 0,4 a 1,7 jsou školní zjednodušení a na jejich přesné hodnoty se neptáme. Pevný NaCl tvoří iontovou mřížku. Rozpustnost se nezvyšuje s teplotou u všech látek. Zákon zachování hmotnosti zahrnuje i plyny.</p><p>Výpočty používají hmotnostní zlomek w = m(látky) / m(celého roztoku); procenta získáš vynásobením stem. U každé otázky je právě jedna správná možnost.</p></details>
+<button class="text-button reset" id="reset">Smazat uložený pokrok</button>
+</section>
+<section id="quiz" class="quiz-screen" hidden>
+ <div class="quiz-toolbar"><button class="text-button" id="pause">← Přerušit a uložit</button><span id="mode-label" class="badge"></span></div>
+ <div class="quiz-progress-label"><span id="question-position"></span><span id="score-live"></span></div><progress id="progress" value="0" max="10" aria-label="Průběh kola"></progress>
+ <article class="question-card"><div class="question-meta"><span id="question-topic"></span><span id="source-number"></span></div><h2 id="question-text" tabindex="-1"></h2><p id="question-hint" class="quiet"></p><div id="options" class="options"></div><div id="oral-controls"><button class="primary" id="reveal">Ukázat vzorovou odpověď</button></div><div id="feedback" class="feedback" role="status" hidden></div><div id="oral-rating" class="button-row" hidden><button class="secondary" data-rate="0">Ještě neumím · 0</button><button class="secondary" data-rate="0.5">Částečně · ½</button><button class="primary" data-rate="1">Umím · 1</button></div><div class="question-bottom"><span id="action-hint" class="quiet"></span><button id="next" class="primary" hidden>Další otázka →</button></div></article>
+ <p class="quiz-foot">Nejde jen o správné písmeno. Zkus si odpověď také vysvětlit.</p>
+</section>
+<section id="results" class="results-screen" hidden><p class="eyebrow">KOLO DOKONČENO</p><div class="result-top"><div><h1 id="result-title" tabindex="-1">Hotovo.</h1><p id="result-subtitle" class="lead"></p><p id="result-kind" class="quiet"></p></div><div class="score-circle"><strong id="result-percent"></strong><span id="result-score"></span></div></div><div class="button-row result-actions"><button class="primary" id="retry">Zopakovat chyby</button><button class="secondary" id="again">Nové kolo</button><button class="text-button" id="home-button">Zpět na přehled</button></div><h2>Co už víš a co si připomenout</h2><div id="result-review"></div></section>
+<p id="storage-warning" role="status" hidden>Prohlížeč nepovolil ukládání. Zkoušení funguje, ale pokrok se po zavření nemusí zachovat.</p>
+</main><footer><span>ZDENEKLAB / ŠKOLA</span><span>Chemie: reakce, vazby a roztoky · 64 otázek</span></footer>
+<dialog id="confirm-dialog"><h2 id="confirm-title">Opravdu pokračovat?</h2><p id="confirm-text"></p><div class="button-row"><button class="secondary" id="confirm-cancel">Zrušit</button><button class="primary" id="confirm-ok">Potvrdit</button></div></dialog>
+<noscript>Pro zkoušení je potřeba zapnout JavaScript v prohlížeči.</noscript>
+<script>const DATA = [
+  {
+    "id": 1,
+    "topic": "reakce",
+    "question": "Co je chemická reakce?",
+    "answer": "Děj, při kterém z výchozích látek vznikají jiné látky.",
+    "wrong": [
+      "Pouhá změna skupenství.",
+      "Pouhé rozdělení směsi sítkem.",
+      "Změna polohy tělesa."
+    ],
+    "explanation": "Produkty mají jiné složení a vlastnosti než reaktanty; mění se uspořádání atomů a vazeb.",
+    "source": "cloud1.pdf, s. 2",
+    "sourceFile": "cloud1.pdf"
+  },
+  {
+    "id": 2,
+    "topic": "reakce",
+    "question": "Jak se nazývají výchozí látky chemické reakce?",
+    "answer": "Reaktanty.",
+    "wrong": [
+      "Produkty.",
+      "Rozpouštědla.",
+      "Sraženiny."
+    ],
+    "explanation": "Reaktanty do reakce vstupují, produkty při ní vznikají.",
+    "source": "cloud1.pdf, s. 2",
+    "sourceFile": "cloud1.pdf"
+  },
+  {
+    "id": 3,
+    "topic": "reakce",
+    "question": "Kde se v chemické rovnici zapisují produkty?",
+    "answer": "Vpravo od šipky.",
+    "wrong": [
+      "Vlevo od šipky.",
+      "Nad každou značkou prvku.",
+      "Jen pod rovnici."
+    ],
+    "explanation": "Zápis má obvyklý směr reaktanty → produkty.",
+    "source": "cloud1.pdf, s. 2",
+    "sourceFile": "cloud1.pdf"
+  },
+  {
+    "id": 4,
+    "topic": "reakce",
+    "question": "Co se při běžné chemické reakci děje s atomy?",
+    "answer": "Přeskupují se a vytvářejí nové vazby.",
+    "wrong": [
+      "Všechny zaniknou.",
+      "Mění se na jiné chemické prvky.",
+      "Vznikají z ničeho nové atomy."
+    ],
+    "explanation": "Při běžné chemické reakci se nemění jádra atomů. Původní vazby zanikají a nové vznikají.",
+    "source": "cloud3.pdf, s. 5–6",
+    "sourceFile": "cloud3.pdf"
+  },
+  {
+    "id": 5,
+    "topic": "reakce",
+    "question": "Který děj je chemická reakce?",
+    "answer": "Rezavění železa.",
+    "wrong": [
+      "Tání ledu.",
+      "Drcení cukru.",
+      "Vypařování čisté vody."
+    ],
+    "explanation": "Při rezavění vznikají nové látky. Ostatní děje nemění chemickou totožnost uvedené látky.",
+    "source": "cloud3.pdf, s. 5",
+    "sourceFile": "cloud3.pdf"
+  },
+  {
+    "id": 6,
+    "topic": "reakce",
+    "question": "Co může být projevem chemické reakce?",
+    "answer": "Vznik sraženiny nebo změna barvy.",
+    "wrong": [
+      "Vždy pouze změna velikosti nádoby.",
+      "Vždy pouze změna hmotnosti celé uzavřené soustavy.",
+      "Vždy všechny možné projevy současně."
+    ],
+    "explanation": "Mezi možné projevy patří také vznik plynu, změna teploty, světlo nebo zápach. Nemusejí se objevit všechny.",
+    "source": "cloud3.pdf, s. 6",
+    "sourceFile": "cloud3.pdf"
+  },
+  {
+    "id": 7,
+    "topic": "reakce",
+    "question": "Dokazují bublinky samy o sobě vždy chemickou reakci?",
+    "answer": "Ne, vznikají také například při varu vody.",
+    "wrong": [
+      "Ano, bez výjimky.",
+      "Ano, každá bublina je nová sloučenina.",
+      "Ne, při chemické reakci plyn nikdy nevzniká."
+    ],
+    "explanation": "Vznik plynu může reakci doprovázet, ale var je fyzikální děj. Je potřeba posoudit celý děj.",
+    "source": "cloud3.pdf, s. 6",
+    "sourceFile": "cloud3.pdf"
+  },
+  {
+    "id": 8,
+    "topic": "reakce",
+    "question": "Co říká zákon zachování hmotnosti?",
+    "answer": "V uzavřené soustavě se hmotnost reaktantů rovná hmotnosti produktů.",
+    "wrong": [
+      "Produkty musí být vždy lehčí.",
+      "Produkty musí být vždy těžší.",
+      "Hmotnost závisí jen na barvě látek."
+    ],
+    "explanation": "Počítáme všechny látky včetně plynů. Únik plynu z otevřené nádoby může zdánlivě způsobit úbytek hmotnosti.",
+    "source": "cloud1.pdf, s. 3; cloud3.pdf, s. 6",
+    "sourceFile": "cloud1.pdf"
+  },
+  {
+    "id": 9,
+    "topic": "reakce",
+    "question": "Co musí platit ve správně vyčíslené chemické rovnici?",
+    "answer": "Na obou stranách je stejný počet atomů každého prvku.",
+    "wrong": [
+      "Na obou stranách je vždy stejný počet molekul.",
+      "Na obou stranách musí být jediná látka.",
+      "Na obou stranách musejí být stejné vzorce."
+    ],
+    "explanation": "Zachovávají se atomy jednotlivých prvků. Počet molekul stejný být nemusí.",
+    "source": "cloud1.pdf, s. 3",
+    "sourceFile": "cloud1.pdf"
+  },
+  {
+    "id": 10,
+    "topic": "reakce",
+    "question": "Která rovnice hoření hořčíku je správně vyčíslená?",
+    "answer": "2 Mg + O₂ → 2 MgO.",
+    "wrong": [
+      "Mg + O₂ → MgO.",
+      "2 Mg + O₂ → MgO.",
+      "Mg + 2 O₂ → 2 MgO."
+    ],
+    "explanation": "Vlevo i vpravo jsou 2 atomy hořčíku a 2 atomy kyslíku. Měníme koeficienty, nikoli vzorec MgO.",
+    "source": "cloud1.pdf, s. 3",
+    "sourceFile": "cloud1.pdf"
+  },
+  {
+    "id": 11,
+    "topic": "reakce",
+    "question": "Kolik atomů kyslíku představuje zápis 2 MgO?",
+    "answer": "2 atomy kyslíku.",
+    "wrong": [
+      "1 atom kyslíku.",
+      "4 atomy kyslíku.",
+      "Žádný atom kyslíku."
+    ],
+    "explanation": "Koeficient 2 násobí celý vzorec MgO: 2 atomy Mg a 2 atomy O.",
+    "source": "cloud1.pdf, s. 3",
+    "sourceFile": "cloud1.pdf"
+  },
+  {
+    "id": 12,
+    "topic": "reakce",
+    "question": "Při reakci v uzavřené soustavě reaguje 12 g látky s 8 g druhé látky. Obě se zcela spotřebují. Jaká je celková hmotnost produktů?",
+    "answer": "20 g.",
+    "wrong": [
+      "4 g.",
+      "12 g.",
+      "96 g."
+    ],
+    "explanation": "Podle zákona zachování hmotnosti je součet hmotností produktů 12 + 8 = 20 g.",
+    "source": "cloud1.pdf, s. 3; cloud3.pdf, s. 6",
+    "sourceFile": "cloud1.pdf"
+  },
+  {
+    "id": 13,
+    "topic": "reakce",
+    "question": "Co je aktivační energie?",
+    "answer": "Minimální energie potřebná k zahájení reakce.",
+    "wrong": [
+      "Hmotnost všech produktů.",
+      "Počet atomů v molekule.",
+      "Teplota tuhnutí rozpouštědla."
+    ],
+    "explanation": "Aby byla srážka částic účinná, potřebují částice dostatek energie a vhodné vzájemné uspořádání.",
+    "source": "cloud1.pdf, s. 4",
+    "sourceFile": "cloud1.pdf"
+  },
+  {
+    "id": 14,
+    "topic": "reakce",
+    "question": "Jak obvykle ovlivní zvýšení teploty rychlost reakce?",
+    "answer": "Reakce se zrychlí.",
+    "wrong": [
+      "Reakce se vždy zastaví.",
+      "Počet atomů v soustavě se zdvojnásobí.",
+      "Rychlost reakce nemůže ovlivnit."
+    ],
+    "explanation": "Při vyšší teplotě má více částic energii potřebnou k překonání aktivační bariéry.",
+    "source": "cloud1.pdf, s. 4",
+    "sourceFile": "cloud1.pdf"
+  },
+  {
+    "id": 15,
+    "topic": "reakce",
+    "question": "Proč prášek pevné látky obvykle reaguje rychleji než stejná hmotnost velkých kusů?",
+    "answer": "Má větší celkový povrch přístupný druhému reaktantu.",
+    "wrong": [
+      "Má vždy více hmotnosti.",
+      "Je tvořen jiným chemickým prvkem.",
+      "Nepotřebuje žádný další reaktant."
+    ],
+    "explanation": "Rozmělnění zvětší povrch, na kterém se mohou částice reaktantů setkávat.",
+    "source": "cloud1.pdf, s. 4",
+    "sourceFile": "cloud1.pdf"
+  },
+  {
+    "id": 16,
+    "topic": "reakce",
+    "question": "Které tvrzení o rychlosti reakce je správné?",
+    "answer": "Závisí také na koncentraci, reaktivitě a přítomnosti katalyzátoru.",
+    "wrong": [
+      "Závisí pouze na názvu nádoby.",
+      "Koncentrace nemůže rychlost ovlivnit.",
+      "Katalyzátor se musí vždy celý spotřebovat jako reaktant."
+    ],
+    "explanation": "Katalyzátor umožňuje rychlejší reakční cestu a při celkovém ději se regeneruje. Vyšší koncentrace často zvyšuje četnost srážek.",
+    "source": "cloud1.pdf, s. 4",
+    "sourceFile": "cloud1.pdf"
+  },
+  {
+    "id": 17,
+    "topic": "atom",
+    "question": "Kde se nacházejí protony a neutrony?",
+    "answer": "V atomovém jádře.",
+    "wrong": [
+      "V elektronovém obalu.",
+      "Pouze mezi dvěma molekulami.",
+      "Vně každého atomu."
+    ],
+    "explanation": "Jádro obsahuje protony a obvykle také neutrony; elektronový obal obsahuje elektrony.",
+    "source": "cloud2.pdf, s. 2",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 18,
+    "topic": "atom",
+    "question": "Která částice má záporný elektrický náboj?",
+    "answer": "Elektron.",
+    "wrong": [
+      "Proton.",
+      "Neutron.",
+      "Neutrální atom."
+    ],
+    "explanation": "Elektron má záporný náboj, proton kladný a neutron je elektricky neutrální.",
+    "source": "cloud2.pdf, s. 2",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 19,
+    "topic": "atom",
+    "question": "Kdy je atom elektricky neutrální?",
+    "answer": "Když má stejný počet protonů a elektronů.",
+    "wrong": [
+      "Když nemá žádné protony.",
+      "Když má více elektronů než protonů.",
+      "Když má více protonů než elektronů."
+    ],
+    "explanation": "Stejné počty kladně nabitých protonů a záporně nabitých elektronů se nábojově vyrovnají.",
+    "source": "cloud2.pdf, s. 2",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 20,
+    "topic": "atom",
+    "question": "Neutrální atom kyslíku má 8 protonů. Kolik má elektronů?",
+    "answer": "8 elektronů.",
+    "wrong": [
+      "4 elektrony.",
+      "16 elektronů.",
+      "0 elektronů."
+    ],
+    "explanation": "V neutrálním atomu je počet elektronů stejný jako počet protonů.",
+    "source": "cloud2.pdf, s. 7",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 21,
+    "topic": "atom",
+    "question": "Co jsou valenční elektrony v probíraném školním modelu?",
+    "answer": "Elektrony v nejvzdálenější obsazené vrstvě obalu.",
+    "wrong": [
+      "Protony na povrchu jádra.",
+      "Neutrony mimo jádro.",
+      "Všechny částice molekuly."
+    ],
+    "explanation": "Valenční elektrony se podílejí na chemických vazbách a výrazně ovlivňují chemické vlastnosti prvku.",
+    "source": "cloud2.pdf, s. 2–3",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 22,
+    "topic": "atom",
+    "question": "Je atom skutečně nedělitelná částice?",
+    "answer": "Ne, má jádro a elektronový obal a obsahuje menší částice.",
+    "wrong": [
+      "Ano, nemá žádnou vnitřní stavbu.",
+      "Ano, obsahuje pouze jednu pevnou kuličku.",
+      "Ne, každý atom je tvořen dvěma molekulami."
+    ],
+    "explanation": "Označení „nedělitelný“ je historické. Atom obsahuje protony, neutrony a elektrony; při běžných chemických reakcích se jádro nemění.",
+    "source": "cloud2.pdf, s. 2 (zpřesnění)",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 23,
+    "topic": "atom",
+    "question": "Který příklad je molekula prvku?",
+    "answer": "H₂.",
+    "wrong": [
+      "H₂O.",
+      "CO₂.",
+      "HCl."
+    ],
+    "explanation": "Molekula prvku obsahuje atomy téhož prvku. H₂ tvoří dva atomy vodíku.",
+    "source": "cloud2.pdf, s. 3",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 24,
+    "topic": "atom",
+    "question": "Co je chemická sloučenina?",
+    "answer": "Látka tvořená chemicky vázanými atomy alespoň dvou různých prvků.",
+    "wrong": [
+      "Každá směs dvou prášků.",
+      "Každá molekula stejného prvku.",
+      "Pouze jeden izolovaný atom."
+    ],
+    "explanation": "Například CO₂ obsahuje uhlík a kyslík. Směs není totéž co sloučenina.",
+    "source": "cloud2.pdf, s. 3–4",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 25,
+    "topic": "atom",
+    "question": "Kolik atomů celkem je v jedné molekule CO₂?",
+    "answer": "3 atomy: 1 uhlíku a 2 kyslíku.",
+    "wrong": [
+      "2 atomy: 1 uhlíku a 1 kyslíku.",
+      "4 atomy: 2 uhlíku a 2 kyslíku.",
+      "1 atom: pouze uhlík."
+    ],
+    "explanation": "Dolní index 2 patří ke kyslíku. U uhlíku není index, takže jde o jeden atom.",
+    "source": "cloud2.pdf, s. 4",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 26,
+    "topic": "atom",
+    "question": "Co ve vzorci znamená číslo vpravo dole za značkou prvku?",
+    "answer": "Počet atomů daného prvku v uvedené částici nebo vzorcové jednotce.",
+    "wrong": [
+      "Celkový elektrický náboj nádoby.",
+      "Pořadí látky v rovnici.",
+      "Hmotnost rozpouštědla v gramech."
+    ],
+    "explanation": "Jednička se obvykle nepíše. Například H₂O obsahuje dva atomy vodíku a jeden atom kyslíku.",
+    "source": "cloud2.pdf, s. 4",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 27,
+    "topic": "vazby",
+    "question": "Které elektrony se podílejí na vzniku chemických vazeb?",
+    "answer": "Valenční elektrony.",
+    "wrong": [
+      "Pouze elektrony z cizí nádoby.",
+      "Žádné elektrony.",
+      "Pouze protony z jádra."
+    ],
+    "explanation": "Chemické vazby souvisejí s uspořádáním valenčních elektronů.",
+    "source": "cloud2.pdf, s. 3",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 28,
+    "topic": "vazby",
+    "question": "Jak vzniká kovalentní vazba?",
+    "answer": "Sdílením elektronového páru nebo párů mezi atomy.",
+    "wrong": [
+      "Sloučením jader při běžné reakci.",
+      "Pouhým smícháním dvou prášků.",
+      "Zánikem všech elektronů."
+    ],
+    "explanation": "Sdílené elektronové páry drží atomy pohromadě například v H₂, O₂ nebo H₂O.",
+    "source": "cloud2.pdf, s. 3, 6–8",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 29,
+    "topic": "vazby",
+    "question": "Kolik elektronových párů se sdílí v jednoduché vazbě?",
+    "answer": "1 pár.",
+    "wrong": [
+      "2 páry.",
+      "3 páry.",
+      "Žádný pár."
+    ],
+    "explanation": "Jednoduchou vazbu zapisujeme jednou čárkou, například H–H.",
+    "source": "cloud2.pdf, s. 6",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 30,
+    "topic": "vazby",
+    "question": "Kolik elektronů tvoří dva sdílené elektronové páry v dvojné vazbě?",
+    "answer": "4 elektrony.",
+    "wrong": [
+      "2 elektrony.",
+      "3 elektrony.",
+      "8 elektronů."
+    ],
+    "explanation": "Jeden pár obsahuje dva elektrony. Dva páry tedy obsahují 2 × 2 = 4 elektrony.",
+    "source": "cloud2.pdf, s. 7",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 31,
+    "topic": "vazby",
+    "question": "Jaká vazba je mezi atomy v molekule O₂?",
+    "answer": "Dvojná, O=O.",
+    "wrong": [
+      "Jednoduchá, O–O.",
+      "Trojná, O≡O.",
+      "Žádná vazba."
+    ],
+    "explanation": "Atomy kyslíku v O₂ sdílejí dva elektronové páry.",
+    "source": "cloud2.pdf, s. 7",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 32,
+    "topic": "vazby",
+    "question": "Jaký je správný zápis vazby v molekule N₂?",
+    "answer": "N≡N, trojná vazba.",
+    "wrong": [
+      "N=N, dvojná vazba.",
+      "N–N, jednoduchá vazba.",
+      "N + N, žádná vazba."
+    ],
+    "explanation": "V N₂ jsou tři sdílené elektronové páry. Na některých místech podkladů je chybný zápis N=N; správně je N≡N.",
+    "source": "cloud2.pdf, s. 5, 8, 10 (oprava)",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 33,
+    "topic": "vazby",
+    "question": "Kolik elektronů se sdílí v jedné trojné vazbě?",
+    "answer": "6 elektronů.",
+    "wrong": [
+      "2 elektrony.",
+      "3 elektrony.",
+      "4 elektrony."
+    ],
+    "explanation": "Trojnou vazbu tvoří tři sdílené páry, tedy šest elektronů.",
+    "source": "cloud2.pdf, s. 8",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 34,
+    "topic": "vazby",
+    "question": "Co vyjadřuje vaznost atomu v uvedených příkladech?",
+    "answer": "Kolik vazeb atom vytváří, přičemž dvojná se počítá za dvě a trojná za tři.",
+    "wrong": [
+      "Hmotnost celého roztoku.",
+      "Počet neutronů v každém jádře.",
+      "Teplotu reakce ve stupních."
+    ],
+    "explanation": "Kyslík je v uvedených příkladech dvojvazný: může mít jednu dvojnou nebo dvě jednoduché vazby.",
+    "source": "cloud2.pdf, s. 9–10",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 35,
+    "topic": "vazby",
+    "question": "Jaké vazby vytváří atom kyslíku v H₂O?",
+    "answer": "Dvě jednoduché vazby s vodíky.",
+    "wrong": [
+      "Jednu trojnou vazbu.",
+      "Čtyři jednoduché vazby.",
+      "Jednu dvojnou vazbu s vodíkem."
+    ],
+    "explanation": "Každý vodík je v H₂O vázán jednou jednoduchou vazbou na kyslík.",
+    "source": "cloud2.pdf, s. 9",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 36,
+    "topic": "vazby",
+    "question": "Jakou vaznost má dusík v NH₃?",
+    "answer": "Tři, vytváří tři jednoduché vazby s vodíky.",
+    "wrong": [
+      "Jedna, vytváří jednu vazbu.",
+      "Dvě, vytváří dvě vazby.",
+      "Čtyři, vytváří čtyři vazby."
+    ],
+    "explanation": "V molekule amoniaku NH₃ je dusík vázán na tři atomy vodíku.",
+    "source": "cloud2.pdf, s. 10",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 37,
+    "topic": "vazby",
+    "question": "Jaké vazby vytváří uhlík v metanu CH₄?",
+    "answer": "Čtyři jednoduché vazby s vodíky.",
+    "wrong": [
+      "Dvě jednoduché vazby.",
+      "Jednu trojnou vazbu.",
+      "Čtyři dvojné vazby."
+    ],
+    "explanation": "Uhlík je v CH₄ čtyřvazný a váže čtyři atomy vodíku.",
+    "source": "cloud2.pdf, s. 10",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 38,
+    "topic": "vazby",
+    "question": "Jaké vazby má uhlík v běžném strukturním vzorci CO₂?",
+    "answer": "Dvě dvojné vazby, O=C=O.",
+    "wrong": [
+      "Dvě jednoduché vazby, O–C–O.",
+      "Jednu trojnou a jednu dvojnou vazbu.",
+      "Čtyři vazby na vodík."
+    ],
+    "explanation": "Dvě dvojné vazby odpovídají čtyřvaznosti uhlíku; každý kyslík je dvojvazný.",
+    "source": "cloud2.pdf, s. 10",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 39,
+    "topic": "vazby",
+    "question": "Co je elektronegativita?",
+    "answer": "Schopnost atomu přitahovat elektrony v chemické vazbě.",
+    "wrong": [
+      "Hmotnost elektronu v gramech.",
+      "Počet molekul v roztoku.",
+      "Schopnost látky měnit objem nádoby."
+    ],
+    "explanation": "Čím větší elektronegativita, tím silněji atom přitahuje vazebné elektrony.",
+    "source": "cloud2.pdf, s. 11",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 40,
+    "topic": "vazby",
+    "question": "Co porovnáváme při školním odhadu druhu vazby podle elektronegativity?",
+    "answer": "Rozdíl elektronegativit obou atomů.",
+    "wrong": [
+      "Jen samotnou elektronegativitu jednoho atomu.",
+      "Součet hmotností nádob.",
+      "Počet neutronů ve vodě."
+    ],
+    "explanation": "Podklady na jednom místě zkracují formulaci nepřesně: rozhoduje rozdíl elektronegativit, nikoli hodnota jediného prvku.",
+    "source": "cloud2.pdf, s. 11–12 (zpřesnění)",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 41,
+    "topic": "vazby",
+    "question": "Jaký druh vazby podle školního dělení odpovídá rozdílu elektronegativit 0?",
+    "answer": "Nepolární kovalentní vazba.",
+    "wrong": [
+      "Polární kovalentní vazba.",
+      "Iontová vazba.",
+      "Vždy trojná vazba."
+    ],
+    "explanation": "Stejné atomy mají stejnou elektronegativitu. Jejich vazba je nepolární, například H–H.",
+    "source": "cloud2.pdf, s. 11",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 42,
+    "topic": "vazby",
+    "question": "Jak zařadíme rozdíl elektronegativit 1,0 podle hranic v materiálech?",
+    "answer": "Polární kovalentní vazba.",
+    "wrong": [
+      "Nepolární kovalentní vazba.",
+      "Iontová vazba.",
+      "Žádná vazba nemůže vzniknout."
+    ],
+    "explanation": "V používaném školním modelu patří rozdíl 1,0 mezi 0,4 a 1,7. Tyto hranice jsou orientační.",
+    "source": "cloud2.pdf, s. 11",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 43,
+    "topic": "vazby",
+    "question": "Jak zařadíme rozdíl elektronegativit 2,2 podle školního modelu z materiálů?",
+    "answer": "Iontová vazba.",
+    "wrong": [
+      "Nepolární kovalentní vazba.",
+      "Vždy jednoduchá nepolární vazba.",
+      "Vždy trojná kovalentní vazba."
+    ],
+    "explanation": "Rozdíl 2,2 je větší než školní orientační hranice 1,7. Iontová vazba souvisí s přitažlivostí opačně nabitých iontů.",
+    "source": "cloud2.pdf, s. 11–12",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 44,
+    "topic": "vazby",
+    "question": "Co vznikne z neutrálního atomu, který odevzdá jeden elektron?",
+    "answer": "Kation s nábojem +1.",
+    "wrong": [
+      "Anion s nábojem −1.",
+      "Neutron.",
+      "Atom bez protonů."
+    ],
+    "explanation": "Po odevzdání záporného elektronu převažuje o jeden kladný náboj protonů.",
+    "source": "cloud2.pdf, s. 12–13",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 45,
+    "topic": "vazby",
+    "question": "Co vznikne z neutrálního atomu, který přijme jeden elektron?",
+    "answer": "Anion s nábojem −1.",
+    "wrong": [
+      "Kation s nábojem +1.",
+      "Proton.",
+      "Vždy neutrální molekula."
+    ],
+    "explanation": "Přijatý elektron přidá jeden záporný náboj. Počet protonů v jádře se nemění.",
+    "source": "cloud2.pdf, s. 12–13",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 46,
+    "topic": "vazby",
+    "question": "Který popis vzniku iontové vazby v NaCl je správný?",
+    "answer": "Sodík odevzdá elektron, chlor ho přijme; Na⁺ a Cl⁻ se přitahují.",
+    "wrong": [
+      "Chlor odevzdá proton sodíku.",
+      "Oba atomy vytvoří kladné ionty a přitahují se.",
+      "Sodík a chlor ztratí všechna jádra."
+    ],
+    "explanation": "Opačně nabité ionty drží elektrostatická přitažlivost. Pevný NaCl vytváří iontovou mřížku, nikoli samostatné molekuly NaCl.",
+    "source": "cloud2.pdf, s. 12–13 (zpřesnění)",
+    "sourceFile": "cloud2.pdf"
+  },
+  {
+    "id": 47,
+    "topic": "roztoky",
+    "question": "Jaký druh směsi je roztok?",
+    "answer": "Stejnorodá směs.",
+    "wrong": [
+      "Vždy různorodá směs s viditelnými kusy.",
+      "Čistý chemický prvek.",
+      "Vždy nová chemická sloučenina."
+    ],
+    "explanation": "Roztok má stejné složení a vlastnosti v celém objemu; rozpuštěné částice běžně nerozeznáme pouhým okem.",
+    "source": "cloud3.pdf, s. 2",
+    "sourceFile": "cloud3.pdf"
+  },
+  {
+    "id": 48,
+    "topic": "roztoky",
+    "question": "Ve kterých skupenstvích mohou existovat roztoky?",
+    "answer": "V pevném, kapalném i plynném.",
+    "wrong": [
+      "Pouze v kapalném.",
+      "Pouze v pevném.",
+      "Pouze v plynném."
+    ],
+    "explanation": "Nejběžněji probíráme kapalné roztoky, ale stejnorodé směsi existují ve všech třech skupenstvích.",
+    "source": "cloud3.pdf, s. 2",
+    "sourceFile": "cloud3.pdf"
+  },
+  {
+    "id": 49,
+    "topic": "roztoky",
+    "question": "Co je rozpouštědlem ve vodném roztoku cukru?",
+    "answer": "Voda.",
+    "wrong": [
+      "Cukr.",
+      "Sklenice.",
+      "Vzduch nad sklenicí."
+    ],
+    "explanation": "Cukr je rozpuštěná látka, voda je rozpouštědlo. Dohromady tvoří roztok.",
+    "source": "cloud3.pdf, s. 2",
+    "sourceFile": "cloud3.pdf"
+  },
+  {
+    "id": 50,
+    "topic": "roztoky",
+    "question": "Co obecně vyjadřuje koncentrace roztoku?",
+    "answer": "Množství rozpuštěné látky vzhledem k množství roztoku.",
+    "wrong": [
+      "Pouze barvu nádoby.",
+      "Vždy jen teplotu roztoku.",
+      "Pouze hmotnost prázdné nádoby."
+    ],
+    "explanation": "Složení lze vyjádřit různými způsoby. Zde procvičujeme zejména hmotnostní zlomek.",
+    "source": "cloud3.pdf, s. 3–4",
+    "sourceFile": "cloud3.pdf"
+  },
+  {
+    "id": 51,
+    "topic": "roztoky",
+    "question": "Který roztok téže látky je koncentrovanější?",
+    "answer": "Ten, který obsahuje více rozpuštěné látky ve stejné hmotnosti roztoku.",
+    "wrong": [
+      "Ten, který je v širší sklenici.",
+      "Každý teplejší roztok bez ohledu na složení.",
+      "Ten, který má světlejší štítek."
+    ],
+    "explanation": "Srovnávat musíme poměr množství látky a roztoku, nikoli jen velikost nádoby.",
+    "source": "cloud3.pdf, s. 3–4",
+    "sourceFile": "cloud3.pdf"
+  },
+  {
+    "id": 52,
+    "topic": "roztoky",
+    "question": "Co je nasycený roztok?",
+    "answer": "Roztok, v němž se při dané teplotě další množství dané látky již nerozpouští.",
+    "wrong": [
+      "Roztok, který neobsahuje rozpuštěnou látku.",
+      "Každý barevný roztok.",
+      "Roztok, který nemůže obsahovat vodu."
+    ],
+    "explanation": "Nasycení posuzujeme pro konkrétní látku, rozpouštědlo a teplotu.",
+    "source": "cloud3.pdf, s. 3",
+    "sourceFile": "cloud3.pdf"
+  },
+  {
+    "id": 53,
+    "topic": "roztoky",
+    "question": "Co platí pro nenasycený roztok?",
+    "answer": "Při dané teplotě může rozpustit ještě další množství dané látky.",
+    "wrong": [
+      "Další látka se v něm už nikdy nerozpustí.",
+      "Musí být vždy horký.",
+      "Neobsahuje žádné částice."
+    ],
+    "explanation": "Nenasycený roztok ještě nedosáhl meze rozpustnosti dané látky za daných podmínek.",
+    "source": "cloud3.pdf, s. 3",
+    "sourceFile": "cloud3.pdf"
+  },
+  {
+    "id": 54,
+    "topic": "roztoky",
+    "question": "Co je rozpustnost látky?",
+    "answer": "Množství látky, které se rozpustí v daném množství rozpouštědla při dané teplotě do nasycení.",
+    "wrong": [
+      "Doba potřebná k zamíchání libovolného roztoku.",
+      "Hmotnost prázdné nádoby.",
+      "Vždy stejná hodnota pro všechny látky."
+    ],
+    "explanation": "Rozpustnost je vlastnost konkrétní látky v konkrétním rozpouštědle a závisí také na teplotě.",
+    "source": "cloud3.pdf, s. 3",
+    "sourceFile": "cloud3.pdf"
+  },
+  {
+    "id": 55,
+    "topic": "roztoky",
+    "question": "Musí se rozpustnost každé látky při zahřívání zvýšit?",
+    "answer": "Ne, závisí na konkrétní látce; u mnoha pevných látek roste, u plynů ve vodě obvykle klesá.",
+    "wrong": [
+      "Ano, bez jediné výjimky.",
+      "Ne, rozpustnost nikdy nezávisí na teplotě.",
+      "Ano, zahřátím se každá látka mění na vodu."
+    ],
+    "explanation": "Tvrzení v podkladu je zjednodušené. Rozpustnost není totéž co rychlost rozpouštění.",
+    "source": "cloud3.pdf, s. 3 (zpřesnění)",
+    "sourceFile": "cloud3.pdf"
+  },
+  {
+    "id": 56,
+    "topic": "roztoky",
+    "question": "Který vztah správně vyjadřuje hmotnostní zlomek rozpuštěné látky?",
+    "answer": "w = m(látky) / m(roztoku).",
+    "wrong": [
+      "w = m(roztoku) / m(látky).",
+      "w = m(látky) × m(roztoku).",
+      "w = m(rozpouštědla) − m(látky)."
+    ],
+    "explanation": "Ve jmenovateli je hmotnost celého roztoku včetně rozpuštěné látky, nikoli jen rozpouštědla.",
+    "source": "cloud3.pdf, s. 4",
+    "sourceFile": "cloud3.pdf"
+  },
+  {
+    "id": 57,
+    "topic": "roztoky",
+    "question": "Jakou jednotku má hmotnostní zlomek w?",
+    "answer": "Nemá jednotku; je bezrozměrný.",
+    "wrong": [
+      "Gram.",
+      "Mililitr.",
+      "Stupeň Celsia."
+    ],
+    "explanation": "Dělíme dvě hmotnosti ve stejných jednotkách, proto se jednotky vykrátí. Pro procenta násobíme výsledek stem.",
+    "source": "cloud3.pdf, s. 4",
+    "sourceFile": "cloud3.pdf"
+  },
+  {
+    "id": 58,
+    "topic": "roztoky",
+    "question": "Jaké procento odpovídá hmotnostnímu zlomku w = 0,2?",
+    "answer": "20 %.",
+    "wrong": [
+      "0,2 %.",
+      "2 %.",
+      "200 %."
+    ],
+    "explanation": "0,2 × 100 % = 20 %. Desetinný zlomek a procentní údaj je potřeba rozlišovat.",
+    "source": "cloud3.pdf, s. 4",
+    "sourceFile": "cloud3.pdf"
+  },
+  {
+    "id": 59,
+    "topic": "roztoky",
+    "question": "Rozpustíme 10 g cukru v 90 g vody. Jaká je hmotnost roztoku, pokud nic neunikne?",
+    "answer": "100 g.",
+    "wrong": [
+      "90 g.",
+      "10 g.",
+      "80 g."
+    ],
+    "explanation": "Hmotnost roztoku je součet hmotností rozpuštěné látky a rozpouštědla: 10 + 90 = 100 g.",
+    "source": "cloud3.pdf, s. 4 (procvičovací výpočet)",
+    "sourceFile": "cloud3.pdf"
+  },
+  {
+    "id": 60,
+    "topic": "roztoky",
+    "question": "Jaký je hmotnostní podíl soli v procentech po rozpuštění 10 g soli v 90 g vody?",
+    "answer": "10 %.",
+    "wrong": [
+      "11,1 %.",
+      "90 %.",
+      "1 %."
+    ],
+    "explanation": "Hmotnost roztoku je 100 g. w = 10 / 100 = 0,10, tedy 10 %. Nedělíme pouze hmotností vody.",
+    "source": "cloud3.pdf, s. 4 (procvičovací výpočet)",
+    "sourceFile": "cloud3.pdf"
+  },
+  {
+    "id": 61,
+    "topic": "roztoky",
+    "question": "Kolik soli je ve 200 g roztoku s hmotnostním podílem soli 5 %?",
+    "answer": "10 g.",
+    "wrong": [
+      "5 g.",
+      "40 g.",
+      "100 g."
+    ],
+    "explanation": "5 % = 0,05. Hmotnost soli je 0,05 × 200 = 10 g.",
+    "source": "cloud3.pdf, s. 4 (procvičovací výpočet)",
+    "sourceFile": "cloud3.pdf"
+  },
+  {
+    "id": 62,
+    "topic": "roztoky",
+    "question": "Kolik vody je potřeba ke 20 g cukru na přípravu 100 g roztoku?",
+    "answer": "80 g vody.",
+    "wrong": [
+      "100 g vody.",
+      "120 g vody.",
+      "20 g vody."
+    ],
+    "explanation": "Celková hmotnost roztoku zahrnuje cukr i vodu: 100 − 20 = 80 g vody.",
+    "source": "cloud3.pdf, s. 4 (procvičovací výpočet)",
+    "sourceFile": "cloud3.pdf"
+  },
+  {
+    "id": 63,
+    "topic": "roztoky",
+    "question": "Do 100 g roztoku s 10 g soli přidáme 100 g vody. Nic neunikne. Jaký je nový hmotnostní podíl soli?",
+    "answer": "5 %.",
+    "wrong": [
+      "10 %.",
+      "20 %.",
+      "50 %."
+    ],
+    "explanation": "Soli zůstává 10 g, ale hmotnost roztoku vzroste na 200 g. w = 10 / 200 = 0,05 = 5 %.",
+    "source": "cloud3.pdf, s. 3–4 (procvičovací výpočet)",
+    "sourceFile": "cloud3.pdf"
+  },
+  {
+    "id": 64,
+    "topic": "roztoky",
+    "question": "Ve 100 g roztoku je 10 g soli. Odpaří se 50 g vody, sůl zůstane rozpuštěná a nic jiného neunikne. Jaký je nový hmotnostní podíl soli?",
+    "answer": "20 %.",
+    "wrong": [
+      "5 %.",
+      "10 %.",
+      "50 %."
+    ],
+    "explanation": "Zůstává 10 g soli v 50 g roztoku. w = 10 / 50 = 0,20 = 20 %. Odpařením části vody se roztok koncentruje.",
+    "source": "cloud3.pdf, s. 3–4 (procvičovací výpočet)",
+    "sourceFile": "cloud3.pdf"
+  }
+];
+'use strict';
+const TOPICS = {reakce:'Chemické reakce',atom:'Atom a molekula',vazby:'Chemické vazby a ionty',roztoky:'Roztoky a výpočty'};
+const MODES = {practice:'Procvičování',test:'Test nanečisto',oral:'Ústní zkoušení'};
+const KEY = 'zdeneklab-chemie-v1';
+const $ = id => document.getElementById(id);
+const esc = text => String(text).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const byId = id => DATA.find(q => q.id === id);
+const emptyState = () => ({version:1, seen:[], wrong:[], rounds:0, active:null});
+function shuffle(items, random = Math.random) { const a = [...items]; for(let i=a.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; }
+function makeRound(pool, mode, count) { return {mode,questions:shuffle(pool).slice(0,count).map(q=>({id:q.id,choices:shuffle([q.answer,...q.wrong])})),answers:[],index:0,revealed:false}; }
+function roundScore(round) { return round.answers.reduce((sum,a)=>sum+a.score,0); }
+function validActive(r){
+ if(!r || !MODES[r.mode] || !Array.isArray(r.questions) || !r.questions.length || r.questions.length>DATA.length || !Array.isArray(r.answers)) return false;
+ if(!Number.isInteger(r.index)||r.index<0||r.index>=r.questions.length||typeof r.revealed!=='boolean') return false;
+ if(r.answers.length<r.index||r.answers.length>r.index+1) return false;
+ if(new Set(r.questions.map(q=>q.id)).size!==r.questions.length) return false;
+ if(!r.questions.every(item=>{const q=byId(item.id);return q&&Array.isArray(item.choices)&&item.choices.length===4&&new Set(item.choices).size===4&&item.choices.every(x=>[q.answer,...q.wrong].includes(x));})) return false;
+ return r.answers.every((a,i)=>{const q=byId(r.questions[i].id);return a && a.id===q.id && [0,.5,1].includes(a.score) && (r.mode==='oral' ? a.chosen===null : r.questions[i].choices.includes(a.chosen)&&a.score===(a.chosen===q.answer?1:0));});
+}
+let state=emptyState(), mode='practice', current=null, lastRound=null, confirmAction=null;
+try { const raw=JSON.parse(localStorage.getItem(KEY)||'null'); if(raw&&raw.version===1){state.seen=Array.isArray(raw.seen)?[...new Set(raw.seen.filter(id=>byId(id)))]:[];state.wrong=Array.isArray(raw.wrong)?[...new Set(raw.wrong.filter(id=>byId(id)))]:[];state.rounds=Number.isInteger(raw.rounds)&&raw.rounds>=0?raw.rounds:0;state.active=validActive(raw.active)?raw.active:null;} }catch{$('storage-warning').hidden=false;}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch{$('storage-warning').hidden=false;}}
+function show(screen){for(const name of ['home','quiz','results'])$(name).hidden=name!==screen;window.scrollTo({top:0,behavior:'instant'});}
+function confirmChange(title,text,action){confirmAction=action;$('confirm-title').textContent=title;$('confirm-text').textContent=text;$('confirm-dialog').showModal();}
+$('confirm-cancel').onclick=()=>{$('confirm-dialog').close();confirmAction=null;};
+$('confirm-ok').onclick=()=>{const action=confirmAction;confirmAction=null;$('confirm-dialog').close();if(action)action();};
+$('confirm-dialog').addEventListener('cancel',()=>{confirmAction=null;});
+function topicPool(){const topic=$('topic').value;return DATA.filter(q=>topic==='all'||q.topic===topic);}
+function updateSetup(){const n=Math.min(Number($('count').value),topicPool().length);$('selection-note').textContent=`V tomto kole: ${n} ${n===1?'otázka':n<5?'otázky':'otázek'} · náhodné pořadí${mode==='oral'?' · hodnocení 0 / ½ / 1 bod':' · čtyři možnosti u každé otázky'}.`;$('start').innerHTML=`${mode==='practice'?'Začít procvičování':mode==='test'?'Spustit test':'Začít zkoušení'} <span>→</span>`;}
+function setMode(value){mode=value;document.querySelectorAll('[data-mode]').forEach(b=>{const selected=b.dataset.mode===mode;b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',String(selected));});updateSetup();}
+Object.entries(TOPICS).forEach(([value,label])=>{const option=document.createElement('option');option.value=value;option.textContent=`${label} (${DATA.filter(q=>q.topic===value).length})`;$('topic').append(option);});
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+$('topic').onchange=updateSetup;$('count').onchange=updateSetup;
+function home(){show('home');$('seen-count').textContent=`${state.seen.length}/${DATA.length}`;$('wrong-count').textContent=state.wrong.length;$('round-count').textContent=state.rounds;$('review-errors').disabled=!state.wrong.length;$('resume-box').hidden=!state.active;if(state.active)$('resume-label').textContent=`${MODES[state.active.mode]} · zodpovězeno ${state.active.answers.length} z ${state.active.questions.length}`;updateSetup();}
+function startRound(pool=topicPool(), selectedMode=mode, count=Number($('count').value)){
+ if(!pool.length)return;
+ const begin=()=>{current=makeRound(pool,selectedMode,count);state.active=current;save();show('quiz');renderQuestion();};
+ if(state.active)confirmChange('Začít nové kolo?','Rozehrané kolo se nahradí novým. Už uložený pokrok zůstane.',begin);else begin();
+}
+$('start').onclick=()=>startRound();
+$('review-errors').onclick=()=>startRound(DATA.filter(q=>state.wrong.includes(q.id)),'practice',DATA.length);
+$('resume').onclick=()=>{current=state.active;show('quiz');renderQuestion();};
+$('discard').onclick=()=>confirmChange('Zahodit rozehrané kolo?','Dosavadní pokrok zůstane. Rozehrané kolo už nepůjde obnovit.',()=>{state.active=null;current=null;save();home();});
+$('pause').onclick=()=>{save();home();};
+$('reset').onclick=()=>confirmChange('Smazat uložený pokrok?','Smažou se chyby, přehled vyzkoušených otázek, počet kol i rozehrané kolo v tomto prohlížeči.',()=>{state=emptyState();current=null;lastRound=null;save();home();});
+function renderQuestion(){
+ const item=current.questions[current.index],q=byId(item.id),answer=current.answers[current.index];
+ $('mode-label').textContent=MODES[current.mode];$('question-position').textContent=`Otázka ${current.index+1} z ${current.questions.length}`;$('progress').max=current.questions.length;$('progress').value=current.answers.length;
+ $('score-live').textContent=current.mode==='test'?'Výsledek až na konci':`Body: ${roundScore(current).toLocaleString('cs-CZ')}`;
+ $('question-topic').textContent=TOPICS[q.topic];$('source-number').textContent=`OTÁZKA #${q.id}`;$('question-text').textContent=q.question;
+ $('question-hint').textContent=current.mode==='oral'?'Odpověz nahlas vlastními slovy. Potom odkryj vzor a porovnej hlavní myšlenku.':'Vyber jednu správnou odpověď.';
+ $('options').innerHTML='';$('options').hidden=current.mode==='oral';$('oral-controls').hidden=current.mode!=='oral'||current.revealed||!!answer;$('oral-rating').hidden=true;$('feedback').hidden=true;$('feedback').className='feedback';$('next').hidden=!answer;
+ $('next').textContent=current.index===current.questions.length-1?'Dokončit kolo →':'Další otázka →';
+ $('action-hint').textContent=answer?(current.mode==='test'?'Odpověď uložena.':'Odpověď je započítaná.'):(current.mode==='oral'?'Bez nápovědy a bez možností.':'');
+ if(current.mode!=='oral')item.choices.forEach((choice,i)=>{
+  const button=document.createElement('button');button.type='button';button.className='option';button.disabled=!!answer;
+  let status='';if(answer){if(current.mode==='test'){if(choice===answer.chosen){button.classList.add('chosen');status='Vybraná odpověď';}}else if(choice===q.answer){button.classList.add('correct');status='✓ Správná odpověď';}else if(choice===answer.chosen){button.classList.add('wrong');status='✕ Tvoje odpověď';}}
+  button.innerHTML=`<span class="option-letter">${'ABCD'[i]}</span><span>${esc(choice)}${status?`<span class="state-label">${status}</span>`:''}</span>`;
+  button.onclick=()=>record(choice,choice===q.answer?1:0);$('options').append(button);
+ });
+ if(current.mode==='oral'&&(current.revealed||answer)){renderFeedback(q,null);$('oral-rating').hidden=!!answer;}
+ else if(answer&&current.mode==='practice')renderFeedback(q,answer.score===1);
+ $('question-text').focus({preventScroll:true});
+}
+function renderFeedback(q,correct){$('feedback').hidden=false;$('feedback').className=`feedback${correct===null?'':correct?' good':' bad'}`;$('feedback').innerHTML=`<strong>${correct===null?'Vzorová odpověď':correct?'✓ Správně.':'Ještě si to připomeň.'}</strong><p>${esc(q.answer)}</p><p class="explanation">${esc(q.explanation)}</p>`;}
+function record(chosen,score){
+ if(!current||current.answers[current.index])return;
+ const id=current.questions[current.index].id;
+ current.answers.push({id,chosen,score});
+ // In test mode, do not expose correctness through stored progress until finishing.
+ if(current.mode!=='test')applyAnswer({id,score});
+ state.active=current;save();renderQuestion();
+}
+function applyAnswer(a){if(!state.seen.includes(a.id))state.seen.push(a.id);if(a.score<1){if(!state.wrong.includes(a.id))state.wrong.push(a.id);}else state.wrong=state.wrong.filter(id=>id!==a.id);}
+$('reveal').onclick=()=>{if(!current||current.mode!=='oral')return;current.revealed=true;save();renderQuestion();};
+document.querySelectorAll('[data-rate]').forEach(b=>b.onclick=()=>{if(current?.mode==='oral'&&current.revealed)record(null,Number(b.dataset.rate));});
+$('next').onclick=()=>{if(!current||!current.answers[current.index])return;if(current.index+1===current.questions.length){finish();return;}current.index++;current.revealed=false;save();renderQuestion();};
+function finish(){
+ if(!current||current.answers.length!==current.questions.length)return;
+ if(current.mode==='test')current.answers.forEach(applyAnswer);
+ state.rounds++;lastRound=current;current=null;state.active=null;save();renderResults();
+}
+function renderResults(){
+ const r=lastRound,score=roundScore(r),percent=Math.round(score/r.questions.length*100),missed=r.answers.filter(a=>a.score<1);
+ show('results');$('result-title').textContent=percent===100?'Všechno sedí.':percent>=80?'Máš dobrý přehled.':percent>=50?'Základy už máš.':'Pojďme to upevnit.';
+ $('result-subtitle').textContent=missed.length?`${missed.length} ${missed.length===1?'otázka čeká':missed.length<5?'otázky čekají':'otázek čeká'} na zopakování. Podívej se na vysvětlení a zkus je znovu.`:'Zvládnuté celé kolo. Příště si zkus odpovědi vybavit nahlas bez možností.';
+ $('result-kind').textContent=`${MODES[r.mode]}${r.mode==='oral'?' · hodnocení rodičem nebo vlastní sebehodnocení':' · 1 bod za správnou odpověď'}. Nejde o oficiální školní známku.`;
+ $('result-percent').textContent=`${percent} %`;$('result-score').textContent=`${score.toLocaleString('cs-CZ')} z ${r.questions.length} bodů`;$('retry').disabled=!missed.length;
+ $('result-review').innerHTML=r.answers.map((a,i)=>{const q=byId(a.id);return `<details class="review-item${a.score<1?' missed':''}" ${a.score<1?'open':''}><summary><span class="review-status">${a.score===1?'✓':a.score===.5?'½':'✕'}</span><span>${i+1}. ${esc(q.question)} <small class="quiet">(otázka #${q.id})</small></span></summary><p>${r.mode==='oral'?`Hodnocení: ${a.score===1?'Umím':a.score===.5?'Částečně':'Ještě neumím'}`:`Tvoje odpověď: ${esc(a.chosen)}`}</p><p class="review-answer">Správně: ${esc(q.answer)}</p><p>${esc(q.explanation)}</p></details>`;}).join('');
+ $('result-title').focus({preventScroll:true});
+}
+$('retry').onclick=()=>{if(lastRound)startRound(lastRound.answers.filter(a=>a.score<1).map(a=>byId(a.id)),lastRound.mode==='oral'?'oral':'practice',DATA.length);};
+$('again').onclick=()=>{if(lastRound)startRound(lastRound.questions.map(item=>byId(item.id)),lastRound.mode,lastRound.questions.length);};
+$('home-button').onclick=home;
+function normalize(text){return text.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();}
+function catalog(){const query=normalize($('search').value.trim()),list=DATA.filter(q=>normalize(`${q.id} ${q.question} ${q.answer} ${q.explanation}`).includes(query));$('catalog-list').innerHTML=list.length?list.map(q=>`<details class="catalog-item"><summary><span class="quiet">#${q.id}</span> ${esc(q.question)}</summary><p class="answer">${esc(q.answer)}</p><p>${esc(q.explanation)}</p><p class="quiet">${esc(TOPICS[q.topic])} · ${esc(q.source)}</p></details>`).join(''):'<p class="quiet">Žádná otázka neodpovídá hledání.</p>';}
+$('search').oninput=catalog;
+catalog();home();
+
+</script>
+</body></html>
+
