@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI HEAD — průběh</title>
+<meta name="description" content="AI HEAD / LYRA: průběžný stav mechaniky a softwaru, rozhodnutí a další kroky.">
+<style>
+:root{--bg:#080e13;--panel:#111b23;--line:#273746;--fg:#ecf2f4;--muted:#a6b7c2;--cyan:#7bdafa;--gold:#eab877;--green:#86ddb6;--red:#e8788a}
+*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;color:var(--fg);font:14px/1.55 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(ellipse at 68% -18%,#1b3b4a 0,transparent 50%),var(--bg)}
+a{color:inherit;text-decoration:none}a:hover{color:var(--cyan)}.wrap{width:min(1180px,calc(100% - 32px));margin:auto;padding:22px 0 60px}
+.top{display:flex;justify-content:space-between;gap:12px;align-items:center;border-bottom:1px solid var(--line);padding:0 0 17px}.brand{font-weight:800;font-size:12px;letter-spacing:.2em}.back{border:1px solid #405364;border-radius:4px;padding:9px 12px;font-size:11px;font-weight:750}
+.kicker{margin:32px 0 10px;color:var(--cyan);font:700 11px ui-monospace,monospace;letter-spacing:.15em}
+h1{font-size:clamp(38px,6vw,72px);letter-spacing:-.06em;line-height:.95;margin:0;font-weight:780}h1 b{color:var(--cyan)}
+.lead{max-width:640px;color:var(--muted);font-size:13px;margin:12px 0 24px}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px}.metric{background:var(--panel);border:1px solid var(--line);padding:15px;border-radius:6px}
+.value{font:750 clamp(18px,2.2vw,26px)/1.2 ui-monospace,monospace;letter-spacing:-.03em}.value.gold{color:var(--gold)}.value.blue{color:var(--cyan)}.value.green{color:var(--green)}
+.cap{margin-top:7px;font:550 10px/1.5 ui-monospace,monospace;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+.panel{background:#111b23ed;border:1px solid var(--line);padding:20px;border-radius:6px}.panel+.panel{margin-top:16px}
+h2{font-size:16px;margin:0 0 12px}h3{font-size:11px;letter-spacing:.06em;color:var(--cyan);margin:16px 0 6px;text-transform:uppercase}
+ul.l{margin:0;padding:0;list-style:none}ul.l li{border-top:1px solid #1d2a34;padding:8px 0;font-size:12.5px;display:flex;gap:10px}ul.l li:first-child{border-top:none}
+.m{font:700 12px ui-monospace,monospace;flex:0 0 16px;text-align:center}.m.done{color:var(--green)}.m.run{color:var(--cyan)}.m.wait{color:var(--gold)}.m.no{color:var(--red)}
+.st{font:700 10px ui-monospace,monospace;color:var(--gold);letter-spacing:.04em}
+table{width:100%;border-collapse:collapse;font-size:12px}th{text-align:left;color:var(--muted);font:600 10px ui-monospace,monospace;text-transform:uppercase;padding:4px 8px 6px 0;border-bottom:1px solid var(--line)}td{padding:6px 8px 6px 0;border-bottom:1px solid #1d2a34;vertical-align:top}
+.note{font-size:11px;color:var(--muted);margin:10px 0 0}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding-top:16px;margin-top:28px;color:var(--muted);font:550 10px ui-monospace,monospace}
+@media(max-width:860px){.cols{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:530px){.panel{padding:14px}.metric{padding:12px}h1{font-size:38px}}
+</style></head><body><div class="wrap">
+<div class="top"><div class="brand">ZDENEKLAB · AI HEAD</div><a class="back" href="index.html">← ZPĚT</a></div>
+<div class="kicker">PRŮBĚH · AKTUALIZOVÁNO 2026-11-08 11:45</div>
+<h1>AI HEAD <b>průběh</b></h1>
+<p class="lead">Průběžný stav robotické hlavy LYRA: mechanika, AI CUBE Studio a software agenta. Uvádí se jen ověřené stavy; co čeká na fyzickou kontrolu, je tak označeno. Fyzické pohyby hlavy řízené agentem v této fázi: 0.</p>
+
+<div class="metrics">
+<div class="metric"><div class="value green">READY</div><div class="cap">Mechanika k montáži · bez blokeru</div></div>
+<div class="metric"><div class="value gold">PF V2.1</div><div class="cap">Zkušební tisk · ověření čeká</div></div>
+<div class="metric"><div class="value blue">AGENT-4</div><div class="cap">Software ready · kandidát integrace</div></div>
+<div class="metric"><div class="value blue">92,1 %</div><div class="cap">FAST C2 · shadow baseline</div></div>
+</div>
+
+<div class="cols"><div>
+<div class="panel"><h2>Mechanika</h2>
+<ul class="l">
+<li><span class="m wait">◐</span><span><b>PF V2.1</b> – oprava spodních ~3,5 cm švu PF ↔ boky (jedna hladká čelní plocha). <span class="st">PRINT PREP / PHYSICAL VALIDATION PENDING</span>. Pokud hrana fyzicky vyjde prémiově, geometrie PF se definitivně zmrazí.</span></li>
+<li><span class="m done">✓</span><span><b>Audit celé sestavy</b> (kolize, spáry, šrouby, přístup nářadím, pohyb YAW ±90° / PITCH ±30°): <b>připraveno k fyzické montáži</b>, žádný bloker, žádná viditelná vada. Všech 11 viditelných spár ~0,40 mm.</span></li>
+<li><span class="m wait">◐</span><span><b>P7 V2</b> – v tisku od 7. 11.; fyzické ověření čeká.</span></li>
+<li><span class="m done">✓</span><span><b>Mechanical Studio</b> ukazuje skutečný stav: přední modul P7 V2 + PF V2.1 + plexi P8 V2 + lišta V2; stavy dílů podle záznamu tisku; staré verze jen jako historie.</span></li>
+<li><span class="m done">✓</span><span>Tři drobnosti (malé rohové otvory, konce spár zespodu) přijaty pro prototyp V1; řešit jen, pokud budou na sestavě vidět.</span></li>
+</ul>
+<h3>Před montáží</h3>
+<ul class="l">
+<li><span class="m wait">!</span><span>Spočítat zálisky M3×4 (potřeba 46).</span></li>
+<li><span class="m wait">!</span><span>Lišta plexi P8 jen šrouby M3×6.</span></li>
+<li><span class="m wait">!</span><span>Distanční podložka: začít 0,0; 0,2 jen při drhnutí; 0,4 ne.</span></li>
+<li><span class="m wait">!</span><span>Úhlový HDMI adaptér 90° připravit před nasazením předního modulu.</span></li>
+</ul></div>
+
+<div class="panel"><h2>Další kroky</h2>
+<ul class="l">
+<li><span class="m run">▸</span><span>Fyzická kontrola PF V2.1 po tisku.</span></li>
+<li><span class="m wait">◦</span><span>Jedna plná integrační regrese – až PF V2.1 fyzicky projde a cílené testy Studia jsou zelené.</span></li>
+<li><span class="m done">✓</span><span>Do <code>main</code> se zatím nic neslučuje.</span></li>
+</ul></div>
+</div><div>
+
+<div class="panel"><h2>Software – rozhodnutí 2026-11-08</h2>
+<h3>AGENT-4</h3>
+<ul class="l">
+<li><span class="m done">✓</span><span><b>AGENT-4 SOFTWARE READY / INTEGRATION CANDIDATE.</b> Cesta text → lokální AI → návrh akce → DRY RUN → schválení člověkem → čerstvá kontrola pravidel, připravenosti a bezpečnosti → provedení, ověřená na softwarové hlavě.</span></li>
+<li><span class="m done">✓</span><span>Schválení člověkem je nově na serveru: jednorázové, vázané přesně na zobrazený požadavek, platné 120 s.</span></li>
+<li><span class="m wait">◦</span><span>Zastavení běžícího pohybu (STOP) je budoucí práce – neblokuje jediné hlídané kývnutí, ale je nutné před opakovaným autonomním pohybem.</span></li>
+</ul>
+<h3>FAST (rychlá reakce řečí těla)</h3>
+<table><thead><tr><th>model</th><th>nový holdout V2</th><th>stav</th></tr></thead><tbody>
+<tr><td>PoC7-v2</td><td>83,5 %</td><td>historický benchmark</td></tr>
+<tr><td><b>C2</b></td><td><b>92,1 %</b></td><td>aktuální výzkumný / shadow baseline</td></tr>
+</tbody></table>
+<p class="note">C2 není připravený pro autonomní fyzické provedení: 11 chybných fyzických reakcí a 1 záměna kývnutí ↔ zavrtění jsou nepřijatelné. Nad FAST zvolena architektura FAST → SMART, kde SMART jen odpovídá nebo odmítá; mezivrstva Tier-2 i paralelní běh zamítnuty měřením.</p>
+<h3>Sémantika FAST</h3>
+<ul class="l">
+<li><span class="m done">✓</span><span><b>Kývnutí s počtem</b> („kývni dvakrát“) → ESCALATE. FAST počet nekóduje; vyřeší ho později plánovač akcí.</span></li>
+<li><span class="m done">✓</span><span><b>Zavrtění</b> = okamžitý záporný komunikační akt, ne slovo „ne“. „Ne.“, „Ne, nechci.“, „To není pravda.“, „Zavrť hlavou.“ → SHAKE. Zápor ve vyprávění, v citaci a záporná otázka („Včera to nebylo dobré.“, „On řekl ne.“, „Není to moc?“) → nic. Nejasné → ESCALATE.</span></li>
+<li><span class="m done">✓</span><span>Holdout V2 zůstává jen diagnostický, nic se podle něj nedoladí. Další kandidát až s novou evaluační sadou: lidské popisky, skutečná řeč a přepisy STT, dost nefyzických vět, záludné případy.</span></li>
+</ul></div>
+
+<div class="panel"><h2>Právě běží</h2>
+<ul class="l">
+<li><span class="m run">▸</span><span>Red-team životního cyklu (zastaralé události, schválení, rušení) a chaos testy – jen software.</span></li>
+<li><span class="m run">▸</span><span>Latence řeč → text → rozhodnutí a návrh evaluační sady ze skutečných přepisů; měření zdrojů a latence FAST / SMART.</span></li>
+<li><span class="m run">▸</span><span>Izolovaná regrese kandidáta AGENT-4.</span></li>
+</ul></div>
+</div></div>
+
+<div class="foot"><span>Zdroj pravdy: soukromý repozitář AI_HEAD (Mac mini). Stránka shrnuje jen ověřené stavy.</span><span>2026-11-08</span></div>
+</div></body></html>
