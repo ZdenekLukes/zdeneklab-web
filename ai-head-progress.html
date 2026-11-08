@@ -26,7 +26,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th{text-align:left;colo
 @media(max-width:530px){.panel{padding:14px}.metric{padding:12px}h1{font-size:38px}}
 </style></head><body><div class="wrap">
 <div class="top"><div class="brand">ZDENEKLAB · AI HEAD</div><a class="back" href="index.html">← ZPĚT</a></div>
-<div class="kicker">PRŮBĚH · AKTUALIZOVÁNO 2026-11-08 14:05</div>
+<div class="kicker">PRŮBĚH · AKTUALIZOVÁNO 2026-11-08 15:05</div>
 <h1>AI HEAD <b>průběh</b></h1>
 <p class="lead">Průběžný stav robotické hlavy LYRA: mechanika, AI CUBE Studio a software agenta. Uvádí se jen ověřené stavy; co čeká na fyzickou kontrolu, je tak označeno. Fyzické pohyby hlavy řízené agentem v této fázi: 0.</p>
 
@@ -64,19 +64,17 @@ table{width:100%;border-collapse:collapse;font-size:12px}th{text-align:left;colo
 </ul></div>
 </div><div>
 
-<div class="panel" id="wow"><h2>WOW software vertical slice <span class="st">ACTIVE</span></h2>
+<div class="panel" id="wow"><h2>WOW software vertical slice <span class="st">VERIFYING</span></h2>
 <p class="note" style="margin-top:0">Cíl: SEE / HEAR → vnímání → FAST → SMART odpověď → tvář / hlas → trace, spustitelné a přehratelné na Mac mini bez jakéhokoli pohybu hlavy. Fyzická provedení: 0.</p>
 <ul class="l" id="wow-list">
-<li><span class="m done">✓</span><span>Bezpečný integrační základ (AGENT-4 + W5/W7 ochrany) a výzkum FAST/STT importovány; chráněné soubory beze změny.</span></li>
-<li><span class="m done">✓</span><span>W0 kontrakt tahu + runtime: jen nejnovější tah smí měnit tvář a hlas, zpožděné výsledky se zahazují, náhled pohybu jen kanonickou cestou a nikdy se neprovede.</span></li>
-<li><span class="m done">✓</span><span>Demo 7 tahů jedním příkazem: pozdrav, náhled kývnutí (pravidla OK, připravenost chybí, neprovedeno), přerušení dlouhé odpovědi novou otázkou, zavrtění odmítnuté pravidly, výpadek SMART se záložní větou, „kývni dvakrát“ zodpovězeno slovy. Očekávaný průběh: PASS.</span></li>
-<li><span class="m done">✓</span><span>Tvář pro 1920×1080 AMOLED za kouřovým plexi: 6 výrazů (klid, pozornost, poslech, přemýšlení, mluvení, porucha), mrkání, pohled; prohlížečový test 67/67.</span></li>
-<li><span class="m done">✓</span><span>Hlas: český hlas do souboru, první zvuk ~0,45 s, zrušení ~18 ms. SMART odpověď (teple) p50 3,5 s / p95 5,8 s.</span></li>
-<li><span class="m done">✓</span><span>Studio MEDIA / AUDIO · VISION · DISPLAY ukazují skutečný stav replaye, nic smyšleného.</span></li>
-<li><span class="m done">✓</span><span>Red-team našel 14 problémů životního cyklu (1 vážný: pád živé smyčky po chybném výstupu providera); všechny opraveny.</span></li>
-<li><span class="m run">▸</span><span>Běží: výběr STT (řeč → text), trvalé chaos testy, nezávislé recenze architektury a dojmu WOW.</span></li>
+<li><span class="m done">✓</span><span>Celý řetězec běží na Mac mini: vidění → řeč → text → FAST (stín) → náhled pohybu (nikdy neproveden) → SMART odpověď → tvář → hlas → trace. Fyzická provedení: 0 (ověřeno i „tripwire“ testem).</span></li>
+<li><span class="m done">✓</span><span>Demo pro publikum (~73 s): živá tvář 1920×1080, slyšitelný český hlas, přerušení odpovědi novou otázkou ji okamžitě utne, výpadek SMART → záložní věta → znovu položená otázka zodpovězena. Žádost o kývnutí dostane slovní odpověď místo ticha.</span></li>
+<li><span class="m done">✓</span><span>Naměřeno se skutečnými modely: řeč → text p50 1,47 s (whisper.cpp, WER ~0,13), FAST 75 ms, SMART za tepla 3,5 s, první zvuk hlasu 0,5 s. Mac mini stačí, ale je omezen pamětí; úzké hrdlo je SMART.</span></li>
+<li><span class="m done">✓</span><span>Studio MEDIA / AUDIO · VISION · DISPLAY ukazují skutečný stav, nic smyšleného.</span></li>
+<li><span class="m done">✓</span><span>Nezávislé recenze: architektura bez blokeru; red-team 17 nálezů životního cyklu – vše opraveno a pokryto 34 chaos testy; recenze dojmu WOW zapracována.</span></li>
+<li><span class="m run">▸</span><span>Probíhá finální kompletní regrese na kandidátu.</span></li>
 </ul>
-<p class="note">Větev integration/wow-vertical-slice-20261108 @ 3bbc6fa7 · fyzická provedení 0 · další krok: napojit vybrané STT a C2 FAST, finální regrese.</p></div>
+<p class="note">Větev integration/wow-vertical-slice-20261108 @ 6318cdb1 · nesloučeno do main · další krok: výsledek regrese; pak živý mikrofon (volitelné).</p></div>
 <div class="panel"><h2>Software – rozhodnutí 2026-11-08</h2>
 <h3>AGENT-4</h3>
 <ul class="l">
