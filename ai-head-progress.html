@@ -26,7 +26,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th{text-align:left;colo
 @media(max-width:530px){.panel{padding:14px}.metric{padding:12px}h1{font-size:38px}}
 </style></head><body><div class="wrap">
 <div class="top"><div class="brand">ZDENEKLAB · AI HEAD</div><a class="back" href="index.html">← ZPĚT</a></div>
-<div class="kicker">PRŮBĚH · AKTUALIZOVÁNO 2026-11-08 15:05</div>
+<div class="kicker">PRŮBĚH · AKTUALIZOVÁNO 2026-11-08 15:40</div>
 <h1>AI HEAD <b>průběh</b></h1>
 <p class="lead">Průběžný stav robotické hlavy LYRA: mechanika, AI CUBE Studio a software agenta. Uvádí se jen ověřené stavy; co čeká na fyzickou kontrolu, je tak označeno. Fyzické pohyby hlavy řízené agentem v této fázi: 0.</p>
 
@@ -72,9 +72,10 @@ table{width:100%;border-collapse:collapse;font-size:12px}th{text-align:left;colo
 <li><span class="m done">✓</span><span>Naměřeno se skutečnými modely: řeč → text p50 1,47 s (whisper.cpp, WER ~0,13), FAST 75 ms, SMART za tepla 3,5 s, první zvuk hlasu 0,5 s. Mac mini stačí, ale je omezen pamětí; úzké hrdlo je SMART.</span></li>
 <li><span class="m done">✓</span><span>Studio MEDIA / AUDIO · VISION · DISPLAY ukazují skutečný stav, nic smyšleného.</span></li>
 <li><span class="m done">✓</span><span>Nezávislé recenze: architektura bez blokeru; red-team 17 nálezů životního cyklu – vše opraveno a pokryto 34 chaos testy; recenze dojmu WOW zapracována.</span></li>
-<li><span class="m run">▸</span><span>Probíhá finální kompletní regrese na kandidátu.</span></li>
+<li><span class="m done">✓</span><span>První kompletní regrese odhalila porušení architektonického pravidla (název akce zapsaný mimo její kanonickou definici); opraveno bez změny chování i testu.</span></li>
+<li><span class="m run">▸</span><span>Probíhá kompletní regrese na novém kandidátu + ověření známých chyb Mechanical Studia na výchozí bázi.</span></li>
 </ul>
-<p class="note">Větev integration/wow-vertical-slice-20261108 @ 6318cdb1 · nesloučeno do main · další krok: výsledek regrese; pak živý mikrofon (volitelné).</p></div>
+<p class="note">Větev integration/wow-vertical-slice-20261108 @ 6225c133 · nesloučeno do main · další krok: výsledek regrese; pak živý mikrofon (volitelné).</p></div>
 <div class="panel"><h2>Software – rozhodnutí 2026-11-08</h2>
 <h3>AGENT-4</h3>
 <ul class="l">
