@@ -26,7 +26,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th{text-align:left;colo
 @media(max-width:530px){.panel{padding:14px}.metric{padding:12px}h1{font-size:38px}}
 </style></head><body><div class="wrap">
 <div class="top"><div class="brand">ZDENEKLAB · AI HEAD</div><a class="back" href="index.html">← ZPĚT</a></div>
-<div class="kicker">PRŮBĚH · AKTUALIZOVÁNO 2026-11-08 12:50</div>
+<div class="kicker">PRŮBĚH · AKTUALIZOVÁNO 2026-11-08 14:35</div>
 <h1>AI HEAD <b>průběh</b></h1>
 <p class="lead">Průběžný stav robotické hlavy LYRA: mechanika, AI CUBE Studio a software agenta. Uvádí se jen ověřené stavy; co čeká na fyzickou kontrolu, je tak označeno. Fyzické pohyby hlavy řízené agentem v této fázi: 0.</p>
 
@@ -64,6 +64,16 @@ table{width:100%;border-collapse:collapse;font-size:12px}th{text-align:left;colo
 </ul></div>
 </div><div>
 
+<div class="panel" id="wow"><h2>WOW software vertical slice <span class="st">ACTIVE</span></h2>
+<p class="note" style="margin-top:0">Cíl: SEE / HEAR → vnímání → FAST → SMART odpověď → tvář / hlas → trace, spustitelné a přehratelné na Mac mini bez jakéhokoli pohybu hlavy. Fyzická provedení: 0.</p>
+<ul class="l" id="wow-list">
+<li><span class="m done">✓</span><span>Bezpečný integrační základ (AGENT-4 + W5/W7 ochrany) a výzkum FAST/STT importovány; chráněné soubory beze změny.</span></li>
+<li><span class="m done">✓</span><span>W0 kontrakt tahu: jen nejnovější tah smí měnit tvář a hlas, zpožděné výsledky se zahazují, náhled pohybu jen kanonickou cestou a nikdy se neprovede.</span></li>
+<li><span class="m done">✓</span><span>Runtime + deterministický replay: demo 7 tahů (pozdrav, náhled kývnutí, přerušení odpovědi novou otázkou, zavrtění odmítnuté pravidly, výpadek SMART se záložní větou, „kývni dvakrát“ zodpovězeno slovy).</span></li>
+<li><span class="m done">✓</span><span>Vidění: replay + sledování pozornosti s hysterezí; skutečná kamera poctivě NENAKONFIGUROVÁNA.</span></li>
+<li><span class="m run">▸</span><span>Běží: řeč → text (výběr STT), tvář na 1920×1080, SMART odpovědi + hlas, Studio MEDIA, red-team.</span></li>
+</ul>
+<p class="note">Další krok: napojit skutečné providery (STT, tvář, hlas) do replaye a Studia.</p></div>
 <div class="panel"><h2>Software – rozhodnutí 2026-11-08</h2>
 <h3>AGENT-4</h3>
 <ul class="l">
